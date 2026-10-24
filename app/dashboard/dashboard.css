@@ -263,8 +263,10 @@
   .dash-burger { display: block; }
   .dash-overlay { display: block; position: fixed; inset: 0; background: rgba(11, 15, 46, 0.5); z-index: 40; }
   .dash-top { gap: 10px; padding: 0 16px; }
-  .dash-top-actions { gap: 10px; }
-  .dash-search { width: auto; min-width: 0; flex: 1; padding: 0 10px; }
+  /* موبايل/تابلت: زر القائمة (الثلاث شرط) في أقصى يمين الشريط، والبحث مخفي بالكامل. الكمبيوتر (فوق 900px) زي ما هو */
+  .dash-top-actions { gap: 10px; flex: 1; min-width: 0; }
+  .dash-top-actions .dash-burger { order: 99; margin-inline-start: auto; }
+  .dash-search { display: none; }
   .dash-content { width: 100%; min-width: 0; box-sizing: border-box; padding: 16px; }
 }
 

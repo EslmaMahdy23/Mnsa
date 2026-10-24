@@ -42,6 +42,8 @@ type CourseExam = {
   position: number;
 };
 type LockedItem = { section_id: string; item_id: string; item_type: "lesson" | "exam"; content_kind: "video" | "file" | "exam"; title: string; position: number; blocking_exam_title: string };
+// عنصر المعاينة: بيانات عرض فقط (عنوان ونوع) من get_public_course، من غير أي رابط أو محتوى
+type PreviewItem = { type: "video" | "file" | "exam"; id: string; title: string };
 type ExamAttempt = { exam_id: string | null; submitted_at: string | null; percent: number | null; passed: boolean | null };
 // قفل القسم: لو locked، blockingTitle هو الامتحان اللي لازم ينجح فيه الطالب الأول
 type SectionLock = { locked: boolean; blockingTitle: string | null };
@@ -67,6 +69,8 @@ export default function CoursePage() {
   const [locks, setLocks] = useState<Record<string, SectionLock>>({});
   const [playing, setPlaying] = useState<{ lesson: Lesson; src: Playable } | null>(null);
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
+  const [previewItems, setPreviewItems] = useState<Record<string, PreviewItem[]>>({});
+  const [previewReady, setPreviewReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -147,6 +151,26 @@ export default function CoursePage() {
         setLessons(courseLessons);
         setEnrolled((e.count ?? 0) > 0);
         if (secs.length > 0) setOpen(new Set([secs[0].id]));
+
+        // غير المشترك: الداتابيز (RLS) مش بترجّعله دروس ولا امتحانات، فبنجيب قائمة العناصر (عناوين وأنواع بس)
+        // من الدالة الآمنة get_public_course عشان يشوف محتوى كل قسم مقفول، من غير أي روابط
+        const subscribed = (e.count ?? 0) > 0 || p.role === "admin" || c.data.teacher_id === p.id;
+        if (subscribed) {
+          setPreviewItems({});
+          setPreviewReady(true);
+        } else {
+          timed("preview", supabase.rpc("get_public_course", { p_course: id })).then((r) => {
+            if (cancelled) return;
+            if (r.error) console.error("course preview load failed:", r.error);
+            const map: Record<string, PreviewItem[]> = {};
+            const preview = r.data as { sections?: { id: string; items?: PreviewItem[] }[] } | null;
+            (preview?.sections ?? []).forEach((section) => {
+              map[section.id] = (section.items ?? []).map((item) => ({ type: item.type, id: item.id, title: item.title }));
+            });
+            setPreviewItems(map);
+            setPreviewReady(true);
+          });
+        }
         setLoading(false); // الصفحة تظهر دلوقتي، والباقي بيوصل بعدها من غير ما يوقّفها
 
         // حالة قفل الأقسام (القسم بيتفتح بعد النجاح في امتحان اللي قبله). لو ملف 16 لسه ما اتشغّلش بنكمّل من غير قفل في الواجهة
@@ -286,6 +310,28 @@ export default function CoursePage() {
     );
   };
 
+  // صف معاينة مقفول (لغير المشتركين): نفس شكل الصف المقفول للمشترك، من غير زر فتح أو رابط
+  const previewRow = (item: PreviewItem) => {
+    const kindLabel = item.type === "file" ? "ملف PDF" : item.type === "video" ? "فيديو" : "امتحان";
+    return (
+      <div className="cv-item cv-item-locked" key={`preview-${item.id}`} aria-disabled="true">
+        <span className="cv-locked-item-name">
+          <i
+            className={`fa-solid ${item.type === "exam" ? "fa-clipboard-list cv-locked-kind-exam" : item.type === "video" ? "fa-video cv-locked-kind-video" : "fa-file-pdf cv-locked-kind-file"}`}
+            title={kindLabel}
+            aria-label={kindLabel}
+          />
+          <span>{item.title}</span>
+        </span>
+        <span className="cv-locked-item-status">
+          <b>المحتوى للمشتركين فقط</b>
+          <i className="fa-solid fa-lock" aria-hidden="true" />
+        </span>
+        <i className="fa-solid fa-chevron-up cv-locked-item-chevron" aria-hidden="true" />
+      </div>
+    );
+  };
+
   function toggleOpen(sid: string) {
     setOpen((prev) => {
       const n = new Set(prev);
@@ -296,6 +342,7 @@ export default function CoursePage() {
   }
 
   async function openLesson(l: Lesson) {
+    if (!canWatch) return; // غير المشترك مايفتحش أي درس من الواجهة
     const url = l.kind === "file" ? l.file_url : l.video_url;
     if (!url) return;
     if (l.kind === "file") void toggleDone(l);
@@ -346,6 +393,7 @@ export default function CoursePage() {
   }
 
   function startCourse() {
+    if (!canWatch) return;
     const target = openable.find((l) => !done.has(l.id)) ?? openable[0];
     if (!target) return;
     setOpen((prev) => new Set(prev).add(target.section_id));
@@ -416,15 +464,16 @@ export default function CoursePage() {
             {sections.length === 0 && <p className="cv-note">لسه ما اتضافش محتوى للكورس ده، هيظهر هنا قريب.</p>}
 
             {sections.map((s) => {
-              const items = lessonsOf(s.id);
+              const items = canWatch ? lessonsOf(s.id) : [];
               // فيديوهات وملفات وامتحانات القسم مترتّبة بنفس الترتيب اللي الأدمن عمله
               const entries = [
                 ...items.map((l) => ({ t: "lesson" as const, position: l.position, lesson: l })),
-                ...examsOf(s.id).map((x) => ({ t: "exam" as const, position: x.position, exam: x })),
+                ...(canWatch ? examsOf(s.id) : []).map((x) => ({ t: "exam" as const, position: x.position, exam: x })),
                 ...lockedItems.filter((x) => x.section_id === s.id).map((x) => ({ t: "locked" as const, position: x.position, item: x })),
               ].sort((a, b) => a.position - b.position || (a.t === b.t ? 0 : a.t === "lesson" ? -1 : 1));
+              const sectionPreview = canWatch ? [] : previewItems[s.id] ?? [];
               const isOpen = open.has(s.id);
-              const locked = isLocked(s.id);
+              const locked = canWatch && isLocked(s.id);
               const sDone = items.filter((l) => done.has(l.id)).length;
               return (
                 <div key={s.id} className={`cv-sec${isOpen ? " open" : ""}`}>
@@ -450,9 +499,10 @@ export default function CoursePage() {
 
                   {isOpen && !locked && (
                     <div className="cv-items">
-                      {entries.length === 0 && (
+                      {sectionPreview.map(previewRow)}
+                      {(canWatch ? entries.length === 0 : !previewReady || sectionPreview.length === 0) && (
                         <p className="cv-note">
-                          {canWatch ? "لسه مفيش عناصر في القسم ده." : <><i className="fa-solid fa-lock" /> محتوى القسم ده للمشتركين في الكورس.</>}
+                          {canWatch || previewReady ? "لسه مفيش عناصر في القسم ده." : "بنحمّل عناصر القسم..."}
                         </p>
                       )}
                       {entries.map((en) => {
@@ -538,9 +588,11 @@ export default function CoursePage() {
               )}
             </div>
 
-            <button className="btn cv-start" onClick={startCourse} disabled={ordered.length === 0}>
-              {doneCount > 0 && doneCount < ordered.length ? "كمّل الكورس" : "ابدأ الكورس"}
-            </button>
+            {canWatch && (
+              <button className="btn cv-start" onClick={startCourse} disabled={ordered.length === 0}>
+                {doneCount > 0 && doneCount < ordered.length ? "كمّل الكورس" : "ابدأ الكورس"}
+              </button>
+            )}
 
             {canWatch ? (
               <div className="cv-enrolled"><i className="fa-solid fa-circle-check" /> {enrolled ? "أنت مشترك بهذا الكورس!" : "معاينة كمسؤول"}</div>
