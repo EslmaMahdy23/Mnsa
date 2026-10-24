@@ -1,0 +1,148 @@
+/* ===== شاشة الصيانة + شريط الأدمن ===== */
+.mt-screen {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(ellipse at 20% 0, #1b2160 0, transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(255,107,53,.25) 0, transparent 50%), #0b0f2e;
+  color: #fff; font-family: "Cairo", "Tajawal", sans-serif;
+}
+.mt-card { width: 100%; max-width: 520px; padding: 40px 30px; text-align: center; border: 1px solid rgba(255,255,255,.12); border-radius: 24px; background: rgba(255,255,255,.06); backdrop-filter: blur(8px); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.mt-icon { display: grid; place-items: center; width: 78px; height: 78px; margin: 0 auto 18px; border-radius: 22px; background: linear-gradient(135deg, #ff6b35, #ff9a62); font-size: 2rem; animation: mt-tilt 3s ease-in-out infinite; }
+.mt-card h1 { margin: 0 0 10px; font-size: 1.7rem; font-weight: 900; }
+.mt-card p { margin: 0; color: rgba(255,255,255,.75); font-size: 1rem; line-height: 1.9; }
+.mt-eta { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 8px 16px; border-radius: 999px; background: rgba(255,107,53,.16); color: #ffb08a; font-weight: 800; font-size: .9rem; }
+.mt-actions { margin-top: 26px; }
+.mt-actions a, .mt-actions button {
+  display: inline-block; padding: 9px 20px; border: 1px solid rgba(255,255,255,.25); border-radius: 12px;
+  background: transparent; color: rgba(255,255,255,.8); font: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; text-decoration: none;
+}
+.mt-actions a:hover, .mt-actions button:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+@keyframes mt-tilt { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .mt-icon { animation: none; } }
+
+/* شريط تنبيه للأدمن وقت الصيانة (تحت الشاشة) */
+.mt-admin-bar {
+  position: fixed; inset-inline: 12px; bottom: 12px; z-index: 9999; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  max-width: 640px; margin: 0 auto; padding: 10px 16px; border-radius: 14px; background: #7c2d12; color: #fff;
+  font: 700 .84rem/1.6 "Cairo", "Tajawal", sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,.3);
+}
+.mt-admin-bar a { color: #ffd2b8; text-decoration: underline; }
+
+/* EduHelp identity for the visitor maintenance screen */
+.mt-screen {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: radial-gradient(ellipse at 12% 18%, rgba(30,177,255,.2), transparent 38%),
+    radial-gradient(ellipse at 88% 82%, rgba(124,58,237,.2), transparent 36%),
+    linear-gradient(145deg, #080c27 0%, #10183f 55%, #0b0f2e 100%);
+}
+.mt-screen::before, .mt-screen::after {
+  position: absolute; z-index: -1; width: 340px; height: 340px; border: 1px solid rgba(255,255,255,.07);
+  border-radius: 50%; content: ""; pointer-events: none;
+}
+.mt-screen::before { top: -205px; inset-inline-start: -115px; box-shadow: 0 0 0 34px rgba(255,255,255,.018), 0 0 0 70px rgba(255,255,255,.014); }
+.mt-screen::after { bottom: -230px; inset-inline-end: -125px; box-shadow: 0 0 0 38px rgba(30,177,255,.025), 0 0 0 78px rgba(30,177,255,.018); }
+.mt-card {
+  position: relative; max-width: 560px; padding: 36px clamp(22px, 6vw, 48px); overflow: hidden;
+  border-color: rgba(255,255,255,.14); border-radius: 28px;
+  background: linear-gradient(155deg, rgba(255,255,255,.105), rgba(255,255,255,.055));
+  box-shadow: 0 28px 90px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.mt-brand { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 28px; direction: ltr; }
+.mt-brand-icon { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 11px; background: linear-gradient(145deg,#1eb1ff,#0a84cc); color: #fff; font: 900 1.05rem/1 "Cairo",sans-serif; box-shadow: 0 7px 20px rgba(30,177,255,.24); }
+.mt-brand-name { color: #fff; font: 900 1.03rem/1 "Cairo",sans-serif; letter-spacing: -.04em; }
+.mt-brand-name span { color: #56c5ff; }
+.mt-loading-brand { display: inline-flex; align-items: center; gap: 10px; direction: ltr; }
+.mt-loading-dot { width: 8px; height: 8px; margin-inline-start: 10px; border-radius: 50%; background: #55d6b0; box-shadow: 0 0 0 0 rgba(85,214,176,.45); animation: mt-pulse 1.5s infinite; }
+.mt-icon { width: 72px; height: 72px; margin-bottom: 16px; border: 1px solid rgba(105,205,255,.26); border-radius: 23px; background: linear-gradient(145deg,rgba(30,177,255,.25),rgba(10,132,204,.12)); color: #72d0ff; box-shadow: 0 12px 30px rgba(10,132,204,.15), inset 0 1px 0 rgba(255,255,255,.12); }
+.mt-kicker { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; color: #79d4ff; font-size: .82rem; font-weight: 800; }
+.mt-kicker span { width: 7px; height: 7px; border-radius: 50%; background: #55d6b0; box-shadow: 0 0 0 4px rgba(85,214,176,.12); }
+.mt-card h1 { margin-bottom: 12px; color: #fff; font-size: clamp(1.55rem,4vw,2rem); }
+.mt-card p { max-width: 430px; margin-inline: auto; color: rgba(238,245,255,.76); }
+.mt-eta { border: 1px solid rgba(30,177,255,.18); background: rgba(30,177,255,.1); color: #9bdfff; }
+.mt-countdown b { font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+.mt-actions { margin-top: 24px; }
+.mt-actions a, .mt-actions button { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.06); color: rgba(255,255,255,.88); transition: .2s ease; }
+.mt-actions a:hover, .mt-actions button:hover { transform: translateY(-1px); border-color: rgba(105,205,255,.55); background: rgba(30,177,255,.13); color: #fff; }
+.mt-admin-bar { background: #111b4a; border: 1px solid rgba(30,177,255,.25); }
+.mt-admin-bar a { color: #7bd4ff; }
+.maintenance-admin-view { min-height: 100vh; background: #fff !important; color: #172541 !important; }
+.maintenance-admin-view .site-nav {
+  top: 18px; background: rgba(255,255,255,.97) !important; border-color: #e2eaf2 !important;
+  box-shadow: 0 8px 28px rgba(23,53,88,.1) !important; backdrop-filter: blur(18px);
+}
+.maintenance-admin-view .nav-logo-text { color: #15213c !important; }
+.maintenance-admin-view .nav-links a { color: #55627a !important; }
+.maintenance-admin-view .nav-links a:hover { color: #0a84cc !important; }
+.maintenance-admin-view .hamburger-nav { color: #263650 !important; }
+.maintenance-admin-view .nav-mobile-menu { background: rgba(255,255,255,.99) !important; border-color: #e5eaf1 !important; }
+.maintenance-admin-view .nav-mobile-menu a { color: #42516a !important; }
+.mt-admin-bar {
+  position: fixed; inset-inline: 14px; top: auto; bottom: 14px; z-index: 1100;
+  display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap;
+  width: max-content; max-width: min(620px,calc(100% - 28px)); min-height: 0; margin: 0 auto;
+  padding: 9px 14px; border: 1px solid #d7eaf4; border-radius: 999px;
+  background: rgba(255,255,255,.96); color: #52677a; font-size: .76rem;
+  box-shadow: 0 8px 26px rgba(23,53,88,.13); backdrop-filter: blur(12px);
+}
+.mt-admin-bar > i { color: #1686bd; }
+.mt-admin-bar a { padding-inline-start: 9px; border-inline-start: 1px solid #dce8ef; color: #087caf; font-weight: 900; text-decoration: none; }
+.mt-admin-bar a:hover { color: #075e8a; text-decoration: underline; }
+.mt-loading { min-height: 100svh; }
+.mt-loading .mt-brand-name { font-size: 1.12rem; }
+.mt-loading .mt-brand-icon { width: 42px; height: 42px; font-size: 1.2rem; }
+@keyframes mt-pulse { 70% { box-shadow: 0 0 0 9px rgba(85,214,176,0); } 100% { box-shadow: 0 0 0 0 rgba(85,214,176,0); } }
+@media (prefers-reduced-motion: reduce) { .mt-loading-dot { animation: none; } }
+@media (max-width: 520px) {
+  .mt-screen { padding: 18px; }
+  .mt-card { padding-block: 28px; border-radius: 23px; }
+  .mt-brand { margin-bottom: 22px; }
+}
+@media (max-width: 760px) {
+  .maintenance-admin-view .site-nav { top: 18px; }
+  .mt-admin-bar { inset-inline: 10px; bottom: 10px; max-width: calc(100% - 20px); padding: 8px 11px; gap: 7px; font-size: .7rem; }
+}
+
+/* Visitor maintenance page: light EduHelp brand, separate from the admin preview. */
+.mt-screen.mt-loading { background: radial-gradient(ellipse at 50% 0,rgba(30,177,255,.12),transparent 43%),#f7fbff; }
+.mt-loading .mt-brand-name { color: #15213c; }
+.mt-loading .mt-loading-dot { background: #0cae83; }
+.mt-screen:not(.mt-loading) {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0;
+  min-height: 100vh; min-height: 100svh; padding: 0 28px 48px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0,rgba(30,177,255,.12),transparent 43%),
+    linear-gradient(180deg,#f5fbff 0%,#fff 60%,#f8fbff 100%);
+  color: #172541; font-family: "Tajawal","Cairo",sans-serif;
+}
+.mt-screen:not(.mt-loading)::before, .mt-screen:not(.mt-loading)::after {
+  border-color: rgba(10,132,204,.09); box-shadow: 0 0 0 38px rgba(30,177,255,.025), 0 0 0 78px rgba(30,177,255,.018);
+}
+.mt-site-header {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1160px;
+  min-height: 74px; margin: 0 auto; padding: 0 22px; border: 1px solid #e4edf5; border-top: 0;
+  border-radius: 0 0 18px 18px; background: rgba(255,255,255,.92); box-shadow: 0 8px 24px rgba(23,53,88,.06);
+}
+.mt-site-logo { display: inline-flex; align-items: center; gap: 9px; direction: ltr; text-decoration: none; }
+.mt-header-status { display: inline-flex; align-items: center; gap: 9px; padding: 8px 13px; border: 1px solid #dceef7; border-radius: 999px; background: #f2faff; color: #39708e; font-size: .8rem; font-weight: 800; }
+.mt-header-status i { width: 7px; height: 7px; border-radius: 50%; background: #0cae83; box-shadow: 0 0 0 4px rgba(12,174,131,.11); }
+.mt-screen:not(.mt-loading) .mt-card {
+  width: min(100%,560px); margin: auto; padding: 42px clamp(24px,6vw,52px); border: 1px solid #e3edf5;
+  border-radius: 26px; background: rgba(255,255,255,.96); box-shadow: 0 24px 70px rgba(35,91,132,.12), inset 0 1px 0 #fff;
+  backdrop-filter: blur(10px);
+}
+.mt-screen:not(.mt-loading) .mt-icon {
+  border: 1px solid #d3edf9; background: linear-gradient(145deg,#e8f8ff,#f0f7ff); color: #0a84cc;
+  box-shadow: 0 12px 28px rgba(10,132,204,.12),inset 0 1px 0 #fff;
+}
+.mt-screen:not(.mt-loading) .mt-kicker { color: #087caf; }
+.mt-screen:not(.mt-loading) .mt-card h1 { color: #15213c; }
+.mt-screen:not(.mt-loading) .mt-card p { color: #687991; }
+.mt-screen:not(.mt-loading) .mt-eta { border-color: #d9edf7; background: #f1faff; color: #287ba3; }
+.mt-screen:not(.mt-loading) .mt-actions a,
+.mt-screen:not(.mt-loading) .mt-actions button { border-color: #cfe6f1; background: #f7fcff; color: #42627a; }
+.mt-screen:not(.mt-loading) .mt-actions a:hover,
+.mt-screen:not(.mt-loading) .mt-actions button:hover { border-color: #8bcce8; background: #eaf8ff; color: #087caf; }
+@media (max-width: 600px) {
+  .mt-screen:not(.mt-loading) { padding: 0 14px 28px; }
+  .mt-site-header { min-height: 64px; padding: 0 14px; border-radius: 0 0 15px 15px; }
+  .mt-header-status { padding: 7px 10px; font-size: .72rem; }
+  .mt-screen:not(.mt-loading) .mt-card { padding-block: 32px; border-radius: 22px; }
+}

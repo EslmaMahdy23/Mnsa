@@ -1,0 +1,25 @@
+.owner-cleanup { max-width: 1050px; margin: 0 auto; padding-bottom: 30px; }
+.cleanup-header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+.cleanup-header h1 { margin:3px 0 5px; font-size:1.4rem; }
+.cleanup-header p,.cleanup-list-head p { margin:0; color:var(--muted); font-size:.88rem; }
+.cleanup-kicker { color:var(--primary); font-weight:800; font-size:.78rem; }
+.cleanup-safety { display:flex; align-items:center; gap:10px; margin-bottom:16px; padding:13px 15px; border:1px solid #cfe8f4; border-radius:12px; background:#f1f9fc; color:#31566a; font-size:.86rem; line-height:1.6; }
+.cleanup-safety i { color:#1689c6; font-size:1.05rem; }
+.cleanup-list { margin-bottom:14px; padding:0; overflow:hidden; }
+.cleanup-list-head { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px 18px; border-bottom:1px solid var(--border); }
+.cleanup-list-head h2 { margin:0 0 4px; font-size:1rem; }
+.cleanup-list-head > span { display:grid; place-items:center; min-width:34px; height:34px; padding:0 8px; border-radius:10px; background:var(--primary-soft); color:var(--primary-dark); font-weight:900; }
+.cleanup-row { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); cursor:pointer; }
+.cleanup-row:last-child { border-bottom:0; }
+.cleanup-row:hover { background:var(--bg); }
+.cleanup-row input { width:18px; height:18px; accent-color:var(--primary); flex:none; }
+.cleanup-item-copy { display:grid; gap:4px; flex:1; min-width:0; }
+.cleanup-item-copy b { overflow-wrap:anywhere; }
+.cleanup-item-copy small { color:var(--muted); font-size:.77rem; }
+.cleanup-row code { color:var(--muted); font-size:.68rem; direction:ltr; }
+.cleanup-empty,.cleanup-state { padding:20px; color:var(--muted); }
+.cleanup-state h1 { color:var(--text); }
+.cleanup-footer { position:sticky; bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 15px; border:1px solid var(--border); border-radius:14px; background:var(--card); box-shadow:0 8px 28px #10253d1c; font-weight:800; }
+.cleanup-protected { margin:11px 2px; color:var(--muted); font-size:.78rem; line-height:1.7; }
+.cleanup-notice { padding:10px 13px; border-radius:10px; background:#eaf8ef; color:#187443; font-weight:700; }
+@media(max-width:650px) { .cleanup-header { align-items:flex-start; flex-direction:column; } .cleanup-row { padding:11px 12px; } .cleanup-row code { display:none; } .cleanup-footer { bottom:6px; } }

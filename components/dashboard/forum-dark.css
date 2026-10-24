@@ -1,0 +1,93 @@
+.dash-shell.dark-mode .forum-page {
+  color: #dce7f1;
+}
+.dash-shell.dark-mode .forum-page:not(.forum-admin-page) {
+  background: #090f17;
+}
+.dash-shell.dark-mode .forum-page .forum-compose-bar,
+.dash-shell.dark-mode .forum-page .forum-post {
+  border-color: #34485c;
+  background: #111b27;
+  color: #dce7f1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+}
+.dash-shell.dark-mode .forum-page .forum-feed-heading h2,
+.dash-shell.dark-mode .forum-page .forum-post-head b,
+.dash-shell.dark-mode .forum-page .forum-post-content h3 {
+  color: #edf5fb;
+}
+.dash-shell.dark-mode .forum-page .forum-feed-heading p,
+.dash-shell.dark-mode .forum-page .forum-post-head time,
+.dash-shell.dark-mode .forum-page .forum-post-actions time {
+  color: #9fb2c5;
+}
+.dash-shell.dark-mode .forum-page .forum-post-content p {
+  color: #c4d1de;
+}
+.dash-shell.dark-mode .forum-page .forum-post-head b small {
+  background: #2b4054;
+  color: #bfd0df;
+}
+.dash-shell.dark-mode .forum-page .forum-post-actions,
+.dash-shell.dark-mode .forum-page .forum-post-discussion {
+  border-color: #34485c;
+}
+.dash-shell.dark-mode .forum-page .forum-reply-form {
+  border-color: #263747;
+  background: #111b27;
+}
+.dash-shell.dark-mode .forum-page .forum-post-actions button {
+  border-color: #426078;
+  background: #20364a;
+  color: #8bd8fb;
+}
+.dash-shell.dark-mode .forum-page .forum-post-actions button:hover,
+.dash-shell.dark-mode .forum-page .forum-post-actions button[aria-expanded="true"] {
+  border-color: #3787a9;
+  background: #25475e;
+  color: #b3eaff;
+}
+.dash-shell.dark-mode .forum-page .forum-post-discussion .forum-reply {
+  border-color: #34485c;
+  background: #152332;
+}
+.dash-shell.dark-mode .forum-page .forum-reply header>b {
+  color: #e3edf5;
+}
+.dash-shell.dark-mode .forum-page .forum-reply p {
+  color: #c4d1de;
+}
+.dash-shell.dark-mode .forum-page .forum-reply time,
+.dash-shell.dark-mode .forum-page .forum-no-replies {
+  color: #9fb2c5;
+}
+.dash-shell.dark-mode .forum-page .forum-reply-avatar {
+  background: #1c3244;
+  color: #a9dff6;
+}
+.dash-shell.dark-mode .forum-page .forum-compose-fields input,
+.dash-shell.dark-mode .forum-page .forum-compose-fields textarea,
+.dash-shell.dark-mode .forum-page .forum-reply-form textarea {
+  border-color: #40566c;
+  background: #0d1722;
+  color: #e7eef5;
+}
+.dash-shell.dark-mode .forum-page .forum-compose-fields input::placeholder,
+.dash-shell.dark-mode .forum-page .forum-compose-fields textarea::placeholder,
+.dash-shell.dark-mode .forum-page .forum-reply-form textarea::placeholder {
+  color: #90a2b4;
+}
+.dash-shell.dark-mode .forum-page .forum-compose-note,
+.dash-shell.dark-mode .forum-page .forum-compose label {
+  color: #a9b8c7;
+}
+.dash-shell.dark-mode .forum-page .forum-filters {
+  border-color: #34485c;
+}
+.dash-shell.dark-mode .forum-page .forum-filters button,
+.dash-shell.dark-mode .forum-page .forum-filters button.active {
+  color: #c4d1de;
+}
+.dash-shell.dark-mode .forum-page .forum-filters button.active::after {
+  background: #35b8ed;
+}

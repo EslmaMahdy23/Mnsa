@@ -1,0 +1,26 @@
+.wallet-cards-admin { max-width:1100px;margin:auto; }
+.wallet-cards-intro { display:flex;align-items:center;gap:13px;margin:0 0 19px; }
+.wallet-cards-intro>span { display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#e9f7fc;color:#1386b3;font-size:1.15rem; }
+.wallet-cards-intro h1 { margin:0 0 5px;color:#24374e;font-size:1.25rem; }
+.wallet-cards-intro p { margin:0;color:#8290a0;font-size:.78rem;line-height:1.7; }
+.wallet-cards-form { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:20px;border:1px solid #e5ebf0;border-radius:15px; }
+.wallet-cards-form label { display:grid;gap:6px;color:#52647a;font-size:.78rem;font-weight:800; }
+.wallet-cards-form input { width:100%;min-height:42px;padding:9px 11px;border:1px solid #dce5ed;border-radius:9px;background:#fff;color:#30445a;font:inherit;font-size:.85rem; }
+.wallet-cards-form input:focus { outline:2px solid #d8f0f8;border-color:#75bfd8; }
+.wallet-cards-form>.btn { grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;gap:8px; }
+.wallet-cards-notice { display:flex;align-items:center;gap:8px;margin:0 0 13px;padding:11px 13px;border-radius:10px;background:#eff9f2;color:#26814a;font-size:.82rem; }
+.wallet-cards-results { margin-top:23px; }
+.wallet-cards-results-head { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px; }
+.wallet-cards-results-head h2 { margin:0;color:#2d4056;font-size:1rem; }
+.wallet-cards-results-head .btn { display:inline-flex;align-items:center;gap:7px; }
+.wallet-cards-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+.wallet-card-code { display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border:1px solid #e5ebf0;border-radius:12px; }
+.wallet-card-code code { color:#173c61;font-size:1.05rem;font-weight:900;letter-spacing:.12em; }
+.wallet-card-code span { color:#16815e;font-size:.8rem;font-weight:900;white-space:nowrap; }
+.wallet-cards-warning { display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding:12px;border:1px solid #f2dfb6;border-radius:11px;background:#fffaf0;color:#87651b;font-size:.76rem;line-height:1.7; }
+@media(max-width:600px) {
+  .wallet-cards-form,.wallet-cards-grid { grid-template-columns:1fr; }
+  .wallet-cards-form>.btn { grid-column:auto; }
+  .wallet-cards-intro h1 { font-size:1.08rem; }
+  .wallet-cards-results-head { align-items:flex-start; }
+}
