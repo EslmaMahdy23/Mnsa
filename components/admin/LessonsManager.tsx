@@ -184,8 +184,9 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
         console.error("section insert failed:", err);
         return setError(adminErrorMessage(err, "مقدرناش نضيف القسم، جرّب تاني"));
       }
-      setSections((prev) => [...prev, data as unknown as Section]);
-      setCollapsedSections((prev) => { const next = new Set(prev); next.delete(data.id); return next; });
+      const newSection = data as unknown as Section;
+      setSections((prev) => [...prev, newSection]);
+      setCollapsedSections((prev) => { const next = new Set(prev); next.delete(newSection.id); return next; });
     } else {
       const { data, error: err } = await supabase
         .from("course_sections")
