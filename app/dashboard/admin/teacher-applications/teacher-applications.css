@@ -1,0 +1,51 @@
+.ta-page{display:grid;gap:14px;max-width:960px;margin:0 auto 28px}
+.ta-toolbar{display:grid;gap:12px;padding:14px}
+.ta-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.ta-tabs button{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid #d5dee7;border-radius:999px;background:#fff;color:#44566c;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+.ta-tabs button small{padding:1px 7px;border-radius:999px;background:#eef3f7;color:#6a7c90;font-size:.7rem}
+.ta-tabs button.on{border-color:#1c9fc4;background:#e8f7fc;color:#0d7694}
+.ta-tabs button.on small{background:#c9ecf6;color:#0d7694}
+.ta-search{position:relative;display:block}
+.ta-search>i{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);color:#8193a5;pointer-events:none}
+.ta-search input{width:100%;min-height:42px;padding:9px 12px 9px 12px;padding-inline-start:36px;border:1px solid #d5dee7;border-radius:10px;background:#fff;color:#25364a;font:inherit;font-size:.84rem}
+.ta-search input:focus{outline:0;border-color:#1c9fc4;box-shadow:0 0 0 3px #159cbb18}
+.ta-empty{padding:26px;text-align:center;color:#718095}
+.ta-list{display:grid;gap:10px}
+.ta-item{padding:0;overflow:hidden}
+.ta-head{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;background:transparent;color:inherit;font:inherit;text-align:start;cursor:pointer}
+.ta-main{display:grid;gap:4px;min-width:0;flex:1}
+.ta-main b{color:#1f3248;font-size:.95rem}
+.ta-main small{color:#7d8999;font-size:.74rem}
+.ta-badge{flex:none;padding:4px 11px;border-radius:999px;font-size:.72rem;font-weight:800}
+.ta-badge.pending{background:#fff4e0;color:#a66a00}
+.ta-badge.approved{background:#e6f8ee;color:#12804b}
+.ta-badge.rejected{background:#fdeaea;color:#b83a3a}
+.ta-body{padding:4px 16px 18px;border-top:1px solid #e8edf2}
+.ta-grid{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;margin-top:14px}
+.ta-photo{display:grid;align-content:start;justify-items:center;gap:10px}
+.ta-photo img{width:160px;height:160px;border-radius:16px;object-fit:cover;border:1px solid #d5dee7}
+.ta-photo-ph{display:grid;place-items:center;width:160px;height:160px;border-radius:16px;background:#f2f6f9;color:#8193a5;font-size:.76rem}
+.ta-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:0}
+.ta-data>div{display:grid;gap:3px;min-width:0}
+.ta-data .wide{grid-column:1/-1}
+.ta-data dt{color:#7d8999;font-size:.7rem;font-weight:700}
+.ta-data dd{margin:0;color:#25364a;font-size:.84rem;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.ta-data dd a{color:#0d7694;font-weight:700}
+.ta-review{display:grid;gap:8px;margin-top:18px;padding-top:14px;border-top:1px dashed #d5dee7}
+.ta-review label{color:#34445c;font-size:.78rem;font-weight:700}
+.ta-review textarea{width:100%;padding:10px 12px;border:1px solid #d5dee7;border-radius:10px;background:#fbfdff;color:#25364a;font:inherit;font-size:.84rem;resize:vertical}
+.ta-review textarea:focus{outline:0;border-color:#1c9fc4;box-shadow:0 0 0 3px #159cbb18}
+.ta-actions{display:flex;flex-wrap:wrap;gap:10px}
+.ta-done{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#e6f8ee;color:#12804b;font-size:.82rem;line-height:1.8}
+.dash-shell.dark-mode .ta-tabs button{border-color:#34485c;background:#152332;color:#c0d1df}
+.dash-shell.dark-mode .ta-tabs button small{background:#101d2a;color:#9aabbd}
+.dash-shell.dark-mode .ta-tabs button.on{border-color:#3bb9d2;background:#173346;color:#8be1f0}
+.dash-shell.dark-mode .ta-search input,.dash-shell.dark-mode .ta-review textarea{border-color:#34485c;background:#101d2a;color:#e7eef5}
+.dash-shell.dark-mode .ta-main b,.dash-shell.dark-mode .ta-data dd{color:#e7eef5}
+.dash-shell.dark-mode .ta-main small,.dash-shell.dark-mode .ta-data dt,.dash-shell.dark-mode .ta-empty{color:#9aabbd}
+.dash-shell.dark-mode .ta-body,.dash-shell.dark-mode .ta-review{border-color:#34485c}
+.dash-shell.dark-mode .ta-review label{color:#c0d1df}
+.dash-shell.dark-mode .ta-photo img{border-color:#34485c}
+.dash-shell.dark-mode .ta-photo-ph{background:#101d2a}
+.dash-shell.dark-mode .ta-data dd a{color:#65cce1}
+@media(max-width:700px){.ta-grid{grid-template-columns:1fr}.ta-data{grid-template-columns:1fr}.ta-actions .btn{width:100%}}

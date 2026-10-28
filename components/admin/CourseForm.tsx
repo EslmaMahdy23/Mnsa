@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { adminErrorMessage, isHttpUrl } from "@/lib/admin";
 import { GRADES } from "@/lib/validation";
+import { parseSubjects, teacherCourseGrades } from "@/lib/teacher-application";
 import { useProfile } from "@/components/dashboard/ProfileContext";
+
+export type ApprovalStatus = "draft" | "pending" | "approved" | "rejected";
 
 export type CourseData = {
   id: string;
@@ -17,6 +20,9 @@ export type CourseData = {
   price: number;
   is_published: boolean;
   show_on_home?: boolean;
+  subject?: string | null;
+  approval_status?: ApprovalStatus;
+  approval_note?: string | null;
 };
 
 type Teacher = { id: string; full_name: string | null };
@@ -24,16 +30,23 @@ type Teacher = { id: string; full_name: string | null };
 const COVER_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 // نموذج إضافة/تعديل كورس. لو اتبعت course يبقى تعديل، غير كده يبقى كورس جديد.
+// للمدرّس: المادة والسنوات بتيجي من بيانات تسجيله، والسعر والظهور في الرئيسية من الأدمن،
+// والنشر بعد موافقة الأدمن (الداتابيز بتفرض ده كمان).
 export default function CourseForm({ course }: { course?: CourseData }) {
   const me = useProfile();
   const router = useRouter();
+  const isTeacher = me.role === "teacher";
+  const approved = course?.approval_status === "approved";
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  // بيانات تسجيل المدرّس: المواد وسنواته اللي سجّل بيها (null = لسه بتتحمّل)
+  const [tinfo, setTinfo] = useState<{ subjects: string[]; grades: number[] } | null>(null);
   const [f, setF] = useState({
     title: course?.title ?? "",
     description: course?.description ?? "",
     coverUrl: course?.cover_url ?? "",
     teacherId: course?.teacher_id ?? me.id,
     grade: course?.grade ? String(course.grade) : "",
+    subject: course?.subject ?? "",
     price: course ? String(course.price) : "0",
     published: course?.is_published ?? false,
     showOnHome: course?.show_on_home ?? false,
@@ -43,8 +56,9 @@ export default function CourseForm({ course }: { course?: CourseData }) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  // المدرّسين والأدمن بس (من الـ view العام)
+  // المدرّسين والأدمن بس (من الـ view العام). المدرّس نفسه مايحتاجش القايمة.
   useEffect(() => {
+    if (isTeacher) return;
     supabase
       .from("public_profiles")
       .select("id, full_name")
@@ -57,9 +71,29 @@ export default function CourseForm({ course }: { course?: CourseData }) {
           setF((current) => ({ ...current, teacherId: available[0].id }));
         }
       });
-  }, [course, me.role]);
+  }, [course, me.role, isTeacher]);
 
-  const set = (k: "title" | "description" | "coverUrl" | "teacherId" | "grade" | "price") =>
+  // مواد وسنوات المدرّس من طلب التسجيل بتاعه
+  useEffect(() => {
+    if (!isTeacher) return;
+    supabase
+      .from("teacher_applications")
+      .select("subjects, stage_grades, primary_grades")
+      .eq("user_id", me.id)
+      .maybeSingle()
+      .then(({ data, error: err }) => {
+        if (err) {
+          console.error("teacher registration data load failed:", err);
+          return setTinfo({ subjects: [], grades: [] });
+        }
+        setTinfo({
+          subjects: parseSubjects(data?.subjects),
+          grades: teacherCourseGrades({ stage_grades: data?.stage_grades, primary_grades: data?.primary_grades }),
+        });
+      });
+  }, [isTeacher, me.id]);
+
+  const set = (k: "title" | "description" | "coverUrl" | "teacherId" | "grade" | "subject" | "price") =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       setOk("");
       setF({ ...f, [k]: e.target.value });
@@ -95,6 +129,12 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     if (f.title.trim().length < 3) return "اكتب عنوان الكورس (3 حروف على الأقل)";
     if (f.coverUrl.trim() && !isHttpUrl(f.coverUrl.trim())) return "رابط الصورة لازم يبدأ بـ https://";
     if (!f.teacherId) return "اختار المدرّس";
+    if (isTeacher) {
+      if (!tinfo) return "استنى لحظة لحد ما بيانات تسجيلك تتحمّل";
+      if (f.subject.trim().length < 2) return "اختار مادة الكورس";
+      if (tinfo.grades.length > 0 && !f.grade) return "اختار السنة الدراسية للكورس";
+      return "";
+    }
     if (!Number.isFinite(price) || price < 0 || price > 100000) return "السعر لازم يكون رقم من 0 لـ 100000 (0 يعني مجاني)";
     return "";
   }
@@ -109,40 +149,71 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     setOk("");
     setLoading(true);
 
-    const payload = {
+    const basePayload = {
       title: f.title.trim(),
       description: f.description.trim() || null,
       cover_url: f.coverUrl.trim() || null,
       teacher_id: f.teacherId,
       grade: f.grade ? Number(f.grade) : null,
+    };
+
+    const teacherPayload = {
+      ...basePayload,
+      subject: f.subject.trim() || null,
+      // المدرّس بينشر/يخفي بعد الموافقة بس
+      is_published: approved ? f.published : false,
+    };
+    const adminPayload = {
+      ...basePayload,
       price,
       is_published: f.published,
       show_on_home: f.showOnHome,
     };
 
     if (course) {
-      const { data, error: err } = await supabase
-        .from("courses")
-        .update(payload)
-        .eq("id", course.id)
-        .select("id"); // بنطلب الصف المتعدّل عشان نتأكد إن التعديل حصل فعلاً
+      const result = isTeacher
+        ? await supabase.from("courses").update(teacherPayload).eq("id", course.id).select("id")
+        : await supabase.from("courses").update(adminPayload).eq("id", course.id).select("id");
+      const { data, error: err } = result; // بنطلب الصف المتعدّل عشان نتأكد إن التعديل حصل فعلاً
       setLoading(false);
       if (err || !data || data.length === 0) {
         console.error("course update failed:", err);
-        return setError(adminErrorMessage(err, "مقدرناش نحفظ التعديلات، جرّب تاني"));
+        return setError(courseSaveError(err, "مقدرناش نحفظ التعديلات، جرّب تاني"));
       }
       return setOk("اتحفظت التعديلات ✔");
     }
 
-    const { data, error: err } = await supabase.from("courses").insert(payload).select("id").single();
+    const result = isTeacher
+      ? await supabase.from("courses").insert(teacherPayload).select("id").single()
+      : await supabase.from("courses").insert(adminPayload).select("id").single();
+    const { data, error: err } = result;
     if (err || !data) {
       setLoading(false);
       console.error("course insert failed:", err);
-      return setError(adminErrorMessage(err, "مقدرناش نضيف الكورس، جرّب تاني"));
+      return setError(courseSaveError(err, "مقدرناش نضيف الكورس، جرّب تاني"));
     }
     // نروح لصفحة الكورس عشان تضيف الدروس
-    router.push(`/dashboard/admin/courses/${data.id}`);
+    router.push(isTeacher ? `/teacher/courses/${data.id}` : `/dashboard/admin/courses/${data.id}`);
   }
+
+  // لو عمود المادة لسه مش موجود يبقى ملف 53 ما اتشغّلش
+  function courseSaveError(err: { code?: string } | null, fallback: string) {
+    if (err?.code === "42703" || err?.code === "PGRST204") {
+      return "لازم تشغّل ملف supabase/53_course_approval.sql في Supabase الأول";
+    }
+    return isTeacher ? fallback : adminErrorMessage(err, fallback);
+  }
+
+  const subjectOptions = tinfo
+    ? [...tinfo.subjects, ...(f.subject && !tinfo.subjects.includes(f.subject) ? [f.subject] : [])]
+    : [];
+  // المدرّس يشوف سنواته المسجّل بيها بس (ابتدائي/إعدادي). لو مسجّل ثانوي/جامعي بس، مفيش رقم سنة ليهم لسه فبنسيب "كل السنوات".
+  const teacherGrades = tinfo?.grades ?? [];
+  const gradeList =
+    isTeacher && teacherGrades.length > 0
+      ? GRADES.filter((g) => teacherGrades.includes(g.value) || String(g.value) === f.grade)
+      : GRADES;
+  const showAllYears = !isTeacher || teacherGrades.length === 0;
 
   return (
     <form onSubmit={onSubmit} noValidate>
@@ -190,43 +261,86 @@ export default function CourseForm({ course }: { course?: CourseData }) {
         </div>
         <p className="hint">JPG أو PNG أو WEBP، أقل من 2 ميجا. الأفضل نسبة 16:9. الصورة بتتحفظ مع الكورس لما تضغط حفظ.</p>
       </div>
+
+      {isTeacher && (
+        <div className="field">
+          <label htmlFor="c-subject">المادة</label>
+          {!tinfo ? (
+            <select id="c-subject" disabled>
+              <option>جاري التحميل...</option>
+            </select>
+          ) : subjectOptions.length > 0 ? (
+            <select id="c-subject" value={f.subject} onChange={set("subject")}>
+              <option value="">اختار المادة</option>
+              {subjectOptions.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          ) : (
+            <input id="c-subject" value={f.subject} onChange={set("subject")} maxLength={80} placeholder="اسم المادة" />
+          )}
+          {tinfo && subjectOptions.length > 0 && <p className="hint">دي المواد اللي سجّلت بيها كمدرّس.</p>}
+        </div>
+      )}
+
       <div className="field-row">
         <div className="field">
           <label htmlFor="c-teacher">المدرّس</label>
-          <select id="c-teacher" value={f.teacherId} onChange={set("teacherId")}>
-            {/* لو بيانات المدرّسين لسه ما وصلتش، نعرض المختار الحالي عشان القيمة ما تضيعش */}
-            {teachers.length === 0 && <option value={f.teacherId}>جاري التحميل...</option>}
-            {teachers.map((t) => (
-              <option key={t.id} value={t.id}>{t.full_name || "بدون اسم"}</option>
-            ))}
+          <select id="c-teacher" value={f.teacherId} onChange={set("teacherId")} disabled={isTeacher}>
+            {isTeacher ? (
+              <option value={f.teacherId}>أنت (مدرّس الكورس)</option>
+            ) : (
+              <>
+                {/* لو بيانات المدرّسين لسه ما وصلتش، نعرض المختار الحالي عشان القيمة ما تضيعش */}
+                {teachers.length === 0 && <option value={f.teacherId}>جاري التحميل...</option>}
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>{t.full_name || "بدون اسم"}</option>
+                ))}
+              </>
+            )}
           </select>
         </div>
         <div className="field">
           <label htmlFor="c-grade">السنة الدراسية</label>
-          <select id="c-grade" value={f.grade} onChange={set("grade")}>
-            <option value="">كل السنوات</option>
-            {GRADES.map((g) => (
+          <select id="c-grade" value={f.grade} onChange={set("grade")} disabled={isTeacher && !tinfo}>
+            {isTeacher && teacherGrades.length > 0 && <option value="">اختار السنة</option>}
+            {showAllYears && <option value="">كل السنوات</option>}
+            {gradeList.map((g) => (
               <option key={g.value} value={g.value}>{g.label}</option>
             ))}
           </select>
+          {isTeacher && tinfo && teacherGrades.length > 0 && <p className="hint">دي السنوات اللي سجّلت بيها كمدرّس.</p>}
         </div>
       </div>
-      <div className="field">
-        <label htmlFor="c-price">السعر بالجنيه</label>
-        <input id="c-price" type="number" min="0" step="1" inputMode="decimal" value={f.price} onChange={set("price")} />
-        <p className="hint">0 يعني الكورس مجاني والطالب يسجّل فيه بنفسه. المدفوع التسجيل فيه من عندك.</p>
-      </div>
-      <label className="adm-check">
-        <input
-          type="checkbox"
-          checked={f.published}
-          onChange={(e) => {
-            setOk("");
-            setF({ ...f, published: e.target.checked });
-          }}
-        />
-        منشور (يظهر للطلاب)
-      </label>
+
+      {isTeacher ? (
+        <p className="hint">
+          {course && Number(course.price) > 0
+            ? `سعر الكورس: ${Number(course.price).toLocaleString("ar-EG")} جنيه (حدّده الأدمن).`
+            : "السعر بيحدده الأدمن بعد الموافقة على الكورس."}
+        </p>
+      ) : (
+        <div className="field">
+          <label htmlFor="c-price">السعر بالجنيه</label>
+          <input id="c-price" type="number" min="0" step="1" inputMode="decimal" value={f.price} onChange={set("price")} />
+          <p className="hint">0 يعني الكورس مجاني والطالب يسجّل فيه بنفسه. المدفوع التسجيل فيه من عندك.</p>
+        </div>
+      )}
+
+      {(!isTeacher || approved) && (
+        <label className="adm-check">
+          <input
+            type="checkbox"
+            checked={f.published}
+            onChange={(e) => {
+              setOk("");
+              setF({ ...f, published: e.target.checked });
+            }}
+          />
+          منشور (يظهر للطلاب)
+        </label>
+      )}
+      {!isTeacher && (<>
       <label className="adm-check course-home-check">
         <input
           type="checkbox"
@@ -239,6 +353,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
         يظهر في الرئيسية ككورس مميّز
       </label>
       <p className="hint course-home-hint">الزائر يقدر يشوف محتويات الكورس، لكن روابط الدروس المجانية فقط هي اللي هتظهر للزوار.</p>
+      </>)}
 
       {error && <p className="msg-error">{error}</p>}
       {ok && <p className="msg-ok">{ok}</p>}

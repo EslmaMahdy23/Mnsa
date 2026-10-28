@@ -46,3 +46,10 @@ EduHelp: منصة تعليمية مصرية للمرحلة الابتدائية 
 - الافتراضي والمخطط (SCHEMA) في lib/home-content.ts، والمحرّر في components/admin/HomeContentManager.tsx، والصفحة في app/dashboard/admin/home/page.tsx. app/page.tsx بتقرا من الداتابيز وتحط الافتراضي لو مفيش.
 - صور الرئيسية في باكت home-media (أدمن بس). ما اتجرّبش لحد دلوقتي.
 - ملف 32: خط مخصّص للرئيسية (مفتاح font، باكت site-fonts، CSS من fontCss في lib/home-content.ts) ووضع صيانة (مفتاح maintenance، دالة get_maintenance، بوابة components/MaintenanceGate.tsx في app/layout.tsx). الصيانة حجب واجهة بس (مش قفل لـ API). اتشال مربع "+320 طالب" من قسم درّس معنا. ما اتجرّبش.
+
+## تسجيل المدرّس ولوحته (ملفات 51 و52)
+- التسجيل: components/TeacherSignupForm.tsx (صفحة /teacher-signup). الصفوف لكل مرحلة (ابتدائي 1-6، إعدادي/ثانوي عام/أزهر/لغات 1-3) من STAGE_GRADE_OPTIONS في lib/teacher-application.ts، وبتتخزّن في عمود stage_grades (JSON) بملف 52_teacher_stage_grades.sql.
+- بعد التقديم الحساب بيفضل role=student وطلب بحالة pending. DashboardShell بيجيب حالة الطلب مع البروفايل: pending → شاشة "طلبك قيد المراجعة" (components/dashboard/TeacherApplicationGate.tsx) بدل داشبورد الطالب، ورفض → سبب الرفض + إعادة تقديم أو "المتابعة كطالب".
+- القبول: الأدمن من لوحة طلبات المدرسين → API app/api/admin/teacher-applications/review/route.ts → دالة admin_review_teacher_application (role يتحوّل teacher) → إيميل موافقة عن طريق lib/mailer.ts (nodemailer + متغيرات SMTP_* وMAIL_FROM وNEXT_PUBLIC_SITE_URL في .env.local). فشل الإيميل ما بيلغيش القبول.
+- المدرّس المقبول: DashboardShell بيحوّله لـ /teacher (components/teacher/TeacherShell.tsx + app/teacher/*): رئيسية بإحصائيات بسيطة، وصفحة بياناتي + تغيير كلمة السر. كورساتي/طلابي/الأرباح "قريباً". PublicSiteChrome مستثني منه /teacher.
+- ما اتجرّبش لحد دلوقتي.

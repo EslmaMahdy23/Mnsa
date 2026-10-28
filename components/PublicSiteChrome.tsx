@@ -20,7 +20,8 @@ const DARK_PAGES = ["/", "/courses"];
 export default function PublicSiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const maintenanceAdmin = useContext(MaintenanceAdminContext);
-  if (pathname.startsWith("/dashboard")) return children;
+  // الداشبورد ولوحة المدرّس (/teacher) لهم هيكلهم الخاص، مش ناف بار الموقع العام. (/teacher-signup صفحة عامة عادية)
+  if (pathname.startsWith("/dashboard") || pathname === "/teacher" || pathname.startsWith("/teacher/")) return children;
   return <PublicSiteFrame pathname={pathname} maintenanceAdmin={maintenanceAdmin}>{children}</PublicSiteFrame>;
 }
 

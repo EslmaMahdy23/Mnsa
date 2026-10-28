@@ -104,7 +104,7 @@ export const DEFAULTS = {
       { emoji: "📈", title: "تحليلات وإحصائيات", sub: "تابع تقدم طلابك وأداء محتواك لحظة بلحظة" },
     ],
     ctaLabel: "قدّم طلبك دلوقتي",
-    ctaHref: "/signup",
+    ctaHref: "/teacher-signup",
     card: {
       name: "أ. محمد عبد الرحمن",
       role: "مدرس رياضيات — نموذج توضيحي",

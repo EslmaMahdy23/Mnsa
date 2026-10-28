@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { toEnDigits } from "@/lib/validation";
 
-export default function OtpStep({ email, onBack, redirectTo = "/dashboard" }: { email: string; onBack: () => void; redirectTo?: string }) {
+// onVerified (اختياري): لو اتبعت، بيتنفّذ بعد نجاح التأكيد بدل التحويل لـ redirectTo (بنستخدمه في تسجيل المدرّس)
+export default function OtpStep({ email, onBack, redirectTo = "/dashboard", onVerified }: { email: string; onBack: () => void; redirectTo?: string; onVerified?: () => void }) {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -31,6 +32,7 @@ export default function OtpStep({ email, onBack, redirectTo = "/dashboard" }: { 
     });
     setLoading(false);
     if (error) return setError("الكود غير صحيح أو انتهت صلاحيته");
+    if (onVerified) return onVerified();
     router.push(redirectTo);
   }
 

@@ -9,10 +9,14 @@ import { fmtMoney } from "@/lib/wallet";
 import LoadingState from "@/components/dashboard/LoadingState";
 import StudentNotifications from "@/components/dashboard/StudentNotifications";
 import StudentSupportWidget from "@/components/dashboard/StudentSupportWidget";
+import TeacherApplicationGate from "@/components/dashboard/TeacherApplicationGate";
 import { clearAllCache, keepOnlyUser, readCache, writeCache } from "@/lib/cache";
 import { DEFAULT_STUDENT_DASHBOARD, parseStudentDashboardSettings, type StudentDashboardNavKey } from "@/lib/student-dashboard";
 
 type NavItem = { href: string; label: string; icon: string; soon?: boolean };
+
+// حالة طلب التدريس للمستخدم الحالي: "none" = ما قدّمش طلب
+type TeacherAppState = { status: "pending" | "approved" | "rejected"; admin_note: string | null; reviewed_at: string | null } | "none";
 
 // "soon" = الصفحة لسه ما اتعملتش، بتظهر باهتة ومش بتتفتح
 const NAV: NavItem[] = [
@@ -39,6 +43,8 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin/notifications", label: "إشعارات الطلاب", icon: "fa-bell" },
   { href: "/dashboard/admin/promo-codes", label: "أكواد الخصم والتفعيل", icon: "fa-ticket" },
   { href: "/dashboard/admin/staff", label: "حسابات الوكلاء", icon: "fa-user-shield" },
+  { href: "/dashboard/admin/teacher-applications", label: "طلبات المدرسين", icon: "fa-chalkboard-user" },
+  { href: "/dashboard/admin/course-requests", label: "طلبات الكورسات", icon: "fa-clipboard-check" },
   { href: "/dashboard/admin/cleanup", label: "تنظيف بيانات التجارب", icon: "fa-broom" },
 ];
 const GRADER_NAV: NavItem[] = [
@@ -66,6 +72,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [darkMode, setDarkMode] = useState(false);
   const [studentDashboard, setStudentDashboard] = useState(DEFAULT_STUDENT_DASHBOARD);
   const [balance, setBalance] = useState<number | null>(null); // null = لسه بيتحمّل أو مش متاح
+  const [teacherApp, setTeacherApp] = useState<TeacherAppState | undefined>(undefined); // undefined = لسه بنتأكد
+  const [rejectedAck, setRejectedAck] = useState(false); // ضغط "المتابعة كطالب" بعد الرفض
   const [open, setOpen] = useState(false); // السايد بار على الموبايل
   const [collapsed, setCollapsed] = useState(false); // السايد بار مصغّر (أيقونات بس) على الكمبيوتر
   const firstLoad = useRef(true); // المحفوظ بنستخدمه أول تحميل بس، مش لما بنعمل refresh بعد تعديل البيانات
@@ -87,6 +95,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         setProfile(c);
         const b = readCache<number>(user.id, "balance");
         if (b !== null) setBalance(b);
+        const ca = readCache<TeacherAppState>(user.id, "teacher-app");
+        if (ca) setTeacherApp(ca);
       }
     }
 
@@ -103,11 +113,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         writeCache(user.id, "balance", Number(b.balance));
       });
 
-    const { data: p } = await supabase
-      .from("profiles")
-      .select("full_name, role, phone, parent_phone, grade, created_at")
-      .eq("id", user.id)
-      .single();
+    // طلب التدريس (لو فيه) بيتجاب مع البروفايل: لو الطالب مقدّم طلب تدريس بنعرض له شاشة "قيد المراجعة" بدل داشبورد الطالب
+    const [{ data: p }, appRes] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("full_name, role, phone, parent_phone, grade, created_at")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("teacher_applications")
+        .select("status, admin_note, reviewed_at")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
+    // لو الجدول لسه مش موجود (ملف 51 ما اتشغّلش) نكمّل عادي كأن مفيش طلب
+    const app: TeacherAppState = !appRes.error && appRes.data ? (appRes.data as Exclude<TeacherAppState, "none">) : "none";
+    setTeacherApp(app);
+    if (!appRes.error) writeCache(user.id, "teacher-app", app);
 
     const meta = user.user_metadata ?? {};
     const fresh: Profile = {
@@ -161,6 +183,19 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       window.clearInterval(timer);
     };
   }, [profile?.role]);
+
+  // المدرّس المقبول له لوحة خاصة (/teacher) مش داشبورد الطالب
+  useEffect(() => {
+    if (profile?.role === "teacher") router.replace("/teacher");
+  }, [profile?.role, router]);
+
+  // لو الطلب اترفض وضغط "المتابعة كطالب" في الجلسة دي، منعرضش شاشة الرفض تاني
+  useEffect(() => {
+    if (!profile || !teacherApp || teacherApp === "none") return;
+    try {
+      setRejectedAck(sessionStorage.getItem(`eduhelp:teacher-rejected:${profile.id}:${teacherApp.reviewed_at ?? ""}`) === "1");
+    } catch {}
+  }, [profile, teacherApp]);
 
   // نقفل السايد بار لما يتنقل لصفحة تانية
   useEffect(() => setOpen(false), [pathname]);
@@ -224,6 +259,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     router.replace("/");
   }
 
+  function continueAsStudent() {
+    if (profile && teacherApp && teacherApp !== "none") {
+      try { sessionStorage.setItem(`eduhelp:teacher-rejected:${profile.id}:${teacherApp.reviewed_at ?? ""}`, "1"); } catch {}
+    }
+    setRejectedAck(true);
+  }
+
   const canManageCoursePath = pathname === "/dashboard/admin/courses"
     || pathname.startsWith("/dashboard/admin/courses/")
     || pathname === "/dashboard/admin/exams/new"
@@ -237,6 +279,25 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     || (profile.role === "forum_moderator" && !isForumModeratorPath)
     || (profile.role === "payment_manager" && !isPaymentManagerPath)
     || (profile.role === "support_agent" && !isSupportAgentPath)) return <LoadingState label="بنجهّز حسابك" detail="لحظة واحدة ونفتح لك لوحة الحساب" />;
+
+  // مدرّس مقبول: بيروح للوحة المدرّس (التحويل في الـ effect فوق)
+  if (profile.role === "teacher") return <LoadingState label="بنفتح لوحة المدرّس" detail="لحظة واحدة" />;
+
+  // طالب مقدّم طلب تدريس: شاشة "قيد المراجعة" (أو الرفض) بدل داشبورد الطالب
+  if (profile.role === "student") {
+    if (teacherApp === undefined) return <LoadingState label="بنجهّز حسابك" detail="لحظة واحدة ونفتح لك لوحة الحساب" />;
+    if (teacherApp !== "none" && (teacherApp.status === "pending" || (teacherApp.status === "rejected" && !rejectedAck))) {
+      return (
+        <TeacherApplicationGate
+          status={teacherApp.status as "pending" | "rejected"}
+          note={teacherApp.admin_note}
+          onRefresh={loadProfile}
+          onSignOut={signOut}
+          onContinueAsStudent={continueAsStudent}
+        />
+      );
+    }
+  }
 
   const navItems = profile.role === "admin"
     ? [...NAV, ...ADMIN_NAV]

@@ -100,7 +100,9 @@ async function swapEntries(list: Entry[], index: number, dir: -1 | 1) {
 
 // إدارة محتوى الكورس: أقسام (أسابيع/وحدات) وجواها عناصر (فيديو أو ملف أو امتحان)
 export default function LessonsManager({ courseId }: { courseId: string }) {
-  const isContentManager = useProfile().role === "course_manager";
+  const role = useProfile().role;
+  const isContentManager = role === "course_manager";
+  const isTeacher = role === "teacher"; // إنشاء الامتحانات للأدمن ومدير المحتوى بس (الداتابيز هي اللي بتمنع)
   const [sections, setSections] = useState<Section[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [exams, setExams] = useState<ExamItem[]>([]);
@@ -142,9 +144,9 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
       console.error("section exams load failed:", x.error);
       setError(examErrorMessage(x.error, "مقدرناش نحمّل امتحانات الأقسام"));
     } else {
-      setExams((x.data ?? []) as ExamItem[]);
+      setExams(isTeacher ? [] : ((x.data ?? []) as ExamItem[]));
     }
-  }, [courseId]);
+  }, [courseId, isTeacher]);
 
   useEffect(() => {
     load();
@@ -666,12 +668,14 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
                     >
                       <i className="fa-solid fa-plus" /> فيديو أو ملف جديد
                     </button>
-                    <Link
-                      href={`/dashboard/admin/exams/new?course=${courseId}&section=${s.id}`}
-                      className="btn btn-outline btn-sm"
-                    >
-                      <i className="fa-solid fa-file-pen" /> امتحان جديد
-                    </Link>
+                    {!isTeacher && (
+                      <Link
+                        href={`/dashboard/admin/exams/new?course=${courseId}&section=${s.id}`}
+                        className="btn btn-outline btn-sm"
+                      >
+                        <i className="fa-solid fa-file-pen" /> امتحان جديد
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>

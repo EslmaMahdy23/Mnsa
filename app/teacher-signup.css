@@ -1,0 +1,84 @@
+/* فورم تسجيل المدرّس (يكمّل auth.css) */
+.auth-screen.auth-screen-teacher .auth-card { max-width: 720px; }
+
+.ts-wide { grid-column: 1 / -1; }
+.auth-signup-form > .ts-wide { grid-column: 1 / -1; }
+
+.ts-section-title {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 8px;
+  margin: 18px 0 4px; padding-bottom: 8px;
+  border-bottom: 1px solid #e3e8ef;
+  color: #10233d; font-size: 1rem; font-weight: 800;
+}
+.ts-section-title:first-child { margin-top: 0; }
+.ts-section-title i { color: var(--auth-cyan, #10a8e8); font-size: .9rem; }
+
+.ts-opt { color: #9ba5b3; font-weight: 400; }
+
+.ts-textarea {
+  width: 100%; min-height: 84px; padding: 11px 14px;
+  border: 1px solid #d1d7e0; border-radius: 12px; outline: 0;
+  background: #fff; color: #26364b; font: inherit; font-size: .88rem; line-height: 1.8; resize: vertical;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.ts-textarea:focus { border-color: var(--auth-cyan, #10a8e8); box-shadow: 0 0 0 3px rgb(21 169 232 / 12%); }
+
+.ts-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ts-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px; border: 1px solid #d1d7e0; border-radius: 999px;
+  background: #fff; color: #44546a; font-size: .84rem; font-weight: 600; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.ts-chip input { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+.ts-chip.on { border-color: var(--auth-cyan, #10a8e8); background: #e8f6fd; color: #067bb7; }
+.ts-chip:focus-within { box-shadow: 0 0 0 3px rgb(21 169 232 / 20%); }
+.ts-sub { margin-top: 12px; padding: 12px; border: 1px dashed #cfd8e3; border-radius: 12px; }
+.ts-sub-title { margin: 0 0 8px; color: #6b7a90; font-size: .78rem; font-weight: 700; }
+
+.auth-screen .auth-field > input.ts-file {
+  width: 100%; min-height: 0; padding: 10px 12px; border: 1px dashed #b8c4d4; border-radius: 12px;
+  background: #f8fafc; color: #44546a; font: inherit; font-size: .84rem; cursor: pointer;
+}
+.ts-file::file-selector-button {
+  margin-inline-end: 10px; padding: 7px 14px; border: 0; border-radius: 8px;
+  background: var(--auth-cyan-dark, #078bd0); color: #fff; font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+}
+.ts-picked { margin: 8px 0 0; color: #3b4d63; font-size: .8rem; overflow-wrap: anywhere; }
+.ts-picked i { color: #d9534f; margin-inline-end: 4px; }
+.ts-picked small { color: #8793a3; }
+.ts-photo-preview { display: block; width: 120px; height: 120px; margin-top: 10px; border-radius: 14px; object-fit: cover; border: 1px solid #d1d7e0; }
+
+.ts-agree {
+  display: flex; align-items: flex-start; gap: 10px; margin: 10px 0 6px;
+  color: #51627a; font-size: .82rem; line-height: 1.8; cursor: pointer;
+}
+.ts-agree input { margin-top: 5px; width: 17px; height: 17px; flex: none; accent-color: var(--auth-cyan-dark, #078bd0); }
+
+.auth-screen .ts-status { text-align: center; }
+.ts-status-icon { width: 64px; height: 64px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 50%; font-size: 1.8rem; }
+.ts-status-icon.ok { background: #e6f8ee; color: #159a5b; }
+.ts-status-icon.wait { background: #fff4e0; color: #d98a00; }
+.ts-status-icon.no { background: #fdeaea; color: #d64545; }
+.ts-note { margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: #f6f8fb; color: #3b4d63; font-size: .86rem; line-height: 1.8; text-align: start; }
+
+.auth-screen .auth-control input[readonly] { background: #f3f5f8; color: #6b7a90; }
+
+@media (max-width: 520px) {
+  .ts-section-title { margin-top: 14px; }
+}
+
+/* الوضع الليلي */
+.eh.dark-mode .ts-section-title { border-color: #2a3466; color: #e8ecf8; }
+.eh.dark-mode .ts-opt { color: #6b7bb0; }
+.eh.dark-mode .ts-textarea { border-color: #2a3466; background: #131840; color: #e8ecf8; color-scheme: dark; }
+.eh.dark-mode .ts-chip { border-color: #2a3466; background: #131840; color: #c6d0ee; }
+.eh.dark-mode .ts-chip.on { border-color: #1eb1ff; background: #16305a; color: #7fd4ff; }
+.eh.dark-mode .ts-sub { border-color: #2a3466; }
+.eh.dark-mode .ts-sub-title { color: #9aa8cc; }
+.eh.dark-mode .auth-screen .auth-field > input.ts-file { border-color: #2a3466; background: #131840; color: #c6d0ee; }
+.eh.dark-mode .ts-picked { color: #c6d0ee; }
+.eh.dark-mode .ts-agree { color: #9aa8cc; }
+.eh.dark-mode .ts-note { background: #131840; color: #c6d0ee; }
+.eh.dark-mode .auth-screen .auth-control input[readonly] { background: #0f1336; color: #8f9cc4; }
