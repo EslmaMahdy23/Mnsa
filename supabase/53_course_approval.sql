@@ -56,6 +56,9 @@ begin
     new.reviewed_at := old.reviewed_at;
     new.reviewed_by := old.reviewed_by;
     new.teacher_id := old.teacher_id;
+    -- RLS allows teachers to update their course row; keep admin-only fields locked here too.
+    new.price := old.price;
+    new.show_on_home := old.show_on_home;
     if new.approval_status <> 'approved' then
       new.is_published := false;
     end if;

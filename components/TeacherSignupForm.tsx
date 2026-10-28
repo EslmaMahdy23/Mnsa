@@ -404,7 +404,7 @@ export default function TeacherSignupForm() {
           </Field>
 
           <Field id="subjects" label="المادة / المواد اللي بتدرّسها">
-            <div className="auth-control"><i className="fa-solid fa-chalkboard" /><input id="subjects" value={f.subjects} onChange={set("subjects")} maxLength={200} placeholder="مثال: رياضيات، علوم" /></div>
+            <div className="auth-control"><i className="fa-solid fa-chalkboard" /><input id="subjects" value={f.subjects} onChange={set("subjects")} maxLength={200} placeholder="افصل بين المواد بفاصلة، مثال: رياضيات، علوم" /></div>
           </Field>
 
           <Field id="workplaces" label="أماكن العمل السابقة" optional wide hint="أسماء المدارس أو المراكز التعليمية أو المنصات اللي اشتغلت فيها.">

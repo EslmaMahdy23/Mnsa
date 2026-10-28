@@ -58,7 +58,8 @@ export const STAGE_LABELS: Record<string, string> = Object.fromEntries(STAGE_OPT
 // المواد اللي كتبها المدرّس في التسجيل كنص واحد (مثال: "رياضيات، علوم") بتتفصل لقايمة اختيارات
 export function parseSubjects(s: string | null | undefined): string[] {
   const parts = String(s ?? "")
-    .split(/[,،;؛/\n\-–]+|\s+و\s+/)
+    // Use explicit list separators only. Slashes and dashes can be part of a subject name.
+    .split(/[,،;؛|\r\n]+/)
     .map((x) => x.trim())
     .filter((x) => x.length >= 2 && x.length <= 80);
   return [...new Set(parts)];
