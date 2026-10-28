@@ -151,6 +151,7 @@ export default function TeacherSignupForm() {
     if (!/^\d{4}$/.test(toEnDigits(f.graduationYear).trim()) || year < 1970 || year > new Date().getFullYear()) return "سنة التخرج غير صحيحة";
     if (!f.experience) return "اختار عدد سنوات الخبرة";
     if (f.subjects.trim().length < 2) return "اكتب المادة أو المواد اللي بتدرّسها";
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.subjects.trim())) return "اكتب المواد اللي بتدرّسها، مش البريد الإلكتروني";
     if (stages.length === 0) return "اختار مرحلة تعليمية واحدة على الأقل";
     for (const s of stages) {
       if (STAGE_GRADE_OPTIONS[s] && !stageGrades[s]?.length) return `حدّد صف واحد على الأقل من ${STAGE_LABELS[s] ?? "المرحلة"}`;

@@ -150,6 +150,7 @@ export function teacherErrorMessage(e: unknown): string {
   if (/not_authenticated/.test(msg) || /no_session/.test(msg)) return "انتهت الجلسة، سجّل الدخول وجرّب تاني";
   if (/bad_files|missing_files/.test(msg)) return "ملفات السيرة الذاتية أو الصورة مش مكتملة، ارفعهم تاني";
   if (/bad_grades/.test(msg)) return "حدّد الصفوف اللي بتدرّسها في كل مرحلة اخترتها";
+  if (/bad_subjects/.test(msg)) return "اكتب المواد اللي بتدرّسها، مش البريد الإلكتروني";
   if (/bad_|invalid_/.test(msg)) return "في بيانات غير صحيحة، راجع الفورم وجرّب تاني";
   if (/PGRST202|schema cache|does not exist/i.test(msg)) return "نظام طلبات التدريس لسه مش متفعّل على السيرفر (ملف 51_teacher_applications.sql)";
   if (/row-level security|bucket|storage|payload too large|mime/i.test(msg)) return "تعذر رفع الملفات، تأكد من النوع والحجم وجرّب تاني";

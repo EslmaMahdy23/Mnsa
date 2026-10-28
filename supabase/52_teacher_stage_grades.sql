@@ -100,7 +100,10 @@ begin
   if v_post is not null and char_length(v_post) > 500 then raise exception 'bad_postgraduate' using errcode = '22023'; end if;
   if v_work is not null and char_length(v_work) > 1000 then raise exception 'bad_workplaces' using errcode = '22023'; end if;
   if v_exp not in ('lt1', '1_3', '3_5', 'gt5') then raise exception 'bad_experience' using errcode = '22023'; end if;
-  if char_length(v_subjects) not between 2 and 200 then raise exception 'bad_subjects' using errcode = '22023'; end if;
+  if char_length(v_subjects) not between 2 and 200
+     or v_subjects ~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
+    raise exception 'bad_subjects' using errcode = '22023';
+  end if;
 
   -- المراحل
   if jsonb_typeof(p->'stages') is distinct from 'array' then raise exception 'bad_stages' using errcode = '22023'; end if;
