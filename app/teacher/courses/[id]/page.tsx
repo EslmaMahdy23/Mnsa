@@ -14,7 +14,6 @@ function submitErrorMessage(err: { code?: string; message?: string }): string {
   if (err.code === "PGRST202") return "لازم تشغّل ملف supabase/53_course_approval.sql في Supabase الأول";
   const m = err.message ?? "";
   if (m.includes("subject_required")) return "اختار مادة الكورس من \"بيانات الكورس\" واحفظ، وبعدين ابعته للمراجعة";
-  if (m.includes("empty_course")) return "ضيف قسم ودرس واحد على الأقل قبل ما تبعت الكورس للمراجعة";
   if (m.includes("bad_state")) return "الكورس ده اتبعت للمراجعة قبل كده";
   return "مقدرناش نبعت الكورس للمراجعة، جرّب تاني";
 }
@@ -90,7 +89,7 @@ export default function TeacherCoursePage() {
         {status === "draft" && (
           <>
             <h3>الكورس لسه مسودة</h3>
-            <p>ضيف الأقسام والدروس والمذكرات، وبعدين ابعته للأدمن. الكورس مش هيظهر للطلاب غير بعد موافقته.</p>
+            <p>راجع بيانات الكورس وأرسله للأدمن وقت ما تكون جاهز. تقدر تضيف الأقسام والدروس قبل أو بعد الإرسال، والكورس مش هيظهر للطلاب غير بعد موافقته.</p>
           </>
         )}
         {status === "pending" && (

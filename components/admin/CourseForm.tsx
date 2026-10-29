@@ -220,7 +220,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     <form className={`course-form${isTeacher ? " course-form-teacher" : ""}`} onSubmit={onSubmit} noValidate>
       <div className="course-form-intro">
         <span className="course-form-kicker"><i className="fa-solid fa-circle-info" /> {course ? "تحديث بيانات الكورس" : "بيانات أساسية"}</span>
-        <p>{isTeacher ? "البيانات دي هتظهر للأدمن في طلب المراجعة. بعد حفظ الكورس أضف درسًا واحدًا على الأقل ثم أرسله للموافقة." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
+        <p>{isTeacher ? "البيانات دي هتظهر للأدمن في طلب المراجعة. احفظ الكورس وأرسله للموافقة وقت ما تكون جاهز، وتقدر تضيف المحتوى قبل أو بعد الإرسال." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
       </div>
       <div className="course-form-section">
         <div className="course-form-section-head"><span><i className="fa-solid fa-pen-to-square" /></span><div><b>معلومات الكورس</b><small>العنوان والوصف وصورة الغلاف</small></div></div>
