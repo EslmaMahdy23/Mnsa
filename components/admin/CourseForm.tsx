@@ -7,6 +7,7 @@ import { adminErrorMessage, isHttpUrl } from "@/lib/admin";
 import { GRADES } from "@/lib/validation";
 import { parseSubjects, teacherCourseGrades } from "@/lib/teacher-application";
 import { useProfile } from "@/components/dashboard/ProfileContext";
+import "./course-form.css";
 
 export type ApprovalStatus = "draft" | "pending" | "approved" | "rejected";
 
@@ -216,16 +217,22 @@ export default function CourseForm({ course }: { course?: CourseData }) {
   const showAllYears = !isTeacher || teacherGrades.length === 0;
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <div className="field">
+    <form className={`course-form${isTeacher ? " course-form-teacher" : ""}`} onSubmit={onSubmit} noValidate>
+      <div className="course-form-intro">
+        <span className="course-form-kicker"><i className="fa-solid fa-circle-info" /> {course ? "تحديث بيانات الكورس" : "بيانات أساسية"}</span>
+        <p>{isTeacher ? "البيانات دي هتظهر للأدمن في طلب المراجعة. بعد حفظ الكورس أضف درسًا واحدًا على الأقل ثم أرسله للموافقة." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
+      </div>
+      <div className="course-form-section">
+        <div className="course-form-section-head"><span><i className="fa-solid fa-pen-to-square" /></span><div><b>معلومات الكورس</b><small>العنوان والوصف وصورة الغلاف</small></div></div>
+      <div className="field course-field-primary">
         <label htmlFor="c-title">عنوان الكورس</label>
-        <input id="c-title" value={f.title} onChange={set("title")} />
+        <input id="c-title" value={f.title} onChange={set("title")} placeholder="مثال: الرياضيات للصف الرابع الابتدائي" />
       </div>
-      <div className="field">
+      <div className="field course-field-description">
         <label htmlFor="c-desc">الوصف</label>
-        <textarea id="c-desc" value={f.description} onChange={set("description")} />
+        <textarea id="c-desc" value={f.description} onChange={set("description")} placeholder="اكتب نبذة قصيرة توضّح للطالب ماذا سيتعلم في هذا الكورس..." />
       </div>
-      <div className="field">
+      <div className="field course-field-cover">
         <label htmlFor="c-cover">صورة الغلاف (اختياري)</label>
         {f.coverUrl && (
           <div className="adm-cover">
@@ -261,8 +268,11 @@ export default function CourseForm({ course }: { course?: CourseData }) {
         </div>
         <p className="hint">JPG أو PNG أو WEBP، أقل من 2 ميجا. الأفضل نسبة 16:9. الصورة بتتحفظ مع الكورس لما تضغط حفظ.</p>
       </div>
+      </div>
 
       {isTeacher && (
+        <div className="course-form-section">
+        <div className="course-form-section-head"><span><i className="fa-solid fa-graduation-cap" /></span><div><b>تصنيف الكورس</b><small>المادة والسنة الدراسية من بيانات تسجيلك</small></div></div>
         <div className="field">
           <label htmlFor="c-subject">المادة</label>
           {!tinfo ? (
@@ -281,9 +291,10 @@ export default function CourseForm({ course }: { course?: CourseData }) {
           )}
           {tinfo && subjectOptions.length > 0 && <p className="hint">دي المواد اللي سجّلت بيها كمدرّس.</p>}
         </div>
+        </div>
       )}
 
-      <div className="field-row">
+      <div className="field-row course-field-row">
         <div className="field">
           <label htmlFor="c-teacher">المدرّس</label>
           <select id="c-teacher" value={f.teacherId} onChange={set("teacherId")} disabled={isTeacher}>
@@ -328,7 +339,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
       )}
 
       {(!isTeacher || approved) && (
-        <label className="adm-check">
+        <label className="adm-check course-publish-check">
           <input
             type="checkbox"
             checked={f.published}
@@ -357,9 +368,12 @@ export default function CourseForm({ course }: { course?: CourseData }) {
 
       {error && <p className="msg-error">{error}</p>}
       {ok && <p className="msg-ok">{ok}</p>}
+      <div className="course-form-submit">
       <button className="btn" disabled={loading || uploading}>
         {loading ? "برجاء الانتظار..." : course ? "حفظ التعديلات" : "إضافة الكورس"}
       </button>
+      {isTeacher && !course && <small><i className="fa-solid fa-shield-halved" /> لن يظهر الكورس للطلاب قبل موافقة الأدمن.</small>}
+      </div>
     </form>
   );
 }
