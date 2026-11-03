@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { fmtDate } from "@/lib/admin";
 import { useProfile } from "@/components/dashboard/ProfileContext";
 import ChangePasswordCard from "@/components/dashboard/ChangePasswordCard";
+import TeacherPublicProfileForm from "@/components/teacher/TeacherPublicProfileForm";
 import { EXPERIENCE_LABELS, STAGE_LABELS, TEACHER_BUCKET, formatStageGrades } from "@/lib/teacher-application";
 import "@/app/dashboard/profile/profile.css";
 
@@ -52,6 +53,7 @@ export default function TeacherProfilePage() {
 
   return (
     <>
+      <TeacherPublicProfileForm id={p.id} />
       <div className="tch-profile-head">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element

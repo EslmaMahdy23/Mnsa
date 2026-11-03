@@ -21,6 +21,7 @@ import {
   type StatItem,
 } from "@/lib/home-content";
 import HomeCourses from "@/components/HomeCourses";
+import HomeTeachers from "@/components/HomeTeachers";
 
 // كل النصوص جاية من الداتابيز (لوحة الأدمن > الصفحة الرئيسية)، وبتتعرض كنص عادي: React بيهرّب أي HTML.
 // الروابط والصور والأيقونات بتعدّي على safeHref / safeImg / safeIcon قبل العرض.
@@ -155,6 +156,7 @@ export default function Home() {
             <p className="sec-sub">{c.subjects.sub}</p>
           </div>
           <HomeCourses />
+          <HomeTeachers />
           <div className="subjects-cta-wrap">
             <SmartLink href={c.subjects.ctaHref} className="btn-all-courses">
               <div className="bac-icon"><i className="fa-solid fa-book-open" aria-hidden="true" /></div>
