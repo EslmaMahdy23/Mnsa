@@ -64,70 +64,39 @@ export default function TeacherCoursePage() {
   if (loading) return <p className="empty">جاري تحميل الكورس...</p>;
 
   if (error || !course) {
-    return (
-      <>
-        <Link href="/teacher/courses" className="adm-back">← رجوع لكورساتي</Link>
-        <p className={error ? "msg-error" : "card empty"}>{error || "الكورس ده مش موجود في كورساتك."}</p>
-      </>
-    );
+    return <div className="tch-course-manage" dir="rtl"><Link href="/teacher/courses" className="adm-back"><i className="fa-solid fa-arrow-right" /> رجوع لكورساتي</Link><p className={error ? "msg-error" : "card empty"}>{error || "الكورس ده مش موجود في كورساتك."}</p></div>;
   }
 
   const status = course.approval_status ?? "approved";
 
+  const reviewCopy = {
+    draft: { icon: "fa-pen-to-square", title: "الكورس مسودة", detail: "أكمل البيانات والمحتوى، وبعدها أرسله للمراجعة. لن يظهر للطلاب قبل موافقة الأدمن." },
+    pending: { icon: "fa-hourglass-half", title: "الكورس قيد المراجعة", detail: "وصل الكورس للأدمن. تقدر تكمّل تعديل المحتوى، وهيظهر للطلاب بعد الموافقة." },
+    rejected: { icon: "fa-circle-exclamation", title: "الكورس محتاج تعديل", detail: course.approval_note ? `ملاحظة الأدمن: ${course.approval_note}` : "الأدمن رفض الكورس من غير إضافة ملاحظة. راجع البيانات ثم أرسله مرة تانية." },
+    approved: { icon: "fa-circle-check", title: "تمت الموافقة على الكورس", detail: "تقدر تتحكم في ظهوره للطلاب من إعداد النشر داخل بيانات الكورس." },
+  }[status];
+
   return (
-    <>
-      <Link href="/teacher/courses" className="adm-back"><i className="fa-solid fa-arrow-right" /> رجوع لكورساتي</Link>
+    <main className="tch-course-manage" dir="rtl">
+      <Link href="/teacher/courses" className="tch-manage-back"><i className="fa-solid fa-arrow-right" /> كورساتي</Link>
+      <header className="tch-manage-hero">
+        <div className="tch-manage-hero-icon"><i className="fa-solid fa-book-open" /></div>
+        <div className="tch-manage-title"><span className="tch-kicker">إدارة الكورس</span><h1>{course.title}</h1><p>عدّل بيانات الكورس ونظّم الأقسام والدروس من مكان واحد.</p></div>
+        <span className={`tch-manage-visibility ${course.is_published ? "is-live" : "is-hidden"}`}><i />{course.is_published ? "ظاهر للطلاب" : "غير ظاهر للطلاب"}</span>
+      </header>
 
-      <div className="adm-head">
-        <h1>{course.title}</h1>
-        <span className={`adm-badge ${course.is_published ? "ok" : "draft"}`}>
-          {course.is_published ? "منشور للطلاب" : "مش ظاهر للطلاب"}
-        </span>
-      </div>
-
-      <section className="card" style={{ marginBottom: 16 }}>
-        {status === "draft" && (
-          <>
-            <h3>الكورس لسه مسودة</h3>
-            <p>راجع بيانات الكورس وأرسله للأدمن وقت ما تكون جاهز. تقدر تضيف الأقسام والدروس قبل أو بعد الإرسال، والكورس مش هيظهر للطلاب غير بعد موافقته.</p>
-          </>
-        )}
-        {status === "pending" && (
-          <>
-            <h3>الكورس عند الأدمن للمراجعة</h3>
-            <p>هيظهر للطلاب أول ما الأدمن يوافق عليه. تقدر تكمّل تعدّل في المحتوى لحد وقتها.</p>
-          </>
-        )}
-        {status === "rejected" && (
-          <>
-            <h3>الأدمن رفض الكورس</h3>
-            {course.approval_note ? <p>ملاحظة الأدمن: {course.approval_note}</p> : <p>الأدمن ما كتبش ملاحظة.</p>}
-            <p>عدّل المطلوب وابعته للمراجعة تاني.</p>
-          </>
-        )}
-        {status === "approved" && (
-          <>
-            <h3>الأدمن وافق على الكورس</h3>
-            <p>تقدر تنشره أو تخفيه من خانة "منشور" في بيانات الكورس تحت.</p>
-          </>
-        )}
-        {(status === "draft" || status === "rejected") && (
-          <div className="adm-actions" style={{ marginTop: 12 }}>
-            <button className="btn" onClick={submitForReview} disabled={submitting}>
-              {submitting ? "برجاء الانتظار..." : status === "rejected" ? "إرسال للمراجعة تاني" : "إرسال للأدمن للمراجعة"}
-            </button>
-          </div>
-        )}
-        {actionError && <p className="msg-error">{actionError}</p>}
+      <section className={`tch-review-panel is-${status}`}>
+        <span className="tch-review-icon"><i className={`fa-solid ${reviewCopy.icon}`} /></span>
+        <div className="tch-review-copy"><h2>{reviewCopy.title}</h2><p>{reviewCopy.detail}</p></div>
+        {(status === "draft" || status === "rejected") && <button className="btn tch-review-submit" onClick={submitForReview} disabled={submitting}><i className="fa-solid fa-paper-plane" />{submitting ? "جارٍ الإرسال..." : status === "rejected" ? "إرسال للمراجعة مجددًا" : "إرسال للمراجعة"}</button>}
+        {actionError && <p className="msg-error tch-review-error">{actionError}</p>}
       </section>
 
-      <LessonsManager courseId={course.id} />
+      <div className="tch-manage-section-heading"><span className="tch-manage-section-icon"><i className="fa-solid fa-list-check" /></span><div><h2>محتوى الكورس</h2><p>أضف الأقسام ثم رتّب الدروس والملفات داخل كل قسم.</p></div></div>
+      <section className="tch-manage-content"><LessonsManager courseId={course.id} /></section>
 
-      <section className="card" style={{ marginTop: 16 }}>
-        <h2>بيانات الكورس</h2>
-        <p className="adm-sub" style={{ marginBottom: 14 }}>الاسم والوصف والغلاف والمادة والسنة.</p>
-        <CourseForm key={status} course={course} />
-      </section>
-    </>
+      <div className="tch-manage-section-heading tch-data-heading"><span className="tch-manage-section-icon"><i className="fa-solid fa-sliders" /></span><div><h2>بيانات الكورس</h2><p>العنوان والوصف والغلاف والمادة والسنة الدراسية.</p></div></div>
+      <section className="tch-manage-form"><CourseForm key={status} course={course} /></section>
+    </main>
   );
 }
