@@ -1,11 +1,104 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { GRADES } from "@/lib/validation";
 import "../teachers.css";
 import "./public-teacher.css";
 
 type Course = { id: string; title: string; description: string | null; cover_url: string | null; grade: number | null; price: number; sections_count: number; lessons_count: number };
 type Teacher = { id: string; slug: string; full_name: string | null; bio: string | null; subjects: string | null; location: string | null; photo_url: string | null; courses_count: number; students_count: number };
-export default function PublicTeacherPage() { const { slug } = useParams<{ slug: string }>(); const [teacher, setTeacher] = useState<Teacher | null>(null); const [courses, setCourses] = useState<Course[]>([]); const [loading, setLoading] = useState(true); useEffect(() => { import("@/lib/supabase").then(({ supabase }) => supabase.rpc("get_public_teacher", { p_slug: slug }).then(({ data }) => { const value = data as { teacher?: Teacher; courses?: Course[] } | null; setTeacher(value?.teacher ?? null); setCourses(value?.courses ?? []); setLoading(false); })); }, [slug]); if (loading) return <main className="teachers-state">جاري تحميل صفحة المدرس...</main>; if (!teacher) return <main className="teachers-state"><h1>المدرس مش موجود</h1><Link href="/teachers">رجوع للمدرسين</Link></main>; return <main className="public-teacher-page"><Link href="/teachers" className="public-teacher-back"><i className="fa-solid fa-arrow-right" /> كل المدرسين</Link><section className="public-teacher-hero">{teacher.photo_url ? <img src={teacher.photo_url} alt={teacher.full_name || "مدرس"} /> : <span><i className="fa-solid fa-chalkboard-user" /></span>}<div><span className="public-teacher-kicker">مدرس في EduHelp</span><h1>{teacher.full_name}</h1><p>{teacher.subjects || "مدرس في المنصة"}{teacher.location ? ` · ${teacher.location}` : ""}</p>{teacher.bio && <div className="public-teacher-bio">{teacher.bio}</div>}<div className="public-teacher-stats"><span><b>{Number(teacher.courses_count).toLocaleString("ar-EG")}</b> كورسات منشورة</span><span><b>{Number(teacher.students_count).toLocaleString("ar-EG")}</b> طالب</span></div></div></section><section className="public-teacher-courses"><div className="public-teacher-section-head"><div><span>المحتوى المنشور</span><h2>كورسات {teacher.full_name}</h2></div><b>{courses.length.toLocaleString("ar-EG")} كورس</b></div>{courses.length === 0 ? <p className="teachers-state">لسه مفيش كورسات منشورة.</p> : <div className="public-teacher-course-grid">{courses.map((c) => <Link href={`/courses/${c.id}`} className="public-teacher-course" key={c.id}>{c.cover_url ? <img src={c.cover_url} alt={c.title} /> : <span><i className="fa-solid fa-book-open" /></span>}<div><h3>{c.title}</h3><p>{c.description || "ابدأ التعلم مع المدرس"}</p><small>{c.grade ? GRADES.find((g) => g.value === c.grade)?.label : "كل الصفوف"} · {Number(c.price) === 0 ? "مجاني" : `${Number(c.price).toLocaleString("ar-EG")} جنيه`}</small></div></Link>)}</div>}</section></main>; }
+type PublicTeacherResult = { teacher?: Teacher; courses?: Course[] } | null;
+
+export default function PublicTeacherPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const [teacher, setTeacher] = useState<Teacher | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase.rpc("get_public_teacher", { p_slug: slug }).then(({ data, error }) => {
+      if (cancelled) return;
+      if (error) {
+        console.error("public teacher load failed:", error);
+        setFailed(true);
+      } else {
+        const result = data as PublicTeacherResult;
+        setTeacher(result?.teacher ?? null);
+        setCourses(result?.courses ?? []);
+      }
+      setLoading(false);
+    }).catch((error: unknown) => {
+      if (cancelled) return;
+      console.error("public teacher request failed:", error);
+      setFailed(true);
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  const number = (value: number) => Number(value ?? 0).toLocaleString("ar-EG");
+
+  if (loading) return <main className="teachers-state public-teacher-state"><span className="public-teacher-loader"><i className="fa-solid fa-spinner fa-spin" /></span><p>بنجهز صفحة المدرّس...</p></main>;
+  if (failed) return <main className="teachers-state public-teacher-state"><span className="public-teacher-loader error"><i className="fa-solid fa-wifi" /></span><h1>حصلت مشكلة في تحميل الصفحة</h1><p>اتأكد من اتصال الإنترنت وحاول تاني.</p><Link href="/teachers" className="public-teacher-primary">استعرض المدرّسين</Link></main>;
+  if (!teacher) return <main className="teachers-state public-teacher-state"><span className="public-teacher-loader"><i className="fa-solid fa-user-slash" /></span><h1>المدرّس مش موجود</h1><p>يمكن الصفحة اتنقلت أو مش متاحة حاليًا.</p><Link href="/teachers" className="public-teacher-primary">كل المدرّسين</Link></main>;
+
+  return (
+    <main className="public-teacher-page" dir="rtl">
+      <nav className="public-teacher-breadcrumb" aria-label="مسار الصفحة"><Link href="/">الرئيسية</Link><i className="fa-solid fa-chevron-left" /><Link href="/teachers">المدرّسون</Link><i className="fa-solid fa-chevron-left" /><span>{teacher.full_name || "صفحة المدرّس"}</span></nav>
+
+      <section className="public-teacher-hero">
+        <div className="public-teacher-hero-art" aria-hidden="true"><span /><span /></div>
+        <div className="public-teacher-photo-wrap">
+          {teacher.photo_url ? <img src={teacher.photo_url} alt={`صورة ${teacher.full_name || "المدرّس"}`} /> : <span className="public-teacher-avatar"><i className="fa-solid fa-chalkboard-user" /></span>}
+          <span className="public-teacher-photo-check"><i className="fa-solid fa-check" /></span>
+        </div>
+        <div className="public-teacher-info">
+          <span className="public-teacher-kicker"><i className="fa-solid fa-graduation-cap" /> مدرس على EduHelp</span>
+          <h1>{teacher.full_name || "مدرس EduHelp"}</h1>
+          <div className="public-teacher-tags">
+            {teacher.subjects && <span><i className="fa-solid fa-book-open" /> {teacher.subjects}</span>}
+            {teacher.location && <span><i className="fa-solid fa-location-dot" /> {teacher.location}</span>}
+          </div>
+          {teacher.bio && <p className="public-teacher-bio">{teacher.bio}</p>}
+          <div className="public-teacher-stats">
+            <div><span className="public-teacher-stat-icon"><i className="fa-solid fa-layer-group" /></span><span><b>{number(teacher.courses_count)}</b><small>كورس منشور</small></span></div>
+            <div><span className="public-teacher-stat-icon students"><i className="fa-solid fa-users" /></span><span><b>{number(teacher.students_count)}</b><small>طالب مسجل</small></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="public-teacher-courses" id="courses">
+        <div className="public-teacher-section-head"><div><span className="public-teacher-section-kicker">ابدأ رحلتك التعليمية</span><h2>كورسات المدرّس</h2><p>استكشف المحتوى المتاح واختر الكورس المناسب ليك.</p></div><b><i className="fa-solid fa-book-open" /> {number(courses.length)} كورس</b></div>
+        {courses.length === 0 ? (
+          <div className="public-teacher-empty"><span><i className="fa-solid fa-book-open" /></span><h3>الكورسات هتظهر هنا قريبًا</h3><p>تابع الصفحة لاحقًا للاطلاع على الكورسات المنشورة.</p></div>
+        ) : (
+          <div className="public-teacher-course-grid">
+            {courses.map((course) => {
+              const price = Number(course.price);
+              const grade = GRADES.find((item) => item.value === course.grade)?.label ?? "كل الصفوف";
+              return (
+                <Link href={`/courses/${course.id}`} className="public-teacher-course" key={course.id}>
+                  <div className="public-teacher-course-cover">
+                    {course.cover_url ? <img src={course.cover_url} alt={course.title} loading="lazy" /> : <span><i className="fa-solid fa-book-open" /></span>}
+                    <span className={`public-teacher-course-price${price === 0 ? " free" : ""}`}>{price === 0 ? "مجاني" : `${number(price)} جنيه`}</span>
+                  </div>
+                  <div className="public-teacher-course-body">
+                    <span className="public-teacher-course-grade"><i className="fa-solid fa-graduation-cap" /> {grade}</span>
+                    <h3>{course.title}</h3>
+                    <p>{course.description || "ابدأ التعلم مع المدرّس من خلال هذا الكورس."}</p>
+                    <div className="public-teacher-course-footer"><span>{number(course.sections_count)} أقسام <i /> {number(course.lessons_count)} دروس</span><span className="public-teacher-course-cta">تفاصيل الكورس <i className="fa-solid fa-arrow-left" /></span></div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

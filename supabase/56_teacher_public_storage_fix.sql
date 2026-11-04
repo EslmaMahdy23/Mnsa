@@ -15,28 +15,38 @@ on conflict (id) do nothing;
 drop policy if exists "teacher public avatar insert" on storage.objects;
 drop policy if exists "teacher public avatar update" on storage.objects;
 drop policy if exists "teacher public avatar delete" on storage.objects;
+drop policy if exists "teacher public avatar read" on storage.objects;
+
+-- upsert يحتاج SELECT حتى يتحقق من وجود الصورة قبل تحديثها.
+-- روابط الباكت العام تظل قابلة للعرض عبر public URL، وهذه السياسة تخص الوصول عبر Storage API.
+create policy "teacher public avatar read"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'teacher-public'
+  and (storage.foldername(name))[1] = (select auth.uid())::text
+);
 
 create policy "teacher public avatar insert"
 on storage.objects for insert to authenticated
 with check (
   bucket_id = 'teacher-public'
-  and split_part(name, '/', 1) = (select auth.uid())::text
+  and (storage.foldername(name))[1] = (select auth.uid())::text
 );
 
 create policy "teacher public avatar update"
 on storage.objects for update to authenticated
 using (
   bucket_id = 'teacher-public'
-  and split_part(name, '/', 1) = (select auth.uid())::text
+  and (storage.foldername(name))[1] = (select auth.uid())::text
 )
 with check (
   bucket_id = 'teacher-public'
-  and split_part(name, '/', 1) = (select auth.uid())::text
+  and (storage.foldername(name))[1] = (select auth.uid())::text
 );
 
 create policy "teacher public avatar delete"
 on storage.objects for delete to authenticated
 using (
   bucket_id = 'teacher-public'
-  and split_part(name, '/', 1) = (select auth.uid())::text
+  and (storage.foldername(name))[1] = (select auth.uid())::text
 );
