@@ -63,3 +63,11 @@
 @media(max-width:620px){.public-teacher-page{padding:18px 13px 56px}.public-teacher-hero{grid-template-columns:1fr;justify-items:center;gap:13px;padding:24px 18px;text-align:center}.public-teacher-photo-wrap{width:118px;height:118px}.public-teacher-info{width:100%}.public-teacher-tags,.public-teacher-stats{justify-content:center}.public-teacher-bio{margin-inline:auto}.public-teacher-section-head{align-items:flex-start}.public-teacher-course-grid{grid-template-columns:1fr}.public-teacher-course{display:grid;grid-template-columns:118px minmax(0,1fr);min-height:150px}.public-teacher-course-cover{height:100%;min-height:150px}.public-teacher-course-body{padding:12px}.public-teacher-course-body>p{min-height:0}.public-teacher-course-footer{align-items:flex-start;flex-direction:column;gap:5px;padding-top:9px}.public-teacher-course-price{top:8px;left:6px;padding:5px 7px;font-size:.61rem}}
 @media(max-width:380px){.public-teacher-course{grid-template-columns:94px minmax(0,1fr)}.public-teacher-course-cover{min-height:165px}.public-teacher-course-footer>span:first-child{font-size:.6rem}.public-teacher-section-head{flex-direction:column}.public-teacher-stats>div{min-width:135px}}
 @media(prefers-reduced-motion:reduce){.public-teacher-course,.public-teacher-course-cover>img{transition:none}.public-teacher-course:hover{transform:none}}
+
+/* Teacher photos are portrait covers, matching the proportions used on teacher cards. */
+.public-teacher-hero{grid-template-columns:210px minmax(0,1fr);gap:30px;min-height:300px}
+.public-teacher-photo-wrap{width:190px;height:232px;padding:5px;border-radius:24px}
+.public-teacher-photo-wrap>img,.public-teacher-avatar{border-radius:19px}
+.public-teacher-avatar{font-size:3.4rem}
+.public-teacher-photo-check{right:12px;bottom:12px}
+@media(max-width:620px){.public-teacher-hero{grid-template-columns:1fr;gap:16px}.public-teacher-photo-wrap{width:154px;height:186px;border-radius:21px}.public-teacher-photo-wrap>img,.public-teacher-avatar{border-radius:16px}}
