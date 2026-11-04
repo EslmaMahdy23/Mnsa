@@ -21,7 +21,7 @@ export default function PublicTeacherPage() {
 
   useEffect(() => {
     let cancelled = false;
-    supabase.rpc("get_public_teacher", { p_slug: slug }).then(({ data, error }) => {
+    Promise.resolve(supabase.rpc("get_public_teacher", { p_slug: slug })).then(({ data, error }) => {
       if (cancelled) return;
       if (error) {
         console.error("public teacher load failed:", error);
