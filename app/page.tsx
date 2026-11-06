@@ -355,10 +355,12 @@ export default function Home() {
   return (
     <div className={`eh-home-content${homeReady ? "" : " is-initializing"}`} style={designStyle}>
       {!homeReady && (
-        <div className="eh-home-initializing" role="status" aria-live="polite" dir="rtl">
-          <span className="eh-home-initializing-mark" aria-hidden="true">E</span>
-          <span>جاري تهيئة الصفحة الرئيسية...</span>
-        </div>
+        <main className="eh-home-initializing" role="status" aria-live="polite" dir="rtl">
+          <span><i className="fa-solid fa-book-open" aria-hidden="true" /></span>
+          <strong>بنجهّز الرئيسية ليك</strong>
+          <small>لحظات ونبدأ...</small>
+          <div><i /></div>
+        </main>
       )}
 
       {/* HERO */}
