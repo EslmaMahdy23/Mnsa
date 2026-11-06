@@ -1,0 +1,12 @@
+/* إعدادات التصميم التي يتحكم بها الأدمن من محرر الرئيسية */
+.eh-home-content{--eh-hero-height:680px;--eh-hero-title-size:3.1rem;--eh-section-title-size:2.3rem;--eh-section-spacing:92px;--eh-page-width:1180px;--eh-card-radius:18px;--eh-primary-color:#0b0f2e;--eh-accent-color:#1eb1ff}
+.eh-home-content .hero{min-height:var(--eh-hero-height)}
+.eh-home-content .hero h1{font-size:var(--eh-hero-title-size)}
+.eh-home-content .sec-title{font-size:var(--eh-section-title-size)!important}
+.eh-home-content .section-pad{padding-top:var(--eh-section-spacing);padding-bottom:var(--eh-section-spacing)}
+.eh-home-content .section-head,.eh-home-content .features-grid,.eh-home-content .how-steps,.eh-home-content .faq-list{max-width:var(--eh-page-width)}
+.eh-home-content .feature-card,.eh-home-content .faq-item,.eh-home-content .teach-right-card,.eh-home-content .teach-perk-card{border-radius:var(--eh-card-radius)}
+.eh-home-content .btn-hero-main,.eh-home-content .btn-cta-main{background:var(--eh-accent-color)}
+.eh-home-content .h1-accent,.eh-home-content .sec-title span,.eh-home-content .cta-inner h2 span{color:var(--eh-accent-color)}
+.eh-home-content .hero,.eh-home-content .how-section{--primary:var(--eh-primary-color)}
+@media(max-width:700px){.eh-home-content .hero{min-height:calc(var(--eh-hero-height) - 80px)}.eh-home-content .hero h1{font-size:clamp(2rem,9vw,var(--eh-hero-title-size))}.eh-home-content .section-pad{padding-top:calc(var(--eh-section-spacing) * .7);padding-bottom:calc(var(--eh-section-spacing) * .7)}}

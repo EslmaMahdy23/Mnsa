@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { GRADES } from "@/lib/validation";
+import { readCache, writeCache } from "@/lib/cache";
+import { fetchHomeRaw, parseHomePage, safeFontUrl } from "@/lib/home-content";
 import "../teachers.css";
 import "./public-teacher.css";
 
 type Course = { id: string; title: string; description: string | null; cover_url: string | null; grade: number | null; price: number; sections_count: number; lessons_count: number };
-type Teacher = { id: string; slug: string; full_name: string | null; bio: string | null; subjects: string | null; location: string | null; photo_url: string | null; courses_count: number; students_count: number };
+type Teacher = { id: string; slug: string; full_name: string | null; bio: string | null; subjects: string | null; photo_url: string | null; courses_count: number; students_count: number };
 type PublicTeacherResult = { teacher?: Teacher; courses?: Course[] } | null;
 
 export default function PublicTeacherPage() {
@@ -18,6 +19,60 @@ export default function PublicTeacherPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const gradeLabel = (grade: number | null) => {
+    if (grade === null) return "";
+    const ordinal = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس"];
+    if (grade >= 1 && grade <= 6) return `الصف ${ordinal[grade - 1]} الابتدائي`;
+    if (grade >= 7 && grade <= 9) return `الصف ${ordinal[grade - 7]} الإعدادي`;
+    if (grade >= 10 && grade <= 12) return `الصف ${ordinal[grade - 10]} الثانوي`;
+    return `الصف ${grade}`;
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    let request = 0;
+    let loadedFace: FontFace | null = null;
+    const clearFont = () => {
+      if (loadedFace) document.fonts.delete(loadedFace);
+      loadedFace = null;
+      document.documentElement.style.removeProperty("--eh-teacher-name-font");
+    };
+    const applyFont = async (raw: unknown) => {
+      const currentRequest = ++request;
+      const font = parseHomePage(raw).content.font;
+      const url = safeFontUrl(font.url);
+      if (!url || !["woff2", "woff", "truetype", "opentype"].includes(font.format)) {
+        clearFont();
+        return;
+      }
+      try {
+        const face = new FontFace("EHTeacherName", `url("${url}")`, { weight: "900", style: "normal" });
+        await face.load();
+        if (cancelled || currentRequest !== request) return;
+        if (loadedFace) document.fonts.delete(loadedFace);
+        loadedFace = face;
+        document.fonts.add(face);
+        document.documentElement.style.setProperty("--eh-teacher-name-font", '"EHTeacherName", "Cairo", "Tajawal", sans-serif');
+      } catch (error) {
+        if (!cancelled && currentRequest === request) {
+          clearFont();
+          console.error("teacher name font failed to load:", error);
+        }
+      }
+    };
+    const cached = readCache<unknown>("public", "home-page", 5 * 60 * 1000);
+    if (cached) void applyFont(cached);
+    fetchHomeRaw().then((raw) => {
+      if (cancelled) return;
+      writeCache("public", "home-page", raw);
+      void applyFont(raw);
+    }).catch((error) => console.error("teacher name font load failed:", error));
+    return () => {
+      cancelled = true;
+      request++;
+      clearFont();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,6 +97,8 @@ export default function PublicTeacherPage() {
   }, [slug]);
 
   const number = (value: number) => Number(value ?? 0).toLocaleString("ar-EG");
+  const teacherGrades = Array.from(new Set(courses.map((course) => course.grade).filter((grade): grade is number => grade !== null)))
+    .sort((a, b) => a - b);
 
   if (loading) return <main className="teachers-state public-teacher-state"><span className="public-teacher-loader"><i className="fa-solid fa-spinner fa-spin" /></span><p>بنجهز صفحة المدرّس...</p></main>;
   if (failed) return <main className="teachers-state public-teacher-state"><span className="public-teacher-loader error"><i className="fa-solid fa-wifi" /></span><h1>حصلت مشكلة في تحميل الصفحة</h1><p>اتأكد من اتصال الإنترنت وحاول تاني.</p><Link href="/teachers" className="public-teacher-primary">استعرض المدرّسين</Link></main>;
@@ -52,10 +109,9 @@ export default function PublicTeacherPage() {
       <section className="public-teacher-hero">
         <div className="public-teacher-pattern" aria-hidden="true" />
         <div className="public-teacher-info">
-          <h1>{teacher.full_name || "مدرس EduHelp"}</h1>
-          <p className="public-teacher-role">{teacher.subjects || "مدرس في EduHelp"}</p>
+          <h1>{teacher.subjects || "مدرس في EduHelp"}</h1>
           <div className="public-teacher-tags">
-            {teacher.location && <span><i className="fa-solid fa-location-dot" /> {teacher.location}</span>}
+            {teacherGrades.map((grade) => <span key={grade}><i className="fa-solid fa-graduation-cap" /> {gradeLabel(grade)}</span>)}
           </div>
           {teacher.bio && <p className="public-teacher-bio">{teacher.bio}</p>}
           <div className="public-teacher-stats public-teacher-main-stats">
@@ -69,6 +125,9 @@ export default function PublicTeacherPage() {
             {teacher.photo_url ? <img src={teacher.photo_url} alt={`صورة ${teacher.full_name || "المدرّس"}`} /> : <span className="public-teacher-avatar"><i className="fa-solid fa-chalkboard-user" /></span>}
             <span className="public-teacher-photo-label"><i className="fa-solid fa-user-tie" /> المدرّس</span>
           </div>
+          <div className="public-teacher-profile-copy">
+            <h2>{teacher.full_name || "مدرس EduHelp"}</h2>
+          </div>
         </aside>
       </section>
 
@@ -80,7 +139,7 @@ export default function PublicTeacherPage() {
           <div className="public-teacher-course-grid">
             {courses.map((course) => {
               const price = Number(course.price);
-              const grade = GRADES.find((item) => item.value === course.grade)?.label ?? "كل الصفوف";
+              const grade = gradeLabel(course.grade) || "كل الصفوف";
               return (
                 <Link href={`/courses/${course.id}`} className="public-teacher-course" key={course.id}>
                   <div className="public-teacher-course-cover">

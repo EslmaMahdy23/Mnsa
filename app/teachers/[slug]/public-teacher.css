@@ -232,3 +232,24 @@
 .public-teacher-hero{height:calc(100vh - 105px)!important;height:calc(100svh - 105px)!important;min-height:calc(100vh - 105px)!important;min-height:calc(100svh - 105px)!important;max-height:none!important}
 .public-teacher-courses{margin-top:64px!important}
 @media(max-width:650px){.public-teacher-hero{height:auto!important;min-height:0!important;max-height:none!important}.public-teacher-courses{margin-top:38px!important}}
+.public-teacher-photo-wrap{padding:14px!important;border:1px solid #e9eff4!important;border-radius:20px!important;background:#fff!important;box-shadow:0 10px 22px rgba(25,45,74,.08)!important}
+.public-teacher-photo-wrap>img{border-radius:12px!important;background:#fff!important}
+.public-teacher-profile-card{display:flex!important;flex-direction:column!important}
+.public-teacher-profile-copy{padding:13px 8px 5px!important;text-align:center}
+.public-teacher-profile-copy h2{margin:0 0 7px!important;color:#172642!important;font-size:1.2rem!important;font-weight:900!important;line-height:1.5!important;white-space:normal!important}
+.public-teacher-info h1{max-width:650px;font-size:clamp(1.65rem,3.6vw,2.4rem)!important;line-height:1.4!important}
+@media(max-width:650px){.public-teacher-profile-copy h2{font-size:1.1rem!important}}
+.public-teacher-page{cursor:default;caret-color:transparent}
+.public-teacher-page :is(a,button,[role="button"],select){cursor:pointer}
+.public-teacher-page :is(input,textarea,[contenteditable="true"],[contenteditable="plaintext-only"]){cursor:text;caret-color:auto}.eh .public-teacher-page .public-teacher-profile-copy h2{font-family:var(--eh-teacher-name-font,"Cairo","Tajawal",sans-serif)!important}
+@media(max-width:650px){
+  .public-teacher-courses{padding-inline:10px!important}
+  .public-teacher-course-grid{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+  .public-teacher-course{display:flex!important;min-height:0!important;flex-direction:column!important}
+  .public-teacher-course-cover{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:1.72!important}
+  .public-teacher-course-body{min-width:0;padding:13px 14px!important}
+  .public-teacher-course-body h3{font-size:.96rem;line-height:1.45}
+  .public-teacher-course-body>p{min-height:0}
+  .public-teacher-course-footer{align-items:center!important;flex-direction:row!important;justify-content:space-between;flex-wrap:wrap;gap:8px!important}
+  .public-teacher-course-footer>span:first-child{white-space:normal}
+}

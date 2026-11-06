@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -22,6 +22,7 @@ import {
 } from "@/lib/home-content";
 import HomeCourses from "@/components/HomeCourses";
 import HomeTeachers from "@/components/HomeTeachers";
+import "./home-editor-overrides.css";
 
 // كل النصوص جاية من الداتابيز (لوحة الأدمن > الصفحة الرئيسية)، وبتتعرض كنص عادي: React بيهرّب أي HTML.
 // الروابط والصور والأيقونات بتعدّي على safeHref / safeImg / safeIcon قبل العرض.
@@ -66,7 +67,6 @@ export default function Home() {
   const router = useRouter();
   const maintenanceAdmin = useContext(MaintenanceAdminContext);
   const [statsOn, setStatsOn] = useState(false);
-  const [homeReady, setHomeReady] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   const [home, setHome] = useState<HomeData>(DEFAULT_HOME);
   const valueOf = useStatsValue(home.auto);
@@ -91,45 +91,31 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false;
     const cached = readCache<unknown>("public", "home-page", 5 * 60 * 1000);
-    async function prepare(raw: unknown) {
-      const next = parseHomePage(raw);
-      const css = fontCss(next.content.font);
-      let style = document.getElementById("eh-custom-font") as HTMLStyleElement | null;
-      if (!css) {
-        style?.remove();
-      } else {
-        if (!style) {
-          style = document.createElement("style");
-          style.id = "eh-custom-font";
-          document.head.appendChild(style);
-        }
-        style.textContent = css;
-        try {
-          await document.fonts.load('16px "EHCustom"');
-        } catch (fontError) {
-          console.warn("custom homepage font failed to load:", fontError);
-        }
-      }
-      if (cancelled) return;
-      setHome(next);
-      setHomeReady(true);
-    }
-
-    fetchHomeRaw().then((raw) => {
-      if (cancelled) return;
-      writeCache("public", "home-page", raw);
-      return prepare(raw);
-    }).catch((err) => {
-      console.error("home content load failed:", err);
-      if (cached) return prepare(cached);
-      if (!cancelled) setHomeReady(true);
-    });
+    if (cached) setHome(parseHomePage(cached));
+    fetchHomeRaw()
+      .then((raw) => {
+        if (cancelled) return;
+        setHome(parseHomePage(raw));
+        writeCache("public", "home-page", raw);
+      })
+      .catch((err) => console.error("home content load failed:", err));
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // إزالة الخط المخصص عند مغادرة الصفحة الرئيسية.
+  // الخط المخصّص: بيتحط وقت ما الرئيسية مفتوحة وبيتشيل لما تمشي (مش بيأثر على الداشبورد ولا الكورسات)
+  useEffect(() => {
+    const css = fontCss(home.content.font);
+    let el = document.getElementById("eh-custom-font") as HTMLStyleElement | null;
+    if (!css) { el?.remove(); return; }
+    if (!el) {
+      el = document.createElement("style");
+      el.id = "eh-custom-font";
+      document.head.appendChild(el);
+    }
+    el.textContent = css;
+  }, [home.content.font]);
   useEffect(() => () => { document.getElementById("eh-custom-font")?.remove(); }, []);
 
   // scroll reveal (بيتعاد كل ما المحتوى يتغيّر عشان العناصر الجديدة تتراقب)
@@ -159,8 +145,17 @@ export default function Home() {
   const c = home.content;
   const hidden = (k: string) => home.layout.hidden.includes(k as never);
   const heroImg = safeImg(c.hero.image);
-
-  if (!homeReady) return <main className="eh-home-initializing" dir="rtl" aria-live="polite"><span><i className="fa-solid fa-book-open" /></span><strong>بنجهّز الرئيسية ليك</strong><small>لحظات ونبدأ...</small><div><i /></div></main>;
+  const design = c.design;
+  const designStyle = {
+    "--eh-hero-height": `${design.heroHeight}px`,
+    "--eh-hero-title-size": `${design.heroTitleSize}rem`,
+    "--eh-section-title-size": `${design.sectionTitleSize}rem`,
+    "--eh-section-spacing": `${design.sectionSpacing}px`,
+    "--eh-page-width": `${design.pageWidth}px`,
+    "--eh-card-radius": `${design.cardRadius}px`,
+    "--eh-primary-color": design.primaryColor,
+    "--eh-accent-color": design.accentColor,
+  } as CSSProperties;
 
   const movable: Record<string, React.ReactNode> = {
     subjects: (
@@ -173,7 +168,6 @@ export default function Home() {
             <p className="sec-sub">{c.subjects.sub}</p>
           </div>
           <HomeCourses />
-          <HomeTeachers />
           <div className="subjects-cta-wrap">
             <SmartLink href={c.subjects.ctaHref} className="btn-all-courses">
               <div className="bac-icon"><i className="fa-solid fa-book-open" aria-hidden="true" /></div>
@@ -184,6 +178,7 @@ export default function Home() {
               <i className="fas fa-arrow-left bac-arrow"></i>
             </SmartLink>
           </div>
+          <HomeTeachers />
         </section>
         <div className="divider-line"></div>
       </>
@@ -327,7 +322,7 @@ export default function Home() {
   };
 
   return (
-    <div className="eh-home-content">
+    <div className="eh-home-content" style={designStyle}>
 
       {/* HERO */}
       <section className="hero" id="hero">

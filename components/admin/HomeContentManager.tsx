@@ -302,6 +302,7 @@ function FieldsEditor({ fields, value, onChange }: { fields: FieldDef[]; value: 
               <div className="field hm-field hm-field--number" key={f.k}>
                 <label>{f.label}</label>
                 <input type="number" min={f.min} max={f.max} step={1} inputMode="numeric" value={String(x ?? 0)} onChange={(e) => set(f.k, e.target.value === "" ? 0 : Number(e.target.value))} />
+                {f.hint && <p className="hint">{f.hint}</p>}
               </div>
             );
           case "select":
@@ -399,6 +400,13 @@ export default function HomeContentManager() {
     if (problem) return setError(problem);
     setError(""); setOk(""); setBusy(k);
     const nextContent = structuredClone(draft![k]) as Obj;
+    if (k === "design") {
+      const color = (v: unknown) => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v.trim());
+      if (!color(nextContent.primaryColor) || !color(nextContent.accentColor)) {
+        setBusy(null);
+        return setError("الألوان لازم تكون بصيغة HEX كاملة، مثال: #1eb1ff");
+      }
+    }
     if (k === "maintenance") {
       const durationMs = (Number(nextContent.returnHours) * 60 + Number(nextContent.returnMinutes)) * 60_000;
       nextContent.returnAt = durationMs > 0 ? new Date(Date.now() + durationMs).toISOString() : "";
@@ -574,7 +582,7 @@ export default function HomeContentManager() {
         { title: "مقدمة الصفحة", description: "الواجهة الرئيسية والشريط المتحرك في أول الصفحة.", icon: "fa-flag", keys: ["hero", "marquee"] },
         { title: "أقسام الصفحة", description: "المواد، مميزات المنصة، طريقة العمل، والإحصائيات والأسئلة الشائعة.", icon: "fa-layer-group", keys: ["subjects", "features", "how", "stats", "teach", "faq"] },
         { title: "نهاية الصفحة", description: "دعوة التسجيل ومعلومات الفوتر وروابطه.", icon: "fa-rectangle-list", keys: ["cta", "footer"] },
-        { title: "شكل الموقع", description: "خط مخصص للصفحة الرئيسية فقط.", icon: "fa-palette", keys: ["font"] },
+        { title: "شكل الموقع", description: "الخط والمقاسات والألوان والاستدارة الخاصة بالصفحة الرئيسية.", icon: "fa-palette", keys: ["font", "design"] },
       ] as const).map((group) => (
         <section className="hm-group-section" key={group.title}>
           <header className="hm-group-heading"><span><i className={`fa-solid ${group.icon}`} /></span><div><h2>{group.title}</h2><p>{group.description}</p></div></header>

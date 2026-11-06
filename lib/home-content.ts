@@ -174,6 +174,16 @@ export const DEFAULTS = {
     fileName: "",
     scope: "all",
   },
+  design: {
+    heroHeight: 680,
+    heroTitleSize: 3.1,
+    sectionTitleSize: 2.3,
+    sectionSpacing: 92,
+    pageWidth: 1180,
+    cardRadius: 18,
+    primaryColor: "#0b0f2e",
+    accentColor: "#1eb1ff",
+  },
   // وضع الصيانة: لو enabled المنصة بتظهر للطلاب صفحة صيانة (الأدمن بس يشتغل)
   maintenance: {
     enabled: false,
@@ -271,7 +281,7 @@ export function safeFontUrl(s: unknown): string {
 
 const FONT_FORMATS = ["woff2", "woff", "truetype", "opentype"];
 const HEADINGS_SELECTOR =
-  "h1,h2,h3,h4,h5,h6,.vip-heading,.vip-heading-cta,.sec-title,.nav-logo-text,.footer-logo-text,.h1-glow,.h1-accent,.hs-val,.stat-bigval,.tpc-title,.trc-teacher-name";
+  "h1,h2,h3,h4,h5,h6,.vip-heading,.vip-heading-cta,.sec-title,.nav-logo-text,.footer-logo-text,.h1-glow,.h1-accent,.hs-val,.stat-bigval,.tpc-title,.trc-teacher-name,.home-teacher-subjects";
 
 // CSS الخط المخصّص (بتاع الرئيسية بس: بتتحط وقت ما الصفحة مفتوحة وتتشيل لما تمشي).
 // اسم الخط ثابت ومش جاي من الأدمن، وأيقونات Font Awesome مستثناة عشان ما تبوظش.
@@ -316,7 +326,7 @@ export async function fetchHomeRaw(): Promise<unknown> {
 // ========== وصف حقول المحرّر (لوحة الأدمن بتتبني منها تلقائياً) ==========
 export type FieldDef =
   | { k: string; label: string; type: "text" | "textarea" | "href" | "icon" | "image"; max?: number; hint?: string; showIf?: { k: string; eq: string } }
-  | { k: string; label: string; type: "number"; min: number; max: number; showIf?: { k: string; eq: string } }
+  | { k: string; label: string; type: "number"; min: number; max: number; hint?: string; showIf?: { k: string; eq: string } }
   | { k: string; label: string; type: "select"; options: { value: string; label: string }[]; showIf?: { k: string; eq: string } }
   | { k: string; label: string; type: "font"; hint?: string }
   | { k: string; label: string; type: "group"; fields: FieldDef[] }
@@ -524,6 +534,20 @@ export const SECTIONS: SectionDef[] = [
         k: "scope", label: "يتطبّق على إيه؟", type: "select",
         options: [{ value: "all", label: "كل نصوص الرئيسية" }, { value: "headings", label: "العناوين فقط" }],
       },
+    ],
+  },
+  {
+    key: "design", title: "تصميم الصفحة والمقاسات", icon: "fa-sliders",
+    blurb: "كبّر وصغّر أجزاء الرئيسية، غيّر المسافات والألوان وشكل الكروت من غير كود.",
+    fields: [
+      { k: "heroHeight", label: "ارتفاع الواجهة الرئيسية (px)", type: "number", min: 480, max: 920, hint: "مثال: 680 — كلما زاد الرقم زاد طول أول شاشة." },
+      { k: "heroTitleSize", label: "حجم عنوان الواجهة (rem)", type: "number", min: 1.8, max: 5, hint: "مثال: 3.1" },
+      { k: "sectionTitleSize", label: "حجم عناوين الأقسام (rem)", type: "number", min: 1.3, max: 3.5, hint: "مثال: 2.3" },
+      { k: "sectionSpacing", label: "المسافة بين الأقسام (px)", type: "number", min: 35, max: 180 },
+      { k: "pageWidth", label: "أقصى عرض للمحتوى (px)", type: "number", min: 900, max: 1500 },
+      { k: "cardRadius", label: "استدارة الكروت (px)", type: "number", min: 0, max: 40 },
+      { k: "primaryColor", label: "اللون الأساسي", type: "text", max: 20, hint: "اكتب HEX مثل #0b0f2e" },
+      { k: "accentColor", label: "لون التمييز والأزرار", type: "text", max: 20, hint: "اكتب HEX مثل #1eb1ff" },
     ],
   },
   {
