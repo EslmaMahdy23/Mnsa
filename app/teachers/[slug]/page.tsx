@@ -49,31 +49,31 @@ export default function PublicTeacherPage() {
 
   return (
     <main className="public-teacher-page" dir="rtl">
-      <nav className="public-teacher-breadcrumb" aria-label="مسار الصفحة"><Link href="/">الرئيسية</Link><i className="fa-solid fa-chevron-left" /><Link href="/teachers">المدرّسون</Link><i className="fa-solid fa-chevron-left" /><span>{teacher.full_name || "صفحة المدرّس"}</span></nav>
-
       <section className="public-teacher-hero">
-        <div className="public-teacher-hero-art" aria-hidden="true"><span /><span /></div>
-        <div className="public-teacher-photo-wrap">
-          {teacher.photo_url ? <img src={teacher.photo_url} alt={`صورة ${teacher.full_name || "المدرّس"}`} /> : <span className="public-teacher-avatar"><i className="fa-solid fa-chalkboard-user" /></span>}
-          <span className="public-teacher-photo-check"><i className="fa-solid fa-check" /></span>
-        </div>
+        <div className="public-teacher-pattern" aria-hidden="true" />
         <div className="public-teacher-info">
-          <span className="public-teacher-kicker"><i className="fa-solid fa-graduation-cap" /> مدرس على EduHelp</span>
           <h1>{teacher.full_name || "مدرس EduHelp"}</h1>
+          <p className="public-teacher-role">{teacher.subjects || "مدرس في EduHelp"}</p>
           <div className="public-teacher-tags">
-            {teacher.subjects && <span><i className="fa-solid fa-book-open" /> {teacher.subjects}</span>}
             {teacher.location && <span><i className="fa-solid fa-location-dot" /> {teacher.location}</span>}
           </div>
           {teacher.bio && <p className="public-teacher-bio">{teacher.bio}</p>}
-          <div className="public-teacher-stats">
-            <div><span className="public-teacher-stat-icon"><i className="fa-solid fa-layer-group" /></span><span><b>{number(teacher.courses_count)}</b><small>كورس منشور</small></span></div>
-            <div><span className="public-teacher-stat-icon students"><i className="fa-solid fa-users" /></span><span><b>{number(teacher.students_count)}</b><small>طالب مسجل</small></span></div>
+          <div className="public-teacher-stats public-teacher-main-stats">
+            <div><span className="public-teacher-stat-icon"><i className="fa-solid fa-book-open" /></span><span><b>{number(teacher.courses_count)}</b><small>كورسات منشورة</small></span></div>
+            <div><span className="public-teacher-stat-icon students"><i className="fa-solid fa-user-graduate" /></span><span><b>{number(teacher.students_count)}</b><small>طالب مسجل</small></span></div>
           </div>
+          <a href="#courses" className="public-teacher-profile-link public-teacher-main-link">تصفح الكورسات <i className="fa-solid fa-arrow-left" /></a>
         </div>
+        <aside className="public-teacher-profile-card">
+          <div className="public-teacher-photo-wrap">
+            {teacher.photo_url ? <img src={teacher.photo_url} alt={`صورة ${teacher.full_name || "المدرّس"}`} /> : <span className="public-teacher-avatar"><i className="fa-solid fa-chalkboard-user" /></span>}
+            <span className="public-teacher-photo-label"><i className="fa-solid fa-user-tie" /> المدرّس</span>
+          </div>
+        </aside>
       </section>
 
       <section className="public-teacher-courses" id="courses">
-        <div className="public-teacher-section-head"><div><span className="public-teacher-section-kicker">ابدأ رحلتك التعليمية</span><h2>كورسات المدرّس</h2><p>استكشف المحتوى المتاح واختر الكورس المناسب ليك.</p></div><b><i className="fa-solid fa-book-open" /> {number(courses.length)} كورس</b></div>
+        <div className="public-teacher-section-head"><div><span className="public-teacher-section-kicker"><i className="fa-solid fa-book-open" /> المحتوى التعليمي</span><h2>كورسات {teacher.full_name || "المدرّس"}</h2><p>اختار الكورس المناسب وابدأ التعلم.</p></div><b><i className="fa-solid fa-layer-group" /> {number(courses.length)} كورس</b></div>
         {courses.length === 0 ? (
           <div className="public-teacher-empty"><span><i className="fa-solid fa-book-open" /></span><h3>الكورسات هتظهر هنا قريبًا</h3><p>تابع الصفحة لاحقًا للاطلاع على الكورسات المنشورة.</p></div>
         ) : (

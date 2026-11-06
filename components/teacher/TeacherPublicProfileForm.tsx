@@ -9,13 +9,31 @@ type Form = {
   slug: string;
   bio: string;
   subjects: string;
-  location: string;
   photoUrl: string;
   enabled: boolean;
 };
 
 type StorageError = { message?: string; statusCode?: string | number; error?: string };
-const initial: Form = { fullName: "", slug: "", bio: "", subjects: "", location: "", photoUrl: "", enabled: true };
+const initial: Form = { fullName: "", slug: "", bio: "", subjects: "", photoUrl: "", enabled: true };
+
+async function makeSquareTeacherPhoto(file: File): Promise<Blob> {
+  const image = await createImageBitmap(file);
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 800;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("تعذر تجهيز الصورة");
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, 800, 800);
+  const scale = Math.min(800 / image.width, 800 / image.height);
+  const width = image.width * scale;
+  const height = image.height * scale;
+  context.drawImage(image, (800 - width) / 2, (800 - height) / 2, width, height);
+  image.close();
+  const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob((value) => value ? resolve(value) : reject(new Error("تعذر تحويل الصورة")), "image/jpeg", 0.9));
+  if (blob.size > 2 * 1024 * 1024) throw new Error("حجم الصورة بعد التجهيز أكبر من 2 ميجا");
+  return blob;
+}
 
 function storageMessage(error: StorageError | null): string {
   const detail = [error?.statusCode, error?.error, error?.message].filter(Boolean).join(" — ");
@@ -33,7 +51,7 @@ export default function TeacherPublicProfileForm({ id }: { id: string }) {
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("full_name, public_slug, public_bio, public_subjects, public_location, public_photo_url, public_enabled")
+      .select("full_name, public_slug, public_bio, public_subjects, public_photo_url, public_enabled")
       .eq("id", id)
       .single()
       .then(({ data, error: loadError }) => {
@@ -44,7 +62,6 @@ export default function TeacherPublicProfileForm({ id }: { id: string }) {
             slug: data.public_slug ?? "",
             bio: data.public_bio ?? "",
             subjects: data.public_subjects ?? "",
-            location: data.public_location ?? "",
             photoUrl: data.public_photo_url ?? "",
             enabled: data.public_enabled !== false,
           });
@@ -64,16 +81,18 @@ export default function TeacherPublicProfileForm({ id }: { id: string }) {
     event.target.value = "";
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return setError("الصورة لازم تكون JPG أو PNG أو WEBP");
-    if (file.size > 2 * 1024 * 1024) return setError("حجم الصورة لازم يكون أقل من 2 ميجا");
+    if (file.size > 10 * 1024 * 1024) return setError("حجم الصورة الأصلية لازم يكون أقل من 10 ميجا");
 
     setError("");
     setMessage("");
     setUploading(true);
-    const extension = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : "webp";
-    const path = `${id}/avatar.${extension}`;
-    const { error: uploadError } = await supabase.storage.from("teacher-public").upload(path, file, {
+    const path = `${id}/avatar-800.jpg`;
+    let photo: Blob;
+    try { photo = await makeSquareTeacherPhoto(file); }
+    catch (photoError) { setUploading(false); return setError(photoError instanceof Error ? photoError.message : "تعذر تجهيز الصورة"); }
+    const { error: uploadError } = await supabase.storage.from("teacher-public").upload(path, photo, {
       upsert: true,
-      contentType: file.type,
+      contentType: "image/jpeg",
       cacheControl: "3600",
     });
     setUploading(false);
@@ -100,7 +119,6 @@ export default function TeacherPublicProfileForm({ id }: { id: string }) {
         public_slug: slug,
         public_bio: f.bio.trim() || null,
         public_subjects: f.subjects.trim() || null,
-        public_location: f.location.trim() || null,
         public_photo_url: f.photoUrl.split("?")[0] || null,
         public_enabled: f.enabled,
       })
@@ -122,13 +140,12 @@ export default function TeacherPublicProfileForm({ id }: { id: string }) {
         <div className="teacher-public-photo">
           <div className="teacher-public-photo-preview">{f.photoUrl ? <img src={f.photoUrl} alt="صورة البروفايل" /> : <i className="fa-solid fa-user-tie" />}</div>
           <label className="btn btn-outline btn-sm">{uploading ? "جاري الرفع..." : "رفع صورة عامة"}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={uploadPhoto} disabled={uploading} hidden /></label>
-          <small>JPG أو PNG أو WEBP، حتى 2 ميجا.</small>
+          <small>مربع 800×800 بكسل؛ الصورة كاملة تتظبط تلقائيًا بدون قص. JPG أو PNG أو WEBP حتى 10 ميجا.</small>
         </div>
         <div className="teacher-public-fields">
           <div className="field"><label htmlFor="public-teacher-name">الاسم الظاهر</label><input id="public-teacher-name" value={f.fullName} onChange={set("fullName")} /></div>
           <div className="field"><label htmlFor="public-teacher-slug">رابط صفحتك</label><div className="teacher-public-slug"><span>/teachers/</span><input id="public-teacher-slug" value={f.slug} onChange={set("slug")} placeholder="ahmed-mohamed" dir="ltr" /></div></div>
           <div className="field"><label htmlFor="public-teacher-subjects">المواد</label><input id="public-teacher-subjects" value={f.subjects} onChange={set("subjects")} placeholder="رياضيات، علوم" /></div>
-          <div className="field"><label htmlFor="public-teacher-location">المحافظة أو المكان</label><input id="public-teacher-location" value={f.location} onChange={set("location")} placeholder="القاهرة" /></div>
           <div className="field teacher-public-wide"><label htmlFor="public-teacher-bio">نبذة عنك</label><textarea id="public-teacher-bio" value={f.bio} onChange={set("bio")} maxLength={600} placeholder="خبرتك وطريقة شرحك وما الذي يميز كورساتك..." /></div>
         </div>
         {error && <p className="msg-error">{error}</p>}

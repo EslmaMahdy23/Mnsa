@@ -71,3 +71,164 @@
 .public-teacher-avatar{font-size:3.4rem}
 .public-teacher-photo-check{right:12px;bottom:12px}
 @media(max-width:620px){.public-teacher-hero{grid-template-columns:1fr;gap:16px}.public-teacher-photo-wrap{width:154px;height:186px;border-radius:21px}.public-teacher-photo-wrap>img,.public-teacher-avatar{border-radius:16px}}
+
+/* Instructor preview follows the reference layout with EduHelp blue colors. */
+.public-teacher-page{width:100%;max-width:none;margin:0 auto;padding:20px 13px 70px;color:#162642;background:#f3f5f8}
+.public-teacher-breadcrumb{display:none}
+.public-teacher-hero{grid-template-columns:minmax(0,1fr) minmax(310px,390px);align-items:center;gap:34px;min-height:510px;margin:0 0 158px;padding:48px 5.5% 0;overflow:visible;border:0;border-radius:5px;background:linear-gradient(115deg,#29b8ed 0%,#31b8ec 57%,#36b8e8 100%);box-shadow:0 12px 30px rgba(14,121,182,.13)}
+.public-teacher-pattern{position:absolute;inset:0 auto 0 0;width:58%;overflow:hidden;border-radius:inherit;opacity:.54;pointer-events:none;background-image:repeating-conic-gradient(from 90deg at 25% 25%,rgba(255,255,255,.25) 0 25%,transparent 0 50%);background-size:42px 42px;mask-image:linear-gradient(90deg,#000 25%,transparent 100%)}
+.public-teacher-info{grid-column:1;grid-row:1;justify-self:stretch;max-width:690px;padding:5px 0 48px;color:#fff}
+.public-teacher-kicker{color:#e9fbff;font-size:.8rem}
+.public-teacher-info h1{margin:14px 0 8px;color:#fff;font-size:clamp(1.85rem,4vw,2.65rem);text-shadow:0 2px 7px rgba(0,74,125,.1)}
+.public-teacher-role{margin:0;color:#e7f8ff;font-size:1.12rem;font-weight:750}
+.public-teacher-tags{gap:8px;margin-top:18px}
+.public-teacher-tags>span{padding:8px 13px;border-color:rgba(0,92,151,.3);background:#0a9fd5;color:#fff;font-size:.75rem;box-shadow:0 3px 8px rgba(0,77,126,.1)}
+.public-teacher-tags i{color:#fff}
+.public-teacher-bio{max-width:660px;margin-top:19px;color:#f2fbff;font-size:.89rem}
+.public-teacher-profile-card{position:relative;z-index:2;grid-column:2;grid-row:1;align-self:end;width:100%;margin-bottom:-102px;padding:14px;border:1px solid #e1e6eb;border-radius:16px;background:#fff;box-shadow:0 15px 32px rgba(25,45,74,.18)}
+.public-teacher-photo-wrap{position:relative;width:100%;height:auto;aspect-ratio:1/1;padding:0;overflow:hidden;border:0;border-radius:11px;background:linear-gradient(135deg,#e4f5fb,#e8edf4);box-shadow:none}
+.public-teacher-photo-wrap>img,.public-teacher-avatar{display:grid;width:100%;height:100%;place-items:center;border-radius:0;object-fit:cover;object-position:center 22%}
+.public-teacher-avatar{background:linear-gradient(145deg,#16b6e7,#0877ce);color:#fff;font-size:4rem}
+.public-teacher-photo-label{position:absolute;right:11px;bottom:11px;display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(0,87,153,.8);color:#fff;font-size:.68rem;font-weight:850;backdrop-filter:blur(7px)}
+.public-teacher-profile-copy{padding:14px 7px 5px}
+.public-teacher-profile-kicker{color:#0a9bcf;font-size:.67rem;font-weight:900}
+.public-teacher-profile-copy h2{overflow:hidden;margin:4px 0;color:#1b2940;font-size:1.05rem;text-overflow:ellipsis;white-space:nowrap}
+.public-teacher-profile-copy>p{overflow:hidden;margin:0;color:#768296;font-size:.75rem;text-overflow:ellipsis;white-space:nowrap}
+.public-teacher-stats{display:flex;align-items:center;gap:17px;margin-top:13px;padding-top:12px;border-top:1px solid #edf0f3}
+.public-teacher-stats>div{display:flex;align-items:baseline;gap:5px}
+.public-teacher-stats b{color:#087fc7;font-size:1.06rem}
+.public-teacher-stats small{color:#838d9e;font-size:.68rem}
+.public-teacher-stats>i{width:1px;height:21px;background:#e4e8ed}
+.public-teacher-profile-link{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:13px;padding:10px 12px;border-radius:10px;background:#0878ce;color:#fff;font-size:.75rem;font-weight:900;text-decoration:none}
+.public-teacher-profile-link:hover{background:#075eae}
+.public-teacher-courses{max-width:1320px;margin:0 auto;padding:0 24px}
+.public-teacher-section-head>div>span{color:#079fd5}
+.public-teacher-section-head h2{color:#17233a;font-size:1.55rem}
+.public-teacher-section-head p{color:#778397}
+.public-teacher-section-head>b{border-color:#dfe9f2;color:#087fc7}
+.public-teacher-section-head>b i{color:#079fd5}
+.public-teacher-course-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.public-teacher-course{border-color:#e0e6ed;border-radius:15px;box-shadow:0 5px 18px rgba(35,55,80,.07)}
+.public-teacher-course:hover{border-color:#9bd8ed;box-shadow:0 12px 24px rgba(25,92,136,.12)}
+.public-teacher-course-cover{height:auto;aspect-ratio:1.88;background:linear-gradient(135deg,#e9f8fd,#e6eff7)}
+.public-teacher-course-cover>img{width:100%;height:100%;object-fit:cover}
+.public-teacher-course-cover>span:not(.public-teacher-course-price){width:100%;height:100%;color:#149ed0}
+.public-teacher-course-price{background:rgba(0,54,105,.82)}
+.public-teacher-course-price.free{background:#0bb4d5}
+.public-teacher-course-body{padding:14px 15px 13px}
+.public-teacher-course-grade{padding:5px 8px;background:#e9f8fc;color:#078cbf}
+.public-teacher-course-body h3{color:#1c2940}
+.public-teacher-course-body>p{color:#748094}
+.public-teacher-course-cta{color:#087fc7}
+@media(max-width:900px){.public-teacher-hero{grid-template-columns:minmax(0,1fr) minmax(275px,340px);gap:22px;padding-inline:4%}.public-teacher-course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.public-teacher-courses{padding-inline:14px}}
+@media(max-width:650px){.public-teacher-page{padding:12px 10px 48px}.public-teacher-hero{grid-template-columns:minmax(0,1fr);gap:15px;min-height:0;margin-bottom:22px;padding:31px 20px 20px}.public-teacher-info{grid-column:1;grid-row:1;padding:0;text-align:right}.public-teacher-info h1{font-size:1.7rem}.public-teacher-role{font-size:.95rem}.public-teacher-bio{font-size:.8rem}.public-teacher-pattern{width:100%;opacity:.32}.public-teacher-profile-card{grid-column:1;grid-row:2;align-self:auto;width:min(100%,400px);justify-self:center;margin:0;padding:10px}.public-teacher-photo-wrap{width:100%;height:auto;aspect-ratio:1/1}.public-teacher-courses{padding-inline:4px}.public-teacher-section-head{align-items:flex-start}.public-teacher-section-head h2{font-size:1.25rem}.public-teacher-course-grid{grid-template-columns:1fr;gap:13px}.public-teacher-course{display:grid;grid-template-columns:minmax(120px,38%) minmax(0,1fr);min-height:146px}.public-teacher-course-cover{height:100%;min-height:146px;aspect-ratio:auto}.public-teacher-course-body{padding:11px}.public-teacher-course-body>p{min-height:0}.public-teacher-course-footer{align-items:flex-start;flex-direction:column;gap:6px;padding-top:9px}}
+@media(max-width:380px){.public-teacher-tags>span{font-size:.68rem}.public-teacher-course{grid-template-columns:108px minmax(0,1fr)}.public-teacher-course-footer>span:first-child{font-size:.6rem}}
+.public-teacher-page{padding-top:105px}
+.public-teacher-hero{min-height:520px;margin-bottom:36px;padding:30px 5.5%;overflow:hidden}
+.public-teacher-profile-card{align-self:center;justify-self:start;width:min(100%,360px);margin:0}
+.public-teacher-photo-wrap{aspect-ratio:1/1}
+.public-teacher-photo-wrap>img{object-fit:contain;object-position:center;background:#f7fbfd}
+@media(max-width:650px){.public-teacher-page{padding:88px 10px 48px}.public-teacher-hero{gap:15px;min-height:0;margin-bottom:22px;padding:27px 16px 18px;overflow:hidden}.public-teacher-profile-card{align-self:auto;justify-self:center;width:min(100%,400px);margin:0}.public-teacher-photo-wrap{width:100%;height:auto;aspect-ratio:1/1}}
+
+/* Local compact teacher preview override */
+.public-teacher-hero {
+  height: 420px !important;
+  min-height: 0 !important;
+  max-height: 420px !important;
+  overflow: hidden !important;
+}
+
+.public-teacher-hero > img,
+.public-teacher-hero > span {
+  height: 370px !important;
+  min-height: 0 !important;
+  max-height: 370px !important;
+  width: min(78%, 320px) !important;
+}
+
+.public-teacher-hero > div {
+  padding: 24px 9% 24px 7% !important;
+}
+
+.public-teacher-hero h1 {
+  font-size: clamp(1.8rem, 3.2vw, 3rem) !important;
+  margin: 10px 0 6px !important;
+}
+
+.public-teacher-bio {
+  margin-top: 15px !important;
+  line-height: 1.7 !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+.public-teacher-stats {
+  margin-top: 18px !important;
+}
+
+@media (max-width: 800px) {
+  .public-teacher-hero {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+
+  .public-teacher-hero > img,
+  .public-teacher-hero > span {
+    height: min(330px, 62vw) !important;
+    max-height: none !important;
+    width: calc(100% - 34px) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .public-teacher-hero > img,
+  .public-teacher-hero > span {
+    height: 270px !important;
+    width: calc(100% - 22px) !important;
+  }
+}
+
+/* ضبط المعاينة الأفقية - Local */
+.public-teacher-hero > div {
+  transform: translateY(-58px) !important;
+}
+
+.public-teacher-hero > img,
+.public-teacher-hero > span {
+  transform: translateY(0) !important;
+}
+
+.public-teacher-courses {
+  margin-top: 150px !important;
+}
+
+@media (max-width: 800px) {
+  .public-teacher-hero > div {
+    transform: none !important;
+  }
+
+  .public-teacher-courses {
+    margin-top: 45px !important;
+  }
+}
+/* Keep all teacher details in the hero beside the photo. */
+.public-teacher-hero{height:420px!important;min-height:420px!important;max-height:420px!important;grid-template-columns:minmax(0,1fr) 360px!important;align-items:center!important;gap:40px!important;margin-bottom:30px!important;padding:24px 5.5%!important;overflow:hidden!important}
+.public-teacher-info{align-self:center!important;padding:0!important}
+.public-teacher-profile-card{width:100%!important;max-width:360px!important;align-self:center!important;margin:0!important;padding:10px!important}
+.public-teacher-photo-wrap{width:100%!important;height:auto!important;aspect-ratio:1/1!important}
+.public-teacher-main-stats{gap:10px!important;margin-top:18px!important}
+.public-teacher-main-stats>div{min-width:150px!important;padding:8px 11px!important;border-color:rgba(255,255,255,.4)!important;background:rgba(0,103,163,.2)!important}
+.public-teacher-main-stats .public-teacher-stat-icon{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.public-teacher-main-stats .public-teacher-stat-icon.students{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.public-teacher-main-stats b,.public-teacher-main-stats small{color:#fff!important}
+.public-teacher-main-link{width:max-content!important;min-width:180px!important;margin-top:14px!important;background:#075fae!important}
+@media(max-width:800px){.public-teacher-hero{grid-template-columns:minmax(0,1fr) 320px!important;gap:22px!important;padding-inline:24px!important}.public-teacher-profile-card{max-width:320px!important}}
+@media(max-width:650px){.public-teacher-hero{height:auto!important;min-height:0!important;max-height:none!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;margin-bottom:26px!important;padding:25px 18px!important}.public-teacher-info{grid-column:1!important;grid-row:1!important}.public-teacher-profile-card{grid-column:1!important;grid-row:2!important;justify-self:center!important;width:min(100%,300px)!important;max-width:300px!important}.public-teacher-main-stats{justify-content:flex-start!important}.public-teacher-main-stats>div{min-width:calc(50% - 5px)!important}.public-teacher-main-link{width:100%!important}}
+.public-teacher-courses{margin:0 auto!important}
+@media(max-width:650px){.public-teacher-courses{margin:0 auto!important}}
+.public-teacher-hero{width:calc(100% + 26px)!important;margin-inline:-13px!important;margin-bottom:0!important;border-radius:0!important}
+.public-teacher-courses{margin-top:54px!important}
+@media(max-width:650px){.public-teacher-hero{width:calc(100% + 20px)!important;margin-inline:-10px!important}.public-teacher-courses{margin-top:38px!important}}
+.public-teacher-hero{height:calc(100vh - 105px)!important;height:calc(100svh - 105px)!important;min-height:calc(100vh - 105px)!important;min-height:calc(100svh - 105px)!important;max-height:none!important}
+.public-teacher-courses{margin-top:64px!important}
+@media(max-width:650px){.public-teacher-hero{height:auto!important;min-height:0!important;max-height:none!important}.public-teacher-courses{margin-top:38px!important}}
