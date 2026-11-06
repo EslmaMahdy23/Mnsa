@@ -67,6 +67,7 @@ export default function Home() {
   const router = useRouter();
   const maintenanceAdmin = useContext(MaintenanceAdminContext);
   const [statsOn, setStatsOn] = useState(false);
+  const [homeReady, setHomeReady] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   const [home, setHome] = useState<HomeData>(DEFAULT_HOME);
   const valueOf = useStatsValue(home.auto);
@@ -90,15 +91,45 @@ export default function Home() {
   // محتوى الصفحة: المحفوظ يظهر فوراً، والجديد من الداتابيز بيستبدله. لو حصل خطأ بنفضل على اللي معروض (الافتراضي أو المحفوظ)
   useEffect(() => {
     let cancelled = false;
-    const cached = readCache<unknown>("public", "home-page", 5 * 60 * 1000);
-    if (cached) setHome(parseHomePage(cached));
-    fetchHomeRaw()
-      .then((raw) => {
+    const timeout = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+    const prepareFont = async (nextHome: HomeData) => {
+      const css = fontCss(nextHome.content.font);
+      let style = document.getElementById("eh-custom-font") as HTMLStyleElement | null;
+      if (!css) {
+        style?.remove();
+        return;
+      }
+      if (!style) {
+        style = document.createElement("style");
+        style.id = "eh-custom-font";
+        document.head.appendChild(style);
+      }
+      style.textContent = css;
+      await Promise.race([
+        document.fonts.load('16px "EHCustom"').then(() => undefined),
+        timeout(5000),
+      ]);
+    };
+    const load = async () => {
+      const cached = readCache<unknown>("public", "home-page", 5 * 60 * 1000);
+      try {
+        const raw = await fetchHomeRaw();
+        const nextHome = parseHomePage(raw);
+        await prepareFont(nextHome);
         if (cancelled) return;
-        setHome(parseHomePage(raw));
+        setHome(nextHome);
         writeCache("public", "home-page", raw);
-      })
-      .catch((err) => console.error("home content load failed:", err));
+      } catch (err) {
+        console.error("home content load failed:", err);
+        const fallback = parseHomePage(cached);
+        await prepareFont(fallback).catch(() => undefined);
+        if (cancelled) return;
+        setHome(fallback);
+      } finally {
+        if (!cancelled) setHomeReady(true);
+      }
+    };
+    void load();
     return () => {
       cancelled = true;
     };
@@ -322,7 +353,13 @@ export default function Home() {
   };
 
   return (
-    <div className="eh-home-content" style={designStyle}>
+    <div className={`eh-home-content${homeReady ? "" : " is-initializing"}`} style={designStyle}>
+      {!homeReady && (
+        <div className="eh-home-initializing" role="status" aria-live="polite" dir="rtl">
+          <span className="eh-home-initializing-mark" aria-hidden="true">E</span>
+          <span>جاري تهيئة الصفحة الرئيسية...</span>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="hero" id="hero">

@@ -1,5 +1,9 @@
 /* إعدادات التصميم التي يتحكم بها الأدمن من محرر الرئيسية */
 .eh-home-content{--eh-hero-height:680px;--eh-hero-title-size:3.1rem;--eh-section-title-size:2.3rem;--eh-section-spacing:92px;--eh-page-width:1180px;--eh-card-radius:18px;--eh-primary-color:#0b0f2e;--eh-accent-color:#1eb1ff}
+.eh-home-content.is-initializing{min-height:100vh;visibility:hidden}
+.eh-home-initializing{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:12px;background:#f4f8fc;color:#24354d;font-family:"Tajawal","Segoe UI",sans-serif;font-size:1rem;font-weight:800;visibility:visible}
+.eh-home-initializing-mark{display:grid;width:42px;height:42px;place-items:center;border-radius:14px;background:#078bd0;color:#fff;font-size:1.15rem;box-shadow:0 8px 22px #078bd033;animation:eh-home-pulse 1s ease-in-out infinite alternate}
+@keyframes eh-home-pulse{to{transform:scale(.92);opacity:.75}}
 .eh-home-content .hero{min-height:var(--eh-hero-height)}
 .eh-home-content .hero h1{font-size:var(--eh-hero-title-size)}
 .eh-home-content .sec-title{font-size:var(--eh-section-title-size)!important}
