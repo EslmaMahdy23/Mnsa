@@ -203,7 +203,7 @@ export type StatItem = (typeof DEFAULTS)["stats"]["items"][number];
 // الأقسام اللي الأدمن يرتّبها (الباقي ثابت: الهيرو والشريط فوق، والدعوة والفوتر تحت)
 export const MOVABLE: SectionKey[] = ["subjects", "features", "how", "stats", "teach", "faq"];
 // الأقسام اللي الأدمن يقدر يخفيها
-export const TOGGLEABLE: SectionKey[] = ["marquee", "subjects", "features", "how", "stats", "teach", "faq", "cta"];
+export const TOGGLEABLE: SectionKey[] = ["hero", "marquee", "subjects", "features", "how", "stats", "teach", "faq", "cta", "footer"];
 
 export type Layout = { order: SectionKey[]; hidden: SectionKey[] };
 export const DEFAULT_LAYOUT: Layout = { order: [...MOVABLE], hidden: [] };

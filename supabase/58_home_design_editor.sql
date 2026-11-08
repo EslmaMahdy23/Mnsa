@@ -33,10 +33,10 @@ begin
   end loop;
 
   if p_key = 'layout' then
-    if p_content ? 'order' and (jsonb_typeof(p_content -> 'order') <> 'array' or exists (select 1 from jsonb_array_elements_text(p_content -> 'order') o where o not in ('subjects','how','stats','teach','faq'))) then
+    if p_content ? 'order' and (jsonb_typeof(p_content -> 'order') <> 'array' or exists (select 1 from jsonb_array_elements_text(p_content -> 'order') o where o not in ('subjects','features','how','stats','teach','faq'))) then
       raise exception 'bad layout order' using errcode = '22023';
     end if;
-    if p_content ? 'hidden' and (jsonb_typeof(p_content -> 'hidden') <> 'array' or exists (select 1 from jsonb_array_elements_text(p_content -> 'hidden') h where h not in ('marquee','subjects','features','how','stats','teach','faq','cta'))) then
+    if p_content ? 'hidden' and (jsonb_typeof(p_content -> 'hidden') <> 'array' or exists (select 1 from jsonb_array_elements_text(p_content -> 'hidden') h where h not in ('hero','marquee','subjects','features','how','stats','teach','faq','cta','footer'))) then
       raise exception 'bad layout hidden' using errcode = '22023';
     end if;
   end if;

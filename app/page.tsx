@@ -364,7 +364,7 @@ export default function Home() {
       )}
 
       {/* HERO */}
-      <section className="hero" id="hero">
+      {!hidden("hero") && <section className="hero" id="hero">
         <div className="hero-mesh"><span></span><span></span><span></span></div>
         <div className="hero-grid"></div>
         <div className="hero-inner">
@@ -398,7 +398,7 @@ export default function Home() {
             )}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* MARQUEE */}
       {!hidden("marquee") && c.marquee.items.length > 0 && (
@@ -433,7 +433,7 @@ export default function Home() {
       )}
 
       {/* FOOTER */}
-      <footer>
+      {!hidden("footer") && <footer>
         <div className="footer-grid">
           <div>
             <div className="footer-logo-wrap">
@@ -467,7 +467,7 @@ export default function Home() {
         <div className="footer-bottom">
           <p>{c.footer.bottom}</p>
         </div>
-      </footer>
+      </footer>}
     </div>
   );
 }

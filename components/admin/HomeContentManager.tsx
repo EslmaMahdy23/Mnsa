@@ -30,7 +30,8 @@ type Obj = Record<string, any>;
 const IMG_MAX = 2 * 1024 * 1024;
 const TITLE_OF = (k: SectionKey) => SECTIONS.find((s) => s.key === k)?.title ?? k;
 
-function dbMessage(err: { code?: string } | null, fallback: string) {
+function dbMessage(err: { code?: string; message?: string } | null, fallback: string) {
+  if (err?.message?.includes("bad layout order")) return "شغّل ملف supabase/60_home_layout_controls.sql في Supabase لدعم ترتيب الأقسام الجديدة";
   if (err?.code === "PGRST202") return "لازم تشغّل ملف supabase/31_home_content.sql في Supabase الأول";
   if (err?.code === "22023") return "المحتوى مرفوض: فيه رابط غير آمن أو نص طويل جداً أو عدد عناصر زيادة";
   return adminErrorMessage(err, fallback);
