@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useProfile } from "@/components/dashboard/ProfileContext";
-import { examErrorMessage, fmtDuration, fmtPct } from "@/lib/exams";
+import { examErrorMessage, fmtDuration } from "@/lib/exams";
 import { GRADES } from "@/lib/validation";
 import LoadingState from "@/components/dashboard/LoadingState";
 import "./exams.css";
@@ -80,11 +80,7 @@ export default function ExamsPage() {
             return (
               <div className="ex-card" key={x.id}>
                 <div>
-                  {finished ? (
-                    <span className={`ex-badge ${at.passed ? "pass" : "fail"}`}>
-                      {at.passed ? "ناجح" : "راسب"} · {fmtPct(at.percent)}
-                    </span>
-                  ) : at ? (
+                  {finished ? null : at ? (
                     <span className="ex-badge open">بدأت ومخلّصتش</span>
                   ) : (
                     <span className="ex-badge new">جديد</span>
@@ -92,7 +88,7 @@ export default function ExamsPage() {
                 </div>
                 <h3>{x.title}</h3>
                 <div className="ex-meta">
-                  <span><i className="fa-solid fa-circle-question" />{x.question_count.toLocaleString("ar-EG")} سؤال</span>
+                  <span><i className="fa-solid fa-circle-question" />{x.question_count.toLocaleString("ar-EG-u-nu-latn")} سؤال</span>
                   <span><i className="fa-regular fa-clock" />{fmtDuration(x.duration_minutes)}</span>
                   {x.course && <span><i className="fa-solid fa-book-open" />{x.course.title}</span>}
                   <span><i className="fa-solid fa-graduation-cap" />{GRADES.find((g) => g.value === x.grade)?.label ?? "كل السنوات"}</span>

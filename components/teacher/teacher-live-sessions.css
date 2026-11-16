@@ -1,0 +1,61 @@
+.teacher-live-page{max-width:1100px;margin:0 auto;padding:2px 0 25px;color:#20304a}
+.teacher-live-intro{display:flex;align-items:center;gap:15px;margin-bottom:17px;padding:20px 22px;border:1px solid #d4eaf2;border-radius:17px;background:linear-gradient(120deg,#f3fbfe,#fff);box-shadow:0 10px 28px rgba(22,126,169,.07)}
+.teacher-live-intro>span{display:grid;place-items:center;width:50px;height:50px;flex:none;border-radius:15px;background:#e3f5fb;color:#0983aa;font-size:1.15rem}
+.teacher-live-intro>div{flex:1;min-width:0}
+.teacher-live-intro small,.teacher-live-form>header small{color:#087fa8;font-size:.7rem;font-weight:900}
+.teacher-live-intro h1{margin:3px 0;color:#21324d;font-size:1.25rem;font-weight:900}
+.teacher-live-intro p{margin:0;color:#718198;font-size:.77rem;line-height:1.7}
+.teacher-live-intro>.btn,.teacher-live-form footer>.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:9px 14px;border:0;border-radius:10px;background:linear-gradient(110deg,#087fa8,#19a6ce);color:#fff;font:inherit;font-size:.78rem;font-weight:850;white-space:nowrap;cursor:pointer}
+.teacher-live-form{margin-bottom:17px;padding:18px;border:1px solid #dce8ef;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(25,55,80,.045)}
+.teacher-live-form>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.teacher-live-form h2{margin:3px 0 0;color:#243650;font-size:1rem}
+.teacher-live-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.teacher-live-fields label{display:grid;gap:6px;color:#4e6078;font-size:.75rem;font-weight:800}
+.teacher-live-fields input,.teacher-live-fields select,.teacher-live-fields textarea{width:100%;min-height:42px;padding:9px 11px;border:1px solid #dce5ec;border-radius:10px;background:#fff;color:#293951;font:inherit;font-size:.8rem}
+.teacher-live-fields textarea{min-height:86px;resize:vertical;line-height:1.7}
+.teacher-live-course-picker{min-width:0;margin:0;padding:12px;border:1px solid #dce8ef;border-radius:12px;background:#f8fcfe}
+.teacher-live-course-picker legend{padding:0 5px;color:#354a63;font-size:.76rem;font-weight:900}
+.teacher-live-course-picker legend small{margin-inline-start:7px;color:#8493a4;font-size:.67rem;font-weight:600}
+.teacher-live-course-picker>div{display:flex;flex-wrap:wrap;gap:8px;margin-top:5px}
+.teacher-live-course-picker>div>label{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #dceaf0;border-radius:9px;background:#fff;color:#405873;font-size:.73rem;font-weight:750;cursor:pointer}
+.teacher-live-course-picker input{width:16px;min-height:16px;accent-color:#0b94b8}
+.teacher-live-course-picker>p{margin:7px 0 0;color:#71849a;font-size:.71rem}
+.teacher-live-course-picker:disabled{opacity:.75}
+.teacher-live-fields input:focus,.teacher-live-fields select:focus,.teacher-live-fields textarea:focus{outline:2px solid #c9eaf5;border-color:#58b5d4}
+.teacher-live-wide{grid-column:1/-1}
+.teacher-live-publish{display:flex;align-items:center;gap:8px;margin-top:13px;color:#496176;font-size:.76rem;font-weight:800;cursor:pointer}
+.teacher-live-publish input{width:17px;height:17px;accent-color:#0d93b9}
+.teacher-live-form footer{display:flex;gap:8px;margin-top:14px}
+.teacher-live-form footer>.btn:disabled{opacity:.55;cursor:not-allowed}
+.teacher-live-empty{display:grid;justify-items:center;gap:9px;padding:35px 18px;border:1px dashed #cfe1eb;border-radius:16px;background:#fff;color:#7b899b;text-align:center}
+.teacher-live-empty>i{color:#2ba4c7;font-size:1.55rem}
+.teacher-live-empty>b{color:#33465e;font-size:.88rem}
+.teacher-live-empty>span{font-size:.75rem}
+.teacher-live-list{display:grid;gap:13px}
+.teacher-live-card{overflow:hidden;border:1px solid #deebf1;border-radius:16px;background:#fff;box-shadow:0 7px 21px rgba(27,55,86,.04)}
+.teacher-live-card>header{display:flex;align-items:center;gap:11px;padding:15px 17px;background:#f7fcfe;border-bottom:1px solid #e8f0f4}
+.teacher-live-card-icon{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:13px;background:#e4f6fb;color:#0985aa}
+.teacher-live-card-title{flex:1;min-width:0}
+.teacher-live-card-title small{color:#71859a;font-size:.68rem}
+.teacher-live-card-title h2{margin:3px 0 0;color:#263750;font-size:.95rem}
+.teacher-live-status{flex:none;padding:6px 9px;border-radius:999px;background:#e8f8ef;color:#268653;font-size:.65rem;font-weight:850}
+.teacher-live-status.draft{background:#f1f3f6;color:#748197}
+.teacher-live-status.full{background:#fff3e2;color:#a56a18}
+.teacher-live-status.past{background:#eef2f6;color:#7b8798}
+.teacher-live-description{margin:12px 17px;color:#63748a;font-size:.78rem;line-height:1.8;white-space:pre-line}
+.teacher-live-capacity{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px 12px;margin:0 17px;padding:11px 12px;border:1px solid #e7f0f4;border-radius:11px;background:#f9fcfd}
+.teacher-live-capacity>span{color:#6b7d91;font-size:.72rem;font-weight:800}
+.teacher-live-capacity>span i{margin-inline-end:6px;color:#168db1}
+.teacher-live-capacity>b{color:#273c57;font-size:.75rem}
+.teacher-live-capacity>i{grid-column:1/-1;height:6px;overflow:hidden;border-radius:99px;background:#e3edf2}
+.teacher-live-capacity>i>b{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#14a0c4,#55c4d6)}
+.teacher-live-bookings{margin:13px 17px}
+.teacher-live-bookings>b{display:block;margin-bottom:8px;color:#354862;font-size:.75rem}
+.teacher-live-bookings>div{display:flex;flex-wrap:wrap;gap:7px}
+.teacher-live-bookings>div>span{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid #e3edf2;border-radius:999px;background:#fbfdfe;color:#5e7085;font-size:.68rem}
+.teacher-live-bookings>div>span i{color:#32956b}
+.teacher-live-bookings>small{color:#8895a5;font-size:.7rem}
+.teacher-live-card>footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 17px;border-top:1px solid #edf2f5}
+.teacher-live-actions{display:flex;flex-wrap:wrap;gap:7px}
+.teacher-live-card>footer>a{display:inline-flex;align-items:center;gap:6px;color:#087fa8;font-size:.72rem;font-weight:800;text-decoration:none;white-space:nowrap}
+@media(max-width:650px){.teacher-live-intro{align-items:flex-start;flex-wrap:wrap;padding:16px}.teacher-live-intro>div{flex-basis:calc(100% - 70px)}.teacher-live-intro>.btn{width:100%}.teacher-live-fields{grid-template-columns:1fr}.teacher-live-wide{grid-column:auto}.teacher-live-card>header{align-items:flex-start;flex-wrap:wrap;padding:13px}.teacher-live-status{margin-inline-start:53px}.teacher-live-card>footer{align-items:stretch;flex-direction:column}.teacher-live-card>footer>a{justify-content:center;padding:8px}.teacher-live-form{padding:14px}}

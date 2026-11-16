@@ -113,7 +113,7 @@ export default function AdminCoursesPage() {
   return (
     <>
       <div className="adm-head">
-        <h1>الكورسات {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG")})</span>}</h1>
+        <h1>الكورسات {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
         <Link href="/dashboard/admin/courses/new" className="btn">
           <i className="fa-solid fa-plus" /> كورس جديد
         </Link>
@@ -174,11 +174,11 @@ export default function AdminCoursesPage() {
                     {price === 0 ? (
                       <span className="adm-badge ok">مجاني</span>
                     ) : (
-                      <span className="adm-badge paid">{price.toLocaleString("ar-EG")} جنيه</span>
+                      <span className="adm-badge paid">{price.toLocaleString("ar-EG-u-nu-latn")} جنيه</span>
                     )}
                   </td>
-                  <td>{(c.lessons[0]?.count ?? 0).toLocaleString("ar-EG")}</td>
-                  {!isContentManager && <td>{(c.enrollments?.[0]?.count ?? 0).toLocaleString("ar-EG")}</td>}
+                  <td>{(c.lessons[0]?.count ?? 0).toLocaleString("ar-EG-u-nu-latn")}</td>
+                  {!isContentManager && <td>{(c.enrollments?.[0]?.count ?? 0).toLocaleString("ar-EG-u-nu-latn")}</td>}
                   <td>
                     <span className={`adm-badge ${c.is_published ? "ok" : "draft"}`}>
                       {c.is_published ? "منشور" : "مسودة"}

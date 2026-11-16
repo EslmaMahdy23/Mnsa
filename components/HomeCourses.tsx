@@ -56,7 +56,7 @@ export default function HomeCourses() {
 
   if (courses.length === 0) return null;
 
-  const fmt = (n: number) => Number(n).toLocaleString("ar-EG");
+  const fmt = (n: number) => Number(n).toLocaleString("ar-EG-u-nu-latn");
 
   return (
     <div className="hc-section">

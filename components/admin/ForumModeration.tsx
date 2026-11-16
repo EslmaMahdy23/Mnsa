@@ -9,7 +9,7 @@ import "@/components/dashboard/forum.css";
 type Question = { id: string; author_id: string; author_role: "student" | "admin" | "forum_moderator"; title: string; body: string; image_path: string | null; status: string; created_at: string; updated_at: string; author_name: string; grade: number | null; reply_count: number; last_reply: string | null };
 type Reply = { id: string; author_id: string; author_role: "student" | "admin" | "forum_moderator"; body: string; created_at: string; author_name: string };
 const statusLabel: Record<string, string> = { pending: "بانتظار المراجعة", published: "منشور", rejected: "مرفوض" };
-const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG", { dateStyle: "medium", timeStyle: "short" });
+const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG-u-nu-latn", { dateStyle: "medium", timeStyle: "short" });
 
 export default function ForumModeration() {
   const profile = useProfile();

@@ -215,7 +215,7 @@ function FontField({ value, fileName, onChange, hint }: {
       {url && (
         <div className="hm-font-preview" style={loaded ? { fontFamily: "EHPreview, sans-serif" } : undefined}>
           <b>{fileName || "الخط الحالي"}</b>
-          <p>ذاكر وافهم وتفوّق مع EduHelp ١٢٣٤٥ 123</p>
+          <p>ذاكر وافهم وتفوّق مع EduHelp 12345 123</p>
           {loaded === null && <small>جاري تحميل المعاينة...</small>}
           {loaded === false && <small className="msg-error">المتصفح مقدرش يقرا الخط ده، جرّب ملف تاني.</small>}
         </div>
@@ -250,7 +250,7 @@ function ListEditor({ f, items, onChange }: { f: Extract<FieldDef, { type: "list
       {items.map((it, i) => (
         <div className="hm-item" key={i}>
           <div className="hm-item-head">
-            <b>{f.itemTitle} {(i + 1).toLocaleString("ar-EG")}</b>
+            <b>{f.itemTitle} {(i + 1).toLocaleString("ar-EG-u-nu-latn")}</b>
             <span className="adm-actions">
               <button type="button" className="btn btn-outline btn-sm" disabled={i === 0} onClick={() => move(i, -1)} aria-label="لفوق"><i className="fa-solid fa-arrow-up" /></button>
               <button type="button" className="btn btn-outline btn-sm" disabled={i === items.length - 1} onClick={() => move(i, 1)} aria-label="لتحت"><i className="fa-solid fa-arrow-down" /></button>
@@ -261,7 +261,7 @@ function ListEditor({ f, items, onChange }: { f: Extract<FieldDef, { type: "list
         </div>
       ))}
       <button type="button" className="btn btn-outline btn-sm" disabled={items.length >= f.max} onClick={() => onChange([...items, blankOf(f.fields)])}>
-        <i className="fa-solid fa-plus" /> إضافة {f.itemTitle}{items.length >= f.max ? ` (الحد الأقصى ${f.max.toLocaleString("ar-EG")})` : ""}
+        <i className="fa-solid fa-plus" /> إضافة {f.itemTitle}{items.length >= f.max ? ` (الحد الأقصى ${f.max.toLocaleString("ar-EG-u-nu-latn")})` : ""}
       </button>
     </div>
   );

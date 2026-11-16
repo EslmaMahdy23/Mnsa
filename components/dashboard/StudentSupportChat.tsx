@@ -9,7 +9,7 @@ import "./support-attachments.css";
 type Ticket = { id: string; subject: string; status: string; created_at: string; updated_at: string; last_message: string | null };
 type Message = { id: string; sender_id: string; sender_role: "student" | "admin"; body: string; created_at: string; sender_name: string; attachment_path?: string | null; attachment_url?: string };
 const statusLabel: Record<string, string> = { waiting_admin: "بانتظار رد الدعم", waiting_student: "بانتظار ردك", closed: "مغلقة" };
-const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" });
+const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG-u-nu-latn", { dateStyle: "short", timeStyle: "short" });
 
 export default function StudentSupportChat() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -26,6 +26,17 @@ export default function StudentSupportChat() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const active = tickets.find((ticket) => ticket.id === activeId);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reason") !== "failed_exam") return;
+    const title = params.get("title") || "الامتحان";
+    const examId = params.get("exam") || "";
+    newTicketMode.current = true;
+    setActiveId("");
+    setSubject(`مراجعة نتيجة امتحان: ${title}`);
+    setDraft(`ظهرت نتيجتي راسب في امتحان «${title}»${examId ? ` (رقم الامتحان: ${examId})` : ""}. أرجو مراجعة النتيجة والتواصل معي.`);
+  }, []);
 
   const loadTickets = useCallback(async () => {
     const { data, error: err } = await supabase.rpc("get_my_support_tickets");
@@ -65,7 +76,16 @@ export default function StudentSupportChat() {
   async function createTicket(event: FormEvent) {
     event.preventDefault(); setError(""); setCreating(true);
     const { data, error: err } = await supabase.rpc("create_support_ticket", { p_subject: subject, p_message: draft });
-    if (err) { setCreating(false); setError("ماقدرناش نبعت طلبك. راجع البيانات وحاول تاني."); return; }
+    if (err) {
+      console.error("support ticket creation failed:", { code: err.code, message: err.message, details: err.details, hint: err.hint });
+      setCreating(false);
+      setError(err.code === "42501"
+        ? "مش مسموح بإنشاء طلب دعم لهذا الحساب. سجّل الخروج وادخل بحساب الطالب."
+        : err.code === "22023"
+          ? "اكتب عنوانًا ورسالة، وتأكد أن العنوان لا يتجاوز 120 حرفًا والرسالة 2000 حرف."
+          : `تعذر إرسال طلب الدعم${err.code ? ` (${err.code})` : ""}. حاول مرة أخرى بعد تحديث الصفحة.`);
+      return;
+    }
     const newTicketId = data as string;
     let attachmentError = "";
     if (image) {

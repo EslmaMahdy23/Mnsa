@@ -8,6 +8,7 @@ import { useProfile } from "@/components/dashboard/ProfileContext";
 import { examErrorMessage, fmtClock, fmtDuration } from "@/lib/exams";
 import ReviewList, { type Review } from "@/components/dashboard/ExamReview";
 import LoadingState, { LoadingButton } from "@/components/dashboard/LoadingState";
+import ConfirmDialog from "@/components/dashboard/ConfirmDialog";
 import "../exams.css";
 import "../exam-run.css";
 
@@ -55,19 +56,22 @@ export default function TakeExamPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visitedQuestions, setVisitedQuestions] = useState<Set<number>>(new Set());
   const [attemptId, setAttemptId] = useState("");
+  const [attemptInfo, setAttemptInfo] = useState<AttemptRow | null>(null);
   const [deadline, setDeadline] = useState<number | null>(null); // بتوقيت جهاز الطالب (محسوب من ساعة السيرفر)
   const [left, setLeft] = useState<number | null>(null);
   const [resumeDeadline, setResumeDeadline] = useState<number | null>(null);
   const [resumeLeft, setResumeLeft] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitSuccessOpen, setSubmitSuccessOpen] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewError, setReviewError] = useState("");
 
   const submitting = useRef(false);
   const autoTried = useRef(false);
-  const submitRef = useRef<(auto?: boolean) => void>(() => {});
+  const submitRef = useRef<(auto?: boolean, confirmed?: boolean) => void>(() => {});
 
   async function fetchAttempt() {
     return supabase
@@ -80,6 +84,7 @@ export default function TakeExamPage() {
 
   function showFromAttempt(a: AttemptRow) {
     setAttemptId(a.id);
+    setAttemptInfo(a);
     setResult({ score: a.score, total: a.total, percent: a.percent, passed: a.passed, essay_pending: a.essay_pending });
     setPhase("done");
   }
@@ -198,6 +203,7 @@ export default function TakeExamPage() {
     }
 
     const d = data as StartData;
+    window.dispatchEvent(new Event("eduhelp:exam-activity-updated"));
     // نرجّع الإجابات المحفوظة لو الطالب عمل Refresh في نص الامتحان
     let saved: Record<string, number | string> = {};
     try {
@@ -217,6 +223,7 @@ export default function TakeExamPage() {
     autoTried.current = false;
     submitting.current = false;
     setAttemptId(d.attempt_id);
+    setAttemptInfo({ id: d.attempt_id, started_at: d.started_at, submitted_at: null, score: null, total: null, percent: null, passed: null });
     setQuestions(d.questions);
     setAnswers(saved);
     const firstUnanswered = Math.max(0, d.questions.findIndex((question) => saved[question.id] === undefined || saved[question.id] === ""));
@@ -244,14 +251,12 @@ export default function TakeExamPage() {
     setVisitedQuestions((visited) => new Set(visited).add(index));
   }
 
-  async function submit(auto = false) {
+  async function submit(auto = false, confirmed = false) {
     if (submitting.current) return;
-    if (!auto) {
-      const unanswered = questions.filter((q) => answers[q.id] === undefined || answers[q.id] === "").length;
-      const message = unanswered > 0
-        ? `هل أنت متأكد إنك عايز تسلّم الامتحان؟ لسه ${unanswered.toLocaleString("ar-EG")} سؤال من غير إجابة.`
-        : "هل أنت متأكد إنك عايز تسلّم الامتحان؟ بعد التسليم مش هتقدر تعدّل إجاباتك.";
-      if (!window.confirm(message)) return;
+    // التسليم اليدوي بيفتح نافذة تأكيد، والتسليم التلقائي (انتهاء الوقت) بيمشي مباشرة
+    if (!auto && !confirmed) {
+      setConfirmOpen(true);
+      return;
     }
     submitting.current = true;
     setBusy(true);
@@ -263,6 +268,7 @@ export default function TakeExamPage() {
 
     if (err || !data) {
       submitting.current = false;
+      setConfirmOpen(false);
       console.error("submit_exam failed:", err);
       if (err?.code === "23505") {
         const a = await fetchAttempt();
@@ -277,7 +283,12 @@ export default function TakeExamPage() {
       // مش مهم
     }
     setResult(data as Result);
+    const savedAttempt = await fetchAttempt();
+    if (savedAttempt.data) setAttemptInfo(savedAttempt.data as AttemptRow);
+    window.dispatchEvent(new Event("eduhelp:exam-activity-updated"));
+    setConfirmOpen(false);
     setPhase("done");
+    setSubmitSuccessOpen(true);
     window.scrollTo(0, 0);
   }
   submitRef.current = submit; // العدّاد يستخدم آخر نسخة (بآخر إجابات)
@@ -297,40 +308,82 @@ export default function TakeExamPage() {
 
   // ===== النتيجة =====
   if (phase === "done" && result) {
+    const attempt = attemptInfo;
+    const elapsedMinutes = attempt?.submitted_at && attempt.started_at
+      ? Math.max(0, Math.floor((new Date(attempt.submitted_at).getTime() - new Date(attempt.started_at).getTime()) / 60000))
+      : null;
+    const dateLabel = attempt?.started_at
+      ? new Date(attempt.started_at).toLocaleString("ar-EG-u-nu-latn", { dateStyle: "medium", timeStyle: "short" })
+      : "—";
+    const scoreLabel = result.essay_pending ? "قيد التصحيح"
+      : result.score === null || result.total === null ? "—"
+      : `${result.score.toLocaleString("ar-EG-u-nu-latn")} من ${result.total.toLocaleString("ar-EG-u-nu-latn")}`;
+    const outcomeLabel = result.essay_pending ? "قيد التصحيح"
+      : result.percent === null ? "—"
+      : `${result.passed === true ? "ناجح" : result.passed === false ? "غير ناجح" : "النتيجة"} · ${result.percent.toLocaleString("ar-EG-u-nu-latn")}٪`;
+
     return (
       <>
         {back}
-        <div className={`ex-box ex-result${result.passed === false ? " fail" : ""}`}>
-          {result.essay_pending ? <>
-            <span className="ex-badge open">في انتظار مراجعة المقالي</span>
-            <h2>تم استلام إجاباتك</h2>
-            <p className="sub">درجات الاختيار من متعدد والتصحيح هتظهر بعد ما المدرّس يراجع الأسئلة المقالية.</p>
-          </> : <>
-          <span className={`ex-badge ${result.passed ? "pass" : "fail"}`}>{result.passed ? "ناجح" : "راسب"}</span>
-          <div className="pct">{(result.percent ?? 0).toLocaleString("ar-EG")}٪</div>
-          <p className="sub">
-            درجتك {(result.score ?? 0).toLocaleString("ar-EG")} من {(result.total ?? 0).toLocaleString("ar-EG")}
-            {meta && ` · نسبة النجاح ${meta.pass_percent.toLocaleString("ar-EG")}٪`}
-          </p>
-          </>}
-          {result.late && <p className="msg-error">الوقت كان خلص قبل التسليم، فالإجابات ما اتحسبتش.</p>}
-          <p className="hint" style={{ marginBottom: 14 }}>النتيجة دي محفوظة في صفحة حسابك.</p>
-          <div className="adm-actions" style={{ justifyContent: "center" }}>
+        <section className="exam-attempt-results" dir="rtl">
+          <header className="exam-attempt-results-head">
+            <div>
+              <span className="exam-results-eyebrow">نتيجة الامتحان</span>
+              <h1>{meta?.title ?? "نتيجة المحاولة"}</h1>
+            </div>
+            {result.essay_pending || result.passed === null
+              ? <span className="exam-result-status pending">{result.essay_pending ? "قيد التصحيح" : "النتيجة غير متاحة"}</span>
+              : <span className={`exam-result-status ${result.passed ? "pass" : "fail"}`}>{result.passed ? "ناجح" : "غير ناجح"}</span>}
+          </header>
+          <div className="exam-attempt-results-table-wrap">
+            <table className="exam-attempt-results-table">
+              <thead><tr>
+                <th>التسلسل</th><th>رقم المحاولة</th><th>تاريخ الدخول</th><th>وقت الامتحان</th>
+                <th>الوقت المستهلك</th><th>عدد الأسئلة</th><th>الدرجة</th><th>النتيجة</th><th>الإجابات</th>
+              </tr></thead>
+              <tbody><tr>
+                <td data-label="التسلسل">1</td>
+                <td data-label="رقم المحاولة">1</td>
+                <td data-label="تاريخ الدخول">{dateLabel}</td>
+                <td data-label="وقت الامتحان">{fmtDuration(meta?.duration_minutes ?? null)}</td>
+                <td data-label="الوقت المستهلك">{elapsedMinutes === null ? "—" : elapsedMinutes < 1 ? "أقل من دقيقة" : `${elapsedMinutes.toLocaleString("ar-EG-u-nu-latn")} دقيقة`}</td>
+                <td data-label="عدد الأسئلة">{meta?.question_count.toLocaleString("ar-EG-u-nu-latn") ?? "—"}</td>
+                <td data-label="الدرجة">{scoreLabel}</td>
+                <td data-label="النتيجة">{outcomeLabel}</td>
+                <td data-label="الإجابات">{attemptId && review && (review.mode === "marks" || review.mode === "full" || (review.mode === "none" && (review.essays?.length ?? 0) > 0))
+                  ? <Link className="exam-result-review-link" href={`/dashboard/exams/review/${attemptId}`}>عرض الإجابات</Link>
+                  : <span className="exam-review-unavailable">غير متاحة</span>}</td>
+              </tr></tbody>
+            </table>
+          </div>
+          {result.late && <p className="msg-error exam-result-note">انتهى الوقت قبل التسليم، لذلك لم تُحتسب الإجابات.</p>}
+          {result.passed === false && meta && <div className="ex-fail-support"><p>لو عندك استفسار عن النتيجة، تواصل مع الدعم الفني. ويقدر المدرّس أو المصحح المسؤول يسمح لك بمحاولة جديدة.</p><Link className="btn btn-outline" href={`/dashboard/support?reason=failed_exam&exam=${id}&title=${encodeURIComponent(meta.title)}`}><i className="fa-solid fa-headset" /> تواصل مع الدعم الفني</Link></div>}
+          <div className="exam-result-actions">
             <Link href="/dashboard/exams" className="btn btn-outline">كل الامتحانات</Link>
             <Link href="/dashboard/profile" className="btn">حسابي</Link>
           </div>
-        </div>
-
+        </section>
         {reviewLoading && <LoadingState label="بنحمّل مراجعة الإجابات" detail="لحظة ونجهّز تفاصيل إجاباتك" compact />}
         {reviewError && <p className="msg-error">{reviewError}</p>}
         {review?.mode === "pending" && <p className="card empty">نتيجة الامتحان والتصحيح مخفيين لحد مراجعة الأسئلة المقالية.</p>}
         {review && (review.mode === "marks" || review.mode === "full" || (review.mode === "none" && (review.essays?.length ?? 0) > 0)) && (
           <ReviewList mode={review.mode} questions={review.questions ?? []} essays={review.essays} />
         )}
+        <ConfirmDialog
+          open={submitSuccessOpen}
+          tone="success"
+          icon="fa-circle-check"
+          title="تم تسليم الامتحان بنجاح"
+          confirmLabel="عرض النتيجة"
+          cancelLabel="إغلاق"
+          onConfirm={() => setSubmitSuccessOpen(false)}
+          onCancel={() => setSubmitSuccessOpen(false)}
+        >
+          <p>إجاباتك اتسجلت بنجاح. تقدر تراجع النتيجة وتفاصيل إجاباتك من الصفحة دي.</p>
+        </ConfirmDialog>
       </>
     );
   }
-
   if (!meta) return null;
 
   // ===== شاشة قبل البدء =====
@@ -342,9 +395,9 @@ export default function TakeExamPage() {
           <h1 className="ex-title">{meta.title}</h1>
           {meta.description && <p className="cv-desc" style={{ color: "var(--muted)", whiteSpace: "pre-line" }}>{meta.description}</p>}
           <ul className="ex-rules">
-            <li>عدد الأسئلة: {meta.question_count.toLocaleString("ar-EG")} (الدرجة الكلية {meta.total_points.toLocaleString("ar-EG")})</li>
+            <li>عدد الأسئلة: {meta.question_count.toLocaleString("ar-EG-u-nu-latn")} (الدرجة الكلية {meta.total_points.toLocaleString("ar-EG-u-nu-latn")})</li>
             <li>الوقت: {fmtDuration(meta.duration_minutes)}</li>
-            <li>نسبة النجاح: {meta.pass_percent.toLocaleString("ar-EG")}٪</li>
+            <li>نسبة النجاح: {meta.pass_percent.toLocaleString("ar-EG-u-nu-latn")}٪</li>
             <li>ليك محاولة واحدة بس.</li>
             {meta.duration_minutes && <li>الوقت بيبدأ أول ما تدوس "ابدأ"، ولو قفلت الصفحة هيفضل شغّال.</li>}
           </ul>
@@ -375,7 +428,7 @@ export default function TakeExamPage() {
           <b>{meta.title}</b>
           <div className="ex-prog"><i style={{ width: `${pct}%` }} /></div>
           <small style={{ color: "var(--muted)" }}>
-            جاوبت {answered.toLocaleString("ar-EG")} من {questions.length.toLocaleString("ar-EG")}
+            جاوبت {answered.toLocaleString("ar-EG-u-nu-latn")} من {questions.length.toLocaleString("ar-EG-u-nu-latn")}
           </small>
         </div>
         {left !== null && (
@@ -390,13 +443,13 @@ export default function TakeExamPage() {
       </div>
 
       <div className="exam-run-stats" aria-label="ملخص الامتحان">
-        <div><span>إجمالي درجات الامتحان</span><b>{meta.total_points.toLocaleString("ar-EG")}</b></div>
-        <div><span>عدد الأسئلة</span><b>{questions.length.toLocaleString("ar-EG")}</b></div>
-        <div><span>الأسئلة التي تم حلها</span><b className="answered-count">{answered.toLocaleString("ar-EG")}</b></div>
-        <div><span>الأسئلة التي تم فتحها</span><b>{visitedQuestions.size.toLocaleString("ar-EG")}</b></div>
-        <div><span>الأسئلة غير المجابة المفتوحة</span><b className="unanswered-count">{[...visitedQuestions].filter((index) => answers[questions[index]?.id] === undefined || answers[questions[index]?.id] === "").length.toLocaleString("ar-EG")}</b></div>
-        <div><span>الأسئلة المجابة</span><b className="answered-count">{answered.toLocaleString("ar-EG")}</b></div>
-        <div className="exam-current-stat"><span>السؤال الحالي</span><b>{(currentIndex + 1).toLocaleString("ar-EG")}</b></div>
+        <div><span>إجمالي درجات الامتحان</span><b>{meta.total_points.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div><span>عدد الأسئلة</span><b>{questions.length.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div><span>الأسئلة التي تم حلها</span><b className="answered-count">{answered.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div><span>الأسئلة التي تم فتحها</span><b>{visitedQuestions.size.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div><span>الأسئلة غير المجابة المفتوحة</span><b className="unanswered-count">{[...visitedQuestions].filter((index) => answers[questions[index]?.id] === undefined || answers[questions[index]?.id] === "").length.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div><span>الأسئلة المجابة</span><b className="answered-count">{answered.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        <div className="exam-current-stat"><span>السؤال الحالي</span><b>{(currentIndex + 1).toLocaleString("ar-EG-u-nu-latn")}</b></div>
       </div>
 
       {error && <p className="msg-error">{error}</p>}
@@ -404,9 +457,9 @@ export default function TakeExamPage() {
       {questions.map((q, qi) => qi === currentIndex && (
         <div className="ex-q" key={q.id}>
           <div className="ex-q-head">
-            <span className="ex-q-no">{(qi + 1).toLocaleString("ar-EG")}</span>
+            <span className="ex-q-no">{(qi + 1).toLocaleString("ar-EG-u-nu-latn")}</span>
             <div className="ex-q-body">{q.body}</div>
-            <span className="ex-q-pts">{q.points.toLocaleString("ar-EG")} درجة</span>
+            <span className="ex-q-pts">{q.points.toLocaleString("ar-EG-u-nu-latn")} درجة</span>
           </div>
           {q.question_type === "essay" ? (
             <textarea className="exam-essay-answer" value={typeof answers[q.id] === "string" ? answers[q.id] as string : ""} onChange={(e) => setAnswers((prev) => {
@@ -426,7 +479,7 @@ export default function TakeExamPage() {
       <div className="exam-question-grid" aria-label="التنقل بين الأسئلة">
         {questions.map((q, qi) => (
           <button type="button" key={q.id} className={`exam-question-number${answers[q.id] !== undefined ? " answered" : ""}${visitedQuestions.has(qi) ? " visited" : ""}${qi === currentIndex ? " current" : ""}`} onClick={() => goToQuestion(qi)} aria-label={`السؤال ${qi + 1}${answers[q.id] !== undefined ? ", تمت الإجابة" : ", بدون إجابة"}`} aria-current={qi === currentIndex ? "step" : undefined}>
-            {(qi + 1).toLocaleString("ar-EG")}
+            {(qi + 1).toLocaleString("ar-EG-u-nu-latn")}
           </button>
         ))}
       </div>
@@ -438,6 +491,29 @@ export default function TakeExamPage() {
       <button className="btn" onClick={() => submit()} disabled={busy} style={{ width: "100%", padding: 14 }}>
         {busy ? <LoadingButton>جاري التسليم</LoadingButton> : "تسليم الامتحان"}
       </button>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        tone={questions.length - answered > 0 ? "warn" : "primary"}
+        icon={questions.length - answered > 0 ? "fa-triangle-exclamation" : "fa-paper-plane"}
+        title="تسليم الامتحان؟"
+        confirmLabel="أيوه، سلّم الامتحان"
+        cancelLabel="رجوع للأسئلة"
+        busy={busy}
+        busyLabel="جاري التسليم"
+        onConfirm={() => submit(false, true)}
+        onCancel={() => setConfirmOpen(false)}
+      >
+        <p>بعد التسليم <strong>مش هتقدر تعدّل إجاباتك</strong>، وليك محاولة واحدة بس.</p>
+        <div className="cd-rows">
+          <div><span>عدد الأسئلة</span><b>{questions.length.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+          <div><span>الأسئلة المجابة</span><b>{answered.toLocaleString("ar-EG-u-nu-latn")}</b></div>
+          <div><span>الأسئلة بدون إجابة</span><b>{(questions.length - answered).toLocaleString("ar-EG-u-nu-latn")}</b></div>
+        </div>
+        {questions.length - answered > 0 && (
+          <div className="cd-warning"><i className="fa-solid fa-circle-exclamation" /> لسه في {(questions.length - answered).toLocaleString("ar-EG-u-nu-latn")} سؤال من غير إجابة، وهياخدوا صفر.</div>
+        )}
+      </ConfirmDialog>
     </main>
   );
 }

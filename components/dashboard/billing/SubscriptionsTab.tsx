@@ -32,7 +32,7 @@ export default function SubscriptionsTab() {
             const kind = subKind(r);
             return (
               <tr key={r.course_id}>
-                <td>{(i + 1).toLocaleString("ar-EG")}</td>
+                <td>{(i + 1).toLocaleString("ar-EG-u-nu-latn")}</td>
                 <td><strong>{r.course?.title ?? "كورس غير متاح حالياً"}</strong></td>
                 <td><span className={`bill-badge ${kind}`}>{SUB_KIND[kind]}</span></td>
                 <td>{kind === "purchase" && r.invoice ? fmtMoney(r.invoice.total) : kind === "free" ? "مجاني" : "—"}</td>

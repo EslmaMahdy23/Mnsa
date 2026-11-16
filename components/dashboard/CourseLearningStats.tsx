@@ -22,13 +22,13 @@ function StatCard({
   return (
     <article className="profile-course-stat">
       <div className="profile-stat-circle" style={{ "--stat-fill": `${percent}%` } as CSSProperties}>
-        <span>{percent.toLocaleString("ar-EG")}<small>%</small></span>
+        <span>{percent.toLocaleString("ar-EG-u-nu-latn")}<small>%</small></span>
       </div>
       <div className="profile-stat-copy">
         <small>يلا ابدأ</small>
         <strong>{title}</strong>
         <span>تقدمك في الكورسات</span>
-        <b>{completed.toLocaleString("ar-EG")} / {total.toLocaleString("ar-EG")}</b>
+        <b>{completed.toLocaleString("ar-EG-u-nu-latn")} / {total.toLocaleString("ar-EG-u-nu-latn")}</b>
       </div>
     </article>
   );

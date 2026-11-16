@@ -19,4 +19,4 @@ export const TOPUP_STATUS: Record<string, string> = {
   rejected: "اترفض",
 };
 
-export const fmtMoney = (n: number | string) => `${Number(n).toLocaleString("ar-EG")} جنيه`;
+export const fmtMoney = (n: number | string) => `${Number(n).toLocaleString("ar-EG-u-nu-latn")} جنيه`;

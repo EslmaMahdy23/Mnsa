@@ -13,6 +13,7 @@ import MyLectureSchedules from "@/components/dashboard/MyLectureSchedules";
 import { GRADES } from "@/lib/validation";
 import { fmtMoney } from "@/lib/wallet";
 import CourseLearningStats from "@/components/dashboard/CourseLearningStats";
+import StudentProfileOverview from "@/components/dashboard/StudentProfileOverview";
 import "./profile.css";
 
 export default function ProfilePage() {
@@ -44,11 +45,13 @@ export default function ProfilePage() {
   const goTopup = () => document.getElementById("topup")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div className="profile-page" dir="rtl">
+    <div className={`profile-page${p.role === "student" ? " is-student-profile" : ""}`} dir="rtl">
       <div className="profile-intro">
         <div><span className="profile-eyebrow">مساحتك التعليمية</span><h1>حسابي</h1><p>تابع بياناتك ودراستك واشتراكاتك من مكان واحد.</p></div>
         <span className="profile-secure"><i className="fa-solid fa-shield-halved" /> حسابك آمن</span>
       </div>
+
+      {p.role === "student" && <StudentProfileOverview enrolled={enrolled} editing={editing} setEditing={setEditing} />}
 
       <section className="profile-hero">
         <div className="profile-hero-orb profile-hero-orb-one" /><div className="profile-hero-orb profile-hero-orb-two" />
@@ -63,7 +66,7 @@ export default function ProfilePage() {
           {!editing && <button className="profile-edit-button" onClick={() => setEditing(true)}><i className="fa-solid fa-pen" /> تعديل الملف</button>}
         </div>
         <div className="profile-metrics">
-          <div className="profile-metric"><span className="profile-metric-icon"><i className="fa-solid fa-book-open" /></span><div><span>الكورسات المسجل فيها</span><strong>{enrolled === null ? "…" : enrolled.toLocaleString("ar-EG")}</strong></div></div>
+          <div className="profile-metric"><span className="profile-metric-icon"><i className="fa-solid fa-book-open" /></span><div><span>الكورسات المسجل فيها</span><strong>{enrolled === null ? "…" : enrolled.toLocaleString("ar-EG-u-nu-latn")}</strong></div></div>
           <div className="profile-metric profile-wallet-metric"><span className="profile-metric-icon"><i className="fa-solid fa-wallet" /></span><div><span>رصيد المحفظة</span><strong>{balance === null ? "—" : fmtMoney(balance)}</strong></div><button onClick={goTopup}>اشحن رصيدك <i className="fa-solid fa-arrow-left" /></button></div>
         </div>
       </section>

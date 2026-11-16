@@ -99,7 +99,7 @@ export default function TeacherCoursesPage() {
       <div className="tch-courses-heading">
         <div>
           <span className="tch-kicker"><i className="fa-solid fa-layer-group" /> إدارة المحتوى</span>
-          <h1>كورساتي <span>{rows.length.toLocaleString("ar-EG")}</span></h1>
+          <h1>كورساتي <span>{rows.length.toLocaleString("ar-EG-u-nu-latn")}</span></h1>
           <p>تابع حالة كل كورس، جهّز محتواه، وأرسله للمراجعة.</p>
         </div>
         <Link href="/teacher/courses/new" className="btn"><i className="fa-solid fa-plus" /> كورس جديد</Link>
@@ -130,16 +130,17 @@ export default function TeacherCoursesPage() {
                 <div className="tch-course-card-body">
                   <div className="tch-course-meta">{course.subject || "بدون مادة"}<span>·</span>{GRADES.find((g) => g.value === course.grade)?.label ?? "كل السنوات"}</div>
                   <h2>{course.title}</h2>
-                  <div className="tch-course-progress-head"><span>اكتمال المحتوى</span><b>{percent.toLocaleString("ar-EG")}%</b></div>
+                  <div className="tch-course-progress-head"><span>اكتمال المحتوى</span><b>{percent.toLocaleString("ar-EG-u-nu-latn")}%</b></div>
                   <div className="tch-course-progress" role="progressbar" aria-label={`اكتمال محتوى ${course.title}`} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${percent}%` }} /></div>
                   <div className="tch-course-counts">
-                    <span><i className="fa-solid fa-list" /> {sectionCount.toLocaleString("ar-EG")} أقسام</span>
-                    <span><i className="fa-solid fa-play" /> {lessonCount.toLocaleString("ar-EG")} دروس</span>
-                    <span><i className="fa-solid fa-users" /> {studentCount.toLocaleString("ar-EG")} طلاب</span>
+                    <span><i className="fa-solid fa-list" /> {sectionCount.toLocaleString("ar-EG-u-nu-latn")} أقسام</span>
+                    <span><i className="fa-solid fa-play" /> {lessonCount.toLocaleString("ar-EG-u-nu-latn")} دروس</span>
+                    <span><i className="fa-solid fa-users" /> {studentCount.toLocaleString("ar-EG-u-nu-latn")} طلاب</span>
                   </div>
                   {course.approval_status === "rejected" && <p className="tch-course-note"><i className="fa-solid fa-circle-exclamation" /> افتح الكورس لمراجعة ملاحظة الأدمن وتعديل المطلوب.</p>}
                   <div className="tch-course-footer"><small>أُنشئ {fmtDate(course.created_at)}</small><div className="tch-course-actions">
                     <Link href={`/teacher/courses/${course.id}`} className="btn btn-outline btn-sm"><i className="fa-solid fa-pen" /> تعديل</Link>
+                    <Link href={`/teacher/lecture-schedules?course=${course.id}`} className="btn btn-outline btn-sm"><i className="fa-solid fa-calendar-days" /> جدول المحاضرات</Link>
                     {(course.approval_status === "draft" || course.approval_status === "rejected") && <button className="btn btn-sm" disabled={busyId === course.id} onClick={() => submitForReview(course)}>{busyId === course.id ? "جارٍ الإرسال..." : "إرسال للمراجعة"}</button>}
                   </div></div>
                 </div>

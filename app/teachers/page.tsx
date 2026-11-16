@@ -48,14 +48,14 @@ export default function TeachersPage() {
       <header className="teachers-page-head"><span><i className="fa-solid fa-chalkboard-user" /> فريق EduHelp</span><h1>مدرسونا</h1><p>اختار المدرس والمادة والصف المناسبين ليك.</p></header>
 
       <section className="teachers-toolbar" aria-label="فلترة المدرسين">
-        <div className="teachers-toolbar-title"><span>اكتشف خبراء EduHelp</span><b>{filtered.length.toLocaleString("ar-EG")} مدرس</b></div>
+        <div className="teachers-toolbar-title"><span>اكتشف خبراء EduHelp</span><b>{filtered.length.toLocaleString("ar-EG-u-nu-latn")} مدرس</b></div>
         <div className="teachers-filters">
           <label className="teacher-filter"><i className="fa-solid fa-layer-group" /><span>الصف</span><select value={grade} onChange={(event) => setGrade(event.target.value)}><option value="all">كل الصفوف</option>{GRADES.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}</select><i className="fa-solid fa-chevron-down" /></label>
           <label className="teacher-filter"><i className="fa-solid fa-book-open" /><span>المادة</span><select value={subject} onChange={(event) => setSubject(event.target.value)}><option value="all">كل المواد</option>{subjects.map((item) => <option value={item} key={item}>{item}</option>)}</select><i className="fa-solid fa-chevron-down" /></label>
         </div>
       </section>
 
-      {loading ? <div className="teachers-state">جاري تحميل المدرسين...</div> : filtered.length === 0 ? <div className="teachers-empty"><i className="fa-regular fa-face-frown" /><h2>مفيش مدرسين بالاختيارات دي</h2><p>جرّب تختار صف أو مادة مختلفة.</p><button type="button" onClick={() => { setGrade("all"); setSubject("all"); }}>عرض كل المدرسين</button></div> : <div className="teachers-grid">{filtered.map((teacher) => <Link href={`/teachers/${teacher.slug}`} className="teacher-card" key={teacher.id}>
+      {loading ? <div className="teachers-state">جاري تحميل المدرسين...</div> : filtered.length === 0 ? <div className="teachers-empty"><i className="fa-regular fa-face-frown" /><h2>مفيش مدرسين بالاختيارات دي</h2><p>جرّب تختار صف أو مادة مختلفة.</p><button type="button" onClick={() => { setGrade("all"); setSubject("all"); }}>عرض كل المدرسين</button></div> : <div className={`teachers-grid${filtered.length === 1 ? " is-single" : ""}`}>{filtered.map((teacher) => <Link href={`/teachers/${teacher.slug}`} className="teacher-card" key={teacher.id}>
         <div className="teacher-card-media">
           {teacher.photo_url ? <img src={teacher.photo_url} alt={teacher.full_name || "مدرس"} /> : <span className="teacher-card-placeholder"><i className="fa-solid fa-chalkboard-user" /></span>}
           <span className="teacher-card-open"><i className="fa-solid fa-arrow-up-left" /></span>
@@ -63,7 +63,7 @@ export default function TeachersPage() {
         <div className="teacher-card-body">
           <div className="teacher-card-name-row"><div><h2>{teacher.full_name || "مدرس EduHelp"}</h2></div></div>
           <div className="teacher-subject-chips">{subjectsOf(teacher.subjects).slice(0, 3).map((item) => <span key={item}>{item}</span>)}{!teacher.subjects && <span>مواد تعليمية</span>}</div>
-          <div className="teacher-card-footer"><span><b>{Number(teacher.courses_count).toLocaleString("ar-EG")}</b> كورسات</span><span><b>{Number(teacher.students_count).toLocaleString("ar-EG")}</b> طالب</span><strong>شوف البروفايل <i className="fa-solid fa-arrow-left" /></strong></div>
+          <div className="teacher-card-footer"><span><b>{Number(teacher.courses_count).toLocaleString("ar-EG-u-nu-latn")}</b> كورسات</span><span><b>{Number(teacher.students_count).toLocaleString("ar-EG-u-nu-latn")}</b> طالب</span><strong>شوف البروفايل <i className="fa-solid fa-arrow-left" /></strong></div>
         </div>
       </Link>)}</div>}
     </main>

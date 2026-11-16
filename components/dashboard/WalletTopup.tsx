@@ -108,7 +108,7 @@ export default function WalletTopup() {
     const phone = cleanPhone(f.senderPhone);
 
     if (!Number.isFinite(amount) || amount < MIN_TOPUP || amount > MAX_TOPUP)
-      return setError(`المبلغ لازم يكون من ${MIN_TOPUP} لـ ${MAX_TOPUP.toLocaleString("ar-EG")} جنيه`);
+      return setError(`المبلغ لازم يكون من ${MIN_TOPUP} لـ ${MAX_TOPUP.toLocaleString("ar-EG-u-nu-latn")} جنيه`);
     if (!isEgPhone(phone)) return setError("اكتب رقم الموبايل اللي حوّلت منه (مثال: 01012345678)");
     if (!file) return setError("ارفع سكرين التحويل");
     if (topups.filter((t) => t.status === "pending").length >= MAX_PENDING)
@@ -150,7 +150,7 @@ export default function WalletTopup() {
     const code = cardCode.trim()
       .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632))
       .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 1776));
-    if (!/^\d{11}$/.test(code)) return setCardError("اكتب كود الكارت المكوّن من ١١ رقم.");
+    if (!/^\d{11}$/.test(code)) return setCardError("اكتب كود الكارت المكوّن من 11 رقم.");
 
     setRedeemingCard(true);
     const { data, error: redeemError } = await supabase.rpc("redeem_wallet_card", { p_code: code });
@@ -164,7 +164,7 @@ export default function WalletTopup() {
     }
 
     const result = (Array.isArray(data) ? data[0] : data) as { credited_amount?: number; redemption_error?: string } | null;
-    if (result?.redemption_error === "too_many_attempts") return setCardError("وصلت للحد المسموح من المحاولات. جرّب بعد ١٥ دقيقة.");
+    if (result?.redemption_error === "too_many_attempts") return setCardError("وصلت للحد المسموح من المحاولات. جرّب بعد 15 دقيقة.");
     if (result?.redemption_error === "already_redeemed") return setCardError("الكود ده اتشحن قبل كده.");
     if (result?.redemption_error === "exhausted") return setCardError("الكود استنفد عدد مرات الاستخدام المحدد له.");
     if (result?.redemption_error || !result) return setCardError("الكود غير صحيح. راجع الأرقام وجرب تاني.");
@@ -184,7 +184,7 @@ export default function WalletTopup() {
       </div>
 
       <form className="wallet-code-redeem" onSubmit={redeemCard} noValidate>
-        <div><h3><i className="fa-solid fa-ticket-simple" /> شحن كود</h3><p>اكتب الكود المكوّن من ١١ رقم على الكارت عشان تشحنه على الأكونت بتاعك.</p></div>
+        <div><h3><i className="fa-solid fa-ticket-simple" /> شحن كود</h3><p>اكتب الكود المكوّن من 11 رقم على الكارت عشان تشحنه على الأكونت بتاعك.</p></div>
         <div className="wallet-code-redeem-row">
           <input
             type="text"
@@ -192,7 +192,7 @@ export default function WalletTopup() {
             autoComplete="off"
             maxLength={11}
             dir="ltr"
-            aria-label="كود شحن المحفظة المكوّن من ١١ رقم"
+            aria-label="كود شحن المحفظة المكوّن من 11 رقم"
             placeholder="00000000000"
             value={cardCode}
             onChange={(event) => setCardCode(event.target.value)}
@@ -205,7 +205,7 @@ export default function WalletTopup() {
 
       <div className="wt-grid">
         <div className="wt-method">
-          <h3>١. حوّل المبلغ على الرقم ده</h3>
+          <h3>1. حوّل المبلغ على الرقم ده</h3>
           <div className="wal-pay">
             <span className="wal-num">{PAYMENT_NUMBER}</span>
             <button type="button" className="btn btn-outline btn-sm" onClick={copyNumber}>
@@ -220,7 +220,7 @@ export default function WalletTopup() {
         </div>
 
         <form className="wt-form" onSubmit={onSubmit} noValidate>
-          <h3>٢. املأ طلب الشحن</h3>
+          <h3>2. املأ طلب الشحن</h3>
           <div className="field-row">
             <div className="field">
               <label htmlFor="w-amount">المبلغ اللي حوّلته (جنيه)</label>
@@ -270,27 +270,35 @@ export default function WalletTopup() {
         </form>
       </div>
 
-      <h3 className="wt-sub">طلبات الشحن</h3>
-      {loadError && <p className="msg-error">{loadError}</p>}
-      {loading ? (
-        <LoadingState label="بنحمّل طلبات الشحن" detail="ثواني ونجيب آخر تحديثات محفظتك" compact />
-      ) : topups.length === 0 ? (
-        <p className="empty" style={{ padding: "20px 0" }}>لسه ما بعتّش أي طلب شحن.</p>
-      ) : (
-        topups.map((t) => (
-          <div key={t.id} className="wal-item">
-            <div className="wal-item-main">
-              <strong>{fmtMoney(t.status === "approved" && t.approved_amount ? t.approved_amount : t.amount)}</strong>
-              <div className="wal-sub">{fmtDate(t.created_at)}</div>
-              {t.status === "rejected" && t.admin_note && <div className="wal-sub">السبب: {t.admin_note}</div>}
-              {t.status === "approved" && t.approved_amount && Number(t.approved_amount) !== Number(t.amount) && (
-                <div className="wal-sub">اتقبل بمبلغ مختلف عن اللي كتبته ({fmtMoney(t.amount)})</div>
-              )}
-            </div>
-            <span className={`wal-badge ${t.status}`}>{TOPUP_STATUS[t.status]}</span>
-          </div>
-        ))
-      )}
+      <details className="wt-history" open>
+        <summary className="wt-sub">
+          <span className="wt-history-title"><i className="fa-solid fa-money-bill-transfer" /> طلبات الشحن</span>
+          <span className="wt-history-count">{loading ? "..." : topups.length.toLocaleString("en-US")}</span>
+          <i className="fa-solid fa-chevron-down wt-history-chevron" aria-hidden="true" />
+        </summary>
+        <div className="wt-history-content">
+          {loadError && <p className="msg-error">{loadError}</p>}
+          {loading ? (
+            <LoadingState label="بنحمّل طلبات الشحن" detail="ثواني ونجيب آخر تحديثات محفظتك" compact />
+          ) : topups.length === 0 ? (
+            <p className="empty" style={{ padding: "20px 0" }}>لسه ما بعتّش أي طلب شحن.</p>
+          ) : (
+            topups.map((t) => (
+              <div key={t.id} className="wal-item">
+                <div className="wal-item-main">
+                  <strong>{fmtMoney(t.status === "approved" && t.approved_amount ? t.approved_amount : t.amount)}</strong>
+                  <div className="wal-sub">{fmtDate(t.created_at)}</div>
+                  {t.status === "rejected" && t.admin_note && <div className="wal-sub">السبب: {t.admin_note}</div>}
+                  {t.status === "approved" && t.approved_amount && Number(t.approved_amount) !== Number(t.amount) && (
+                    <div className="wal-sub">اتقبل بمبلغ مختلف عن اللي كتبته ({fmtMoney(t.amount)})</div>
+                  )}
+                </div>
+                <span className={`wal-badge ${t.status}`}>{TOPUP_STATUS[t.status]}</span>
+              </div>
+            ))
+          )}
+        </div>
+      </details>
     </section>
   );
 }

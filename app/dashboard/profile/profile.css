@@ -168,8 +168,8 @@
 .profile-wallet .wt-method,.profile-wallet .wt-form { min-width:0;padding:16px;border:1px solid #edf0f6;border-radius:16px;background:#fbfcfe; }
 .profile-wallet .wt-method h3,.profile-wallet .wt-form h3 { display:flex;align-items:center;gap:8px;margin:0 0 12px;color:#202b48;font-size:.91rem; }
 .profile-wallet .wt-method h3::before,.profile-wallet .wt-form h3::before { width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:#e8f4fc;color:#167ac6;font-size:.76rem; }
-.profile-wallet .wt-method h3::before { content:"١"; }
-.profile-wallet .wt-form h3::before { content:"٢"; }
+.profile-wallet .wt-method h3::before { content:"1"; }
+.profile-wallet .wt-form h3::before { content:"2"; }
 .profile-wallet .wal-pay { gap:9px;padding:11px 12px;margin:0 0 13px;border:1px dashed #8ec5e8;border-radius:13px;background:#f1f9fe; }
 .profile-wallet .wal-num { color:#154c76;font-size:1.2rem;font-weight:900;letter-spacing:.04em; }
 .profile-wallet .wal-pay .btn { border-color:#b8dcef;color:#167ac6;background:#fff; }

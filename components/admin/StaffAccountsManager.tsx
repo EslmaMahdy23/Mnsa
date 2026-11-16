@@ -87,7 +87,7 @@ export default function StaffAccountsManager() {
       <form className="staff-create-form" onSubmit={createStaff}>
         <label>اسم الوكيل<input required minLength={2} maxLength={100} value={name} onChange={(event) => setName(event.target.value)} /></label>
         <label>البريد الإلكتروني<input required type="email" dir="ltr" autoComplete="off" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-        <label>كلمة السر (١٢ حرفًا على الأقل)<input required type="password" minLength={12} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+        <label>كلمة السر (12 حرفًا على الأقل)<input required type="password" minLength={12} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
         <label className="staff-role-field">الدور<select value={role} onChange={(event) => setRole(event.target.value as StaffRole)}>{Object.entries(ROLE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><small className="staff-role-hint">{ROLE_DESCRIPTIONS[role]}</small></label>
         <button className="btn" disabled={busy}>{busy ? "جاري إنشاء الحساب..." : "إنشاء حساب الوكيل"}</button>
       </form>
@@ -100,11 +100,11 @@ export default function StaffAccountsManager() {
       {!loading && staff.length > 0 && <div className="staff-filters">
         <label className="staff-search"><i className="fa-solid fa-magnifying-glass" /><input type="search" value={staffQuery} onChange={(event) => setStaffQuery(event.target.value)} placeholder="ابحث بالاسم أو البريد أو الدور" aria-label="ابحث في حسابات الوكلاء" /></label>
         <label className="staff-role-filter"><span>تصفية بالدور</span><select value={staffRoleFilter} onChange={(event) => setStaffRoleFilter(event.target.value as "all" | StaffRole)}><option value="all">كل الأدوار</option>{Object.entries(ROLE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <small className="staff-results-count">{filteredStaff.length.toLocaleString("ar-EG")} من {staff.length.toLocaleString("ar-EG")} وكيل</small>
+        <small className="staff-results-count">{filteredStaff.length.toLocaleString("ar-EG-u-nu-latn")} من {staff.length.toLocaleString("ar-EG-u-nu-latn")} وكيل</small>
       </div>}
       {loading ? <p>جاري التحميل...</p> : staff.length === 0 ? <p>لا يوجد وكلاء مضافون حتى الآن.</p> : filteredStaff.length === 0 ? <p className="staff-no-results">مفيش وكلاء مطابقين للبحث أو الفلتر.</p> : <div className="staff-list">
         {filteredStaff.map((row) => <article key={row.user_id}>
-          <div><b>{row.full_name || "وكيل"}</b><small>{row.email} · {ROLE_LABELS[row.role]} · {new Date(row.created_at).toLocaleDateString("ar-EG")}</small></div>
+          <div><b>{row.full_name || "وكيل"}</b><small>{row.email} · {ROLE_LABELS[row.role]} · {new Date(row.created_at).toLocaleDateString("ar-EG-u-nu-latn")}</small></div>
           <button type="button" className="btn btn-outline btn-sm" disabled={busy} onClick={() => revoke(row.user_id, row.full_name, row.role)}>إلغاء الصلاحية</button>
         </article>)}
       </div>}

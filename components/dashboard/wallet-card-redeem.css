@@ -9,6 +9,12 @@
 .wallet-code-error,.wallet-code-success { grid-column:1/-1;display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px; }
 .wallet-code-error { background:#fff0f0;color:#b43f43 !important; }
 .wallet-code-success { background:#eff9f2;color:#26814a !important; }
+.dash-shell.dark-mode .wallet-code-redeem { border-color:#2b4053;background:linear-gradient(120deg,#142332,#172a39); }
+.dash-shell.dark-mode .wallet-code-redeem h3 { color:#e7eef5; }
+.dash-shell.dark-mode .wallet-code-redeem p { color:#a6b6c6; }
+.dash-shell.dark-mode .wallet-code-redeem-row input { border-color:#344b60;background:#0e1823;color:#e7eef5; }
+.dash-shell.dark-mode .wallet-code-redeem-row input::placeholder { color:#91a4b7; }
+.dash-shell.dark-mode .wallet-code-redeem-row input:focus { outline-color:#1b4b63;border-color:#49b9dc; }
 @media(max-width:650px) {
   .wallet-code-redeem { grid-template-columns:1fr;gap:10px;padding:13px; }
   .wallet-code-redeem-row { width:100%; }

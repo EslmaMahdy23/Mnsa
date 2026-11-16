@@ -137,7 +137,7 @@ export default function TeacherApplicationsManager() {
         <div className="ta-tabs" role="tablist">
           {FILTERS.map((x) => (
             <button key={x.value} type="button" role="tab" aria-selected={filter === x.value} className={filter === x.value ? "on" : ""} onClick={() => setFilter(x.value)}>
-              {x.label} <small>{count(x.value).toLocaleString("ar-EG")}</small>
+              {x.label} <small>{count(x.value).toLocaleString("ar-EG-u-nu-latn")}</small>
             </button>
           ))}
         </div>

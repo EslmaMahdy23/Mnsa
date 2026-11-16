@@ -75,7 +75,7 @@ export default function CoursesCatalogPage() {
             {teachers.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
           </select>
         </label>
-        <div className="catalog-count">{filteredCourses.length.toLocaleString("ar-EG")} كورس</div>
+        <div className="catalog-count">{filteredCourses.length.toLocaleString("ar-EG-u-nu-latn")} كورس</div>
       </section>
 
       {loading ? (
@@ -98,7 +98,7 @@ export default function CoursesCatalogPage() {
                     ? <img src={course.cover_url} alt={course.title} loading="lazy" />
                     : <i className="fa-solid fa-book-open-reader" aria-hidden="true" />}
                   <span className={price === 0 ? "catalog-price free" : "catalog-price"}>
-                    {price === 0 ? "مجاني" : `${price.toLocaleString("ar-EG")} جنيه`}
+                    {price === 0 ? "مجاني" : `${price.toLocaleString("ar-EG-u-nu-latn")} جنيه`}
                   </span>
                 </div>
                 <div className="catalog-card-body">
@@ -109,8 +109,8 @@ export default function CoursesCatalogPage() {
                   </div>
                   {course.description && <p>{course.description}</p>}
                   <div className="catalog-card-footer">
-                    <span>{Number(course.sections_count).toLocaleString("ar-EG")} أقسام</span>
-                    <span>{Number(course.lessons_count).toLocaleString("ar-EG")} درس</span>
+                    <span>{Number(course.sections_count).toLocaleString("ar-EG-u-nu-latn")} أقسام</span>
+                    <span>{Number(course.lessons_count).toLocaleString("ar-EG-u-nu-latn")} درس</span>
                     <b>معاينة الكورس <i className="fa-solid fa-arrow-left" /></b>
                   </div>
                 </div>

@@ -1,0 +1,31 @@
+.lecture-admin-course-filter{display:flex;align-items:center;gap:10px;width:min(460px,100%);padding:12px 14px;border:1px solid #e2eaf0;border-radius:13px;background:#fff;color:#4b5d72;font-size:.83rem;font-weight:750}
+.lecture-admin-course-filter select{flex:1;min-width:0;min-height:40px;padding:8px 10px;border:1px solid #dce5ed;border-radius:9px;background:#fff;color:#263951;font:inherit;font-size:.84rem}
+.lecture-admin-course-filter select:focus{outline:2px solid #c8eaff;border-color:#61b6e2}
+.lecture-admin-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lecture-admin-overview>div{display:flex;align-items:center;gap:11px;min-height:70px;padding:12px 15px;border:1px solid #e3edf4;border-radius:14px;background:linear-gradient(135deg,#fff,#f6fbfe)}
+.lecture-admin-overview>div>i{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#e8f6fc;color:#1689b4}
+.lecture-admin-overview span{display:grid;gap:1px}.lecture-admin-overview b{color:#21364d;font-size:1.08rem}.lecture-admin-overview small{color:#7b8b9c;font-size:.72rem}
+.tch-course-manage .tch-manage-hero{align-items:center}
+.tch-shell .lecture-admin-page{max-width:1180px;margin-inline:auto;gap:16px}
+.tch-shell .lecture-admin-intro{position:relative;overflow:hidden;padding:24px;border-color:#e6def2;border-radius:20px;background:radial-gradient(circle at 92% 4%,#eee4ff 0,transparent 31%),linear-gradient(125deg,#fff 0%,#faf7ff 100%);box-shadow:0 10px 28px #50327a0b}
+.tch-shell .lecture-admin-intro>span{width:52px;height:52px;border-radius:16px;background:#f0e8ff;color:#7040bd}
+.tch-shell .lecture-admin-intro h1{font-size:1.35rem;letter-spacing:-.02em}
+.tch-shell .lecture-admin-intro p{max-width:650px}
+.tch-shell .lecture-admin-intro>.btn{flex:none}
+.tch-shell .lecture-admin-overview>div{border-color:#e9e2f2;background:linear-gradient(135deg,#fff,#fbf9ff)}
+.tch-shell .lecture-admin-overview>div>i{background:#f1eaff;color:#7445bd}
+.tch-shell .lecture-admin-course-filter{width:100%;max-width:none;border-color:#e9e2f2;background:#fff}
+.tch-shell .lecture-admin-course-filter select{max-width:520px;border-color:#e5ddef}
+.tch-shell .lecture-admin-form{border-color:#e6def2;border-radius:18px;box-shadow:0 10px 28px #50327a0b}
+.tch-shell .lecture-admin-fields :is(input,select,textarea):focus{outline:2px solid #eee5fb;border-color:#9365cd}
+.tch-shell .lecture-admin-publish input{accent-color:#7544bf}
+.tch-shell .lecture-admin-card{border-color:#e8e1f0;border-radius:18px;box-shadow:0 8px 24px #50327a0a}
+.tch-shell .lecture-admin-subject-icon{background:#f1eaff;color:#7040bd}
+.tch-shell .lecture-admin-items-head{border-color:#eee8f4}
+.tch-shell .lecture-admin-row-no{background:#f2ecfb;color:#7445bd}
+.tch-shell .lecture-admin-lecture-form{border-color:#e7dff1;background:#fcfaff}
+.tch-shell .lecture-admin-empty{border-color:#dcd0ed;background:linear-gradient(135deg,#fff,#fbf9ff)}
+.tch-shell .lecture-admin-empty>i{color:#8a5bc9}
+.tch-shell .lecture-admin-page .adm-badge{font-family:inherit}
+@media(max-width:720px){.tch-shell .lecture-admin-intro>.btn{margin-inline-start:0}}
+@media(max-width:520px){.lecture-admin-course-filter{align-items:stretch;flex-direction:column}.lecture-admin-course-filter select{width:100%}.lecture-admin-overview{gap:7px}.lecture-admin-overview>div{align-items:flex-start;flex-direction:column;gap:6px;padding:9px}.lecture-admin-overview>div>i{width:32px;height:32px;border-radius:9px}.lecture-admin-overview b{font-size:.95rem}}

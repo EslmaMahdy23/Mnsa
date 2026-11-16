@@ -37,7 +37,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
   const me = useProfile();
   const router = useRouter();
   const isTeacher = me.role === "teacher";
-  const approved = course?.approval_status === "approved";
+  const approved = true;
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   // بيانات تسجيل المدرّس: المواد وسنواته اللي سجّل بيها (null = لسه بتتحمّل)
   const [tinfo, setTinfo] = useState<{ subjects: string[]; grades: number[] } | null>(null);
@@ -161,8 +161,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     const teacherPayload = {
       ...basePayload,
       subject: f.subject.trim() || null,
-      // المدرّس بينشر/يخفي بعد الموافقة بس
-      is_published: approved ? f.published : false,
+      is_published: f.published,
     };
     const adminPayload = {
       ...basePayload,
@@ -220,7 +219,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     <form className={`course-form${isTeacher ? " course-form-teacher" : ""}`} onSubmit={onSubmit} noValidate>
       <div className="course-form-intro">
         <span className="course-form-kicker"><i className="fa-solid fa-circle-info" /> {course ? "تحديث بيانات الكورس" : "بيانات أساسية"}</span>
-        <p>{isTeacher ? "البيانات دي هتظهر للأدمن في طلب المراجعة. احفظ الكورس وأرسله للموافقة وقت ما تكون جاهز، وتقدر تضيف المحتوى قبل أو بعد الإرسال." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
+        <p>{isTeacher ? "احفظ بيانات الكورس، وحدد إذا كان ظاهرًا للطلاب، ثم أضف الفيديوهات والملفات والامتحانات داخل الأقسام." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
       </div>
       <div className="course-form-section">
         <div className="course-form-section-head"><span><i className="fa-solid fa-pen-to-square" /></span><div><b>معلومات الكورس</b><small>العنوان والوصف وصورة الغلاف</small></div></div>
@@ -327,7 +326,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
       {isTeacher ? (
         <p className="hint">
           {course && Number(course.price) > 0
-            ? `سعر الكورس: ${Number(course.price).toLocaleString("ar-EG")} جنيه (حدّده الأدمن).`
+            ? `سعر الكورس: ${Number(course.price).toLocaleString("ar-EG-u-nu-latn")} جنيه (حدّده الأدمن).`
             : "السعر بيحدده الأدمن بعد الموافقة على الكورس."}
         </p>
       ) : (
@@ -372,7 +371,6 @@ export default function CourseForm({ course }: { course?: CourseData }) {
       <button className="btn" disabled={loading || uploading}>
         {loading ? "برجاء الانتظار..." : course ? "حفظ التعديلات" : "إضافة الكورس"}
       </button>
-      {isTeacher && !course && <small><i className="fa-solid fa-shield-halved" /> لن يظهر الكورس للطلاب قبل موافقة الأدمن.</small>}
       </div>
     </form>
   );

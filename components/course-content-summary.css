@@ -1,0 +1,14 @@
+.course-content-summary{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px}
+.course-content-stat{display:inline-flex;align-items:center;gap:11px;min-height:46px;padding:6px 8px 6px 16px;border:1px solid transparent;border-radius:999px;background:#fff;color:#123a56;font-size:.8rem;font-weight:850;white-space:nowrap;box-shadow:0 5px 14px rgba(9,67,112,.13)}
+.course-content-stat b{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:42px;min-height:32px;padding:0 12px;border:1px solid rgba(18,75,117,.1);border-radius:999px;background:#fff;color:#123e62;font-size:.84rem;font-weight:900;direction:ltr;font-variant-numeric:tabular-nums;box-shadow:0 2px 6px rgba(10,64,102,.1)}
+.course-content-stat b i{color:#087eae;font-size:.74rem}
+.course-content-stat.files{border-color:#6ee7dc;background:linear-gradient(135deg,#4ad7c7,#26bfae);color:#063f48}
+.course-content-stat.sections{border-color:#93c5fd;background:linear-gradient(135deg,#72b5ff,#4589ed);color:#fff}
+.course-content-stat.exams{border-color:#fca5a5;background:linear-gradient(135deg,#f87171,#dc2626);color:#fff}
+.course-content-stat.videos{border-color:#81dce7;background:linear-gradient(135deg,#67d6e1,#39baca);color:#064451}
+.course-view-page .cv-hero .course-content-summary{width:max-content;max-width:100%;margin-right:auto;margin-left:0;}
+.course-view-page .cv-hero .course-content-stat{box-shadow:0 5px 14px rgba(11,75,127,.18)}
+.course-view-page .cv-hero .course-content-stat b{border-color:rgba(255,255,255,.75);background:#fff;color:#126da7;box-shadow:0 3px 8px rgba(7,69,117,.12)}
+.course-view-page .cv-hero .course-content-stat b i{color:#0b9fc9}
+@media(max-width:680px){.course-content-summary{gap:8px;margin-top:16px}.course-view-page .cv-hero .course-content-summary{margin-right:auto;margin-left:0}.course-content-stat{min-height:40px;gap:8px;padding:5px 6px 5px 12px;font-size:.74rem}.course-content-stat b{min-width:37px;min-height:29px;padding:0 9px;font-size:.78rem}}
+@media(max-width:380px){.course-content-summary{gap:6px}.course-content-stat{gap:6px;padding-inline:8px;font-size:.7rem}.course-content-stat b{min-width:34px;gap:5px;padding:0 7px;font-size:.74rem}}

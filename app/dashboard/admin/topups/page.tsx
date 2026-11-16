@@ -48,9 +48,12 @@ export default function AdminTopupsPage() {
   return (
     <>
       <div className="adm-head">
-        <h1>طلبات شحن الرصيد {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG")})</span>}</h1>
+        <h1>طلبات شحن الرصيد {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
       </div>
 
+      <details className="adm-topups-fold" open>
+        <summary><span><i className="fa-solid fa-money-bill-transfer" /> قائمة طلبات الشحن</span><span className="adm-topups-fold-count">{total.toLocaleString("en-US")}</span><i className="fa-solid fa-chevron-down adm-topups-fold-chevron" aria-hidden="true" /></summary>
+        <div className="adm-topups-fold-body">
       <div className="adm-toolbar">
         <select
           value={status}
@@ -115,6 +118,8 @@ export default function AdminTopupsPage() {
       </div>
 
       <Pagination page={page} pageSize={PAGE_SIZE} total={total} onChange={setPage} />
+        </div>
+      </details>
 
       {reviewing && (
         <TopupReviewModal

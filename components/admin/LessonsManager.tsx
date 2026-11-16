@@ -144,7 +144,7 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
       console.error("section exams load failed:", x.error);
       setError(examErrorMessage(x.error, "مقدرناش نحمّل امتحانات الأقسام"));
     } else {
-      setExams(isTeacher ? [] : ((x.data ?? []) as ExamItem[]));
+      setExams((x.data ?? []) as ExamItem[]);
     }
   }, [courseId, isTeacher]);
 
@@ -208,9 +208,9 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
   async function removeSection(s: Section) {
     const n = itemsOf(s.id).length;
     const ne = exams.filter((x) => x.section_id === s.id).length;
-    const warn = n > 0 ? ` وكل اللي جواه (${n.toLocaleString("ar-EG")} فيديو/ملف)` : "";
+    const warn = n > 0 ? ` وكل اللي جواه (${n.toLocaleString("ar-EG-u-nu-latn")} فيديو/ملف)` : "";
     const examNote =
-      ne > 0 ? `\n\n${ne.toLocaleString("ar-EG")} امتحان جواه مش هيتحذفوا، هيفضلوا في بلوك "امتحانات من غير قسم" (حدّث الصفحة بعد الحذف عشان تشوفهم).` : "";
+      ne > 0 ? `\n\n${ne.toLocaleString("ar-EG-u-nu-latn")} امتحان جواه مش هيتحذفوا، هيفضلوا في بلوك "امتحانات من غير قسم" (حدّث الصفحة بعد الحذف عشان تشوفهم).` : "";
     if (!confirm(`حذف قسم "${s.title}"${warn} نهائياً؟${examNote}`)) return;
     setBusy(s.id);
     setError("");
@@ -376,7 +376,7 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
     setExams((prev) => prev.filter((e) => e.id !== x.id));
   }
 
-  const fmt = (n: number) => n.toLocaleString("ar-EG");
+  const fmt = (n: number) => n.toLocaleString("ar-EG-u-nu-latn");
 
   return (
     <section className="card adm-section">
@@ -537,7 +537,7 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
                           <button className="btn btn-outline btn-sm" disabled={i === items.length - 1 || busy !== null} onClick={() => moveItem(s.id, i, 1)} aria-label="نقل لتحت">
                             <i className="fa-solid fa-arrow-down" />
                           </button>
-                          <Link href={`/dashboard/admin/exams/${x.id}`} className="btn btn-outline btn-sm">{isContentManager ? "تعديل الامتحان" : "تعديل ونتايج"}</Link>
+                          <Link href={isTeacher ? `/teacher/exams/${x.id}` : `/dashboard/admin/exams/${x.id}`} className="btn btn-outline btn-sm">{isTeacher || isContentManager ? "تعديل الامتحان" : "تعديل ونتايج"}</Link>
                           <button className="btn btn-outline btn-sm" disabled={busy !== null} onClick={() => toggleExamPublish(x)}>
                             {x.is_published ? "إخفاء" : "نشر"}
                           </button>
@@ -668,14 +668,9 @@ export default function LessonsManager({ courseId }: { courseId: string }) {
                     >
                       <i className="fa-solid fa-plus" /> فيديو أو ملف جديد
                     </button>
-                    {!isTeacher && (
-                      <Link
-                        href={`/dashboard/admin/exams/new?course=${courseId}&section=${s.id}`}
-                        className="btn btn-outline btn-sm"
-                      >
-                        <i className="fa-solid fa-file-pen" /> امتحان جديد
-                      </Link>
-                    )}
+                    <Link href={`${isTeacher ? "/teacher" : "/dashboard/admin"}/exams/new?course=${courseId}&section=${s.id}`} className="btn btn-outline btn-sm">
+                      <i className="fa-solid fa-file-pen" /> امتحان جديد
+                    </Link>
                   </div>
                 )}
               </div>

@@ -57,3 +57,6 @@
   .exam-question-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
   .exam-question-number { min-height: 32px; font-size: .76rem; }
 }
+.ex-fail-support { display: grid; justify-items: center; gap: 9px; margin: 0 auto 16px; padding: 14px 16px; max-width: 540px; border: 1px solid #f2d6d8; border-radius: 14px; background: #fff9f9; color: #705457; text-align: center; }
+.ex-fail-support p { margin: 0; font-size: .82rem; line-height: 1.7; }
+.ex-fail-support .btn { display: inline-flex; align-items: center; gap: 8px; }

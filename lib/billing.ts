@@ -28,4 +28,4 @@ export const SUB_KIND: Record<string, string> = {
 };
 
 export const fmtDateTime = (iso: string) =>
-  new Date(iso).toLocaleString("ar-EG", { dateStyle: "medium", timeStyle: "short" });
+  new Date(iso).toLocaleString("ar-EG-u-nu-latn", { dateStyle: "medium", timeStyle: "short" });

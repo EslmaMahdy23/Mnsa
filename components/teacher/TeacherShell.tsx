@@ -15,8 +15,19 @@ const NAV: NavItem[] = [
   { href: "/teacher", label: "الرئيسية", icon: "fa-house" },
   { href: "/teacher/profile", label: "حسابي وبياناتي", icon: "fa-id-card" },
   { href: "/teacher/courses", label: "كورساتي", icon: "fa-layer-group" },
-  { href: "/teacher/students", label: "طلابي", icon: "fa-users", soon: true },
+  { href: "/teacher/lecture-schedules", label: "جداول محاضراتي", icon: "fa-calendar-days" },
+  { href: "/teacher/live-sessions", label: "حصصي المباشرة", icon: "fa-video" },
+  { href: "/teacher/students", label: "طلابي", icon: "fa-users" },
+  { href: "/teacher/essay-grading", label: "تصحيح المقالي", icon: "fa-marker" },
+  { href: "/teacher/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
+  { href: "/teacher/graders", label: "المساعدون", icon: "fa-user-check" },
   { href: "/teacher/earnings", label: "الأرباح", icon: "fa-sack-dollar", soon: true },
+];
+
+const ASSISTANT_NAV: NavItem[] = [
+  { href: "/teacher/essay-grading", label: "تصحيح المقالي", icon: "fa-marker" },
+  { href: "/teacher/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
+  { href: "/teacher/students", label: "متابعة أولياء الأمور", icon: "fa-user-group" },
 ];
 
 // هيكل لوحة المدرّس (مستقل عن داشبورد الطالب). الحارس هنا للواجهة بس؛ الحماية الحقيقية في الداتابيز (RLS).
@@ -41,7 +52,17 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
 
     const role = (p?.role as Profile["role"]) ?? "student";
     // مش مدرّس (لسه طلبه تحت المراجعة، أو طالب عادي، أو أدمن): داشبورد الطالب هو اللي بيقرّر يعرض إيه
-    if (role !== "teacher") return router.replace("/dashboard");
+    if (role === "essay_grader") {
+      const { data: assigned } = await supabase.rpc("is_teacher_assistant");
+      if (assigned !== true) return router.replace("/dashboard");
+      if (pathname === "/teacher") return router.replace("/teacher/essay-grading");
+      const assistantPaths = ["/teacher/essay-grading", "/teacher/retries", "/teacher/students"];
+      if (!assistantPaths.some((path) => pathname === path || pathname.startsWith(path + "/"))) {
+        return router.replace("/teacher/essay-grading");
+      }
+    } else if (role !== "teacher") {
+      return router.replace("/dashboard");
+    }
 
     const meta = user.user_metadata ?? {};
     setProfile({
@@ -54,7 +75,7 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
       grade: null,
       joined_at: p?.created_at ?? user.created_at ?? null,
     });
-  }, [router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     load();
@@ -95,6 +116,8 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
   const isActive = (href: string) => (href === "/teacher" ? pathname === href : pathname.startsWith(href));
   const displayName = profile.full_name || profile.email || "مدرّس";
 
+  const visibleNav = profile.role === "essay_grader" ? ASSISTANT_NAV : NAV;
+
   return (
     <ProfileContext.Provider value={{ profile, balance: null, refresh: load }}>
       <div className={`dash-shell tch-shell${collapsed ? " collapsed" : ""}`}>
@@ -103,10 +126,10 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
             <b className="dash-logo-full">Edu<span>Help</span></b>
             <b className="dash-logo-mini">E</b>
           </Link>
-          <p className="tch-side-tag dash-label"><i className="fa-solid fa-chalkboard-user" /> لوحة المدرّس</p>
+          <p className="tch-side-tag dash-label"><i className="fa-solid fa-chalkboard-user" /> {profile.role === "essay_grader" ? "مساحة المساعد" : "لوحة المدرّس"}</p>
 
           <nav className="dash-nav">
-            {NAV.map((n) =>
+            {visibleNav.map((n) =>
               n.soon ? (
                 <span key={n.href} className="dash-link soon" aria-disabled="true" title={n.label}>
                   <i className={`fa-solid ${n.icon}`} />

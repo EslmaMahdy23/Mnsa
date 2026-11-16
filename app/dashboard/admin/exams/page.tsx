@@ -93,7 +93,7 @@ export default function AdminExamsPage() {
   return (
     <>
       <div className="adm-head">
-        <h1>الامتحانات {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG")})</span>}</h1>
+        <h1>الامتحانات {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
         <Link href="/dashboard/admin/exams/new" className="btn">
           <i className="fa-solid fa-plus" /> امتحان جديد
         </Link>
@@ -124,9 +124,9 @@ export default function AdminExamsPage() {
                 </td>
                 <td>{x.course?.title ?? "متاح للكل"}</td>
                 <td>{GRADES.find((g) => g.value === x.grade)?.label ?? "كل السنوات"}</td>
-                <td>{x.question_count.toLocaleString("ar-EG")}</td>
+                <td>{x.question_count.toLocaleString("ar-EG-u-nu-latn")}</td>
                 <td>{fmtDuration(x.duration_minutes)}</td>
-                <td>{(x.exam_attempts[0]?.count ?? 0).toLocaleString("ar-EG")}</td>
+                <td>{(x.exam_attempts[0]?.count ?? 0).toLocaleString("ar-EG-u-nu-latn")}</td>
                 <td>
                   <span className={`adm-badge ${x.is_published ? "ok" : "draft"}`}>{x.is_published ? "منشور" : "مسودة"}</span>
                 </td>

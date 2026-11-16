@@ -94,7 +94,7 @@ export default function AdminCoursePage() {
           <h1>{course.title}</h1>
           <div className="admin-course-meta">
             {course.grade && <span><i className="fa-solid fa-graduation-cap" /> الصف {course.grade}</span>}
-            <span><i className="fa-solid fa-tag" /> {Number(course.price) === 0 ? "مجاني" : `${Number(course.price).toLocaleString("ar-EG")} جنيه`}</span>
+            <span><i className="fa-solid fa-tag" /> {Number(course.price) === 0 ? "مجاني" : `${Number(course.price).toLocaleString("ar-EG-u-nu-latn")} جنيه`}</span>
           </div>
         </div>
         <nav className="admin-course-jump" aria-label="أقسام إدارة الكورس">

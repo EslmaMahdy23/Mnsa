@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -23,11 +23,11 @@ const relativeDate = (value: string) => {
   const elapsed = Math.max(0, Date.now() - new Date(value).getTime());
   const minutes = Math.floor(elapsed / 60_000);
   if (minutes < 1) return "دلوقتي";
-  if (minutes < 60) return `من ${minutes.toLocaleString("ar-EG")} دقيقة`;
+  if (minutes < 60) return `من ${minutes.toLocaleString("ar-EG-u-nu-latn")} دقيقة`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `من ${hours.toLocaleString("ar-EG")} ساعة`;
+  if (hours < 24) return `من ${hours.toLocaleString("ar-EG-u-nu-latn")} ساعة`;
   const days = Math.floor(hours / 24);
-  return days < 7 ? `من ${days.toLocaleString("ar-EG")} يوم` : new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(value));
+  return days < 7 ? `من ${days.toLocaleString("ar-EG-u-nu-latn")} يوم` : new Intl.DateTimeFormat("ar-EG-u-nu-latn", { dateStyle: "medium" }).format(new Date(value));
 };
 
 export default function StudentNotifications() {
@@ -37,28 +37,41 @@ export default function StudentNotifications() {
   const knownIdsRef = useRef(new Set<string>());
   const initializedRef = useRef(false);
   const [rows, setRows] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [floatingRows, setFloatingRows] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const unread = useMemo(() => rows.filter((row) => !row.read_at).length, [rows]);
+  const unread = unreadCount;
 
   const load = useCallback(async (quiet = false) => {
     if (!quiet) setLoading(true);
-    const { data, error: err } = await supabase
-      .from("student_notifications")
-      .select("id, source_type, title, message, href, created_at, read_at")
-      .eq("user_id", profile.id)
-      .order("created_at", { ascending: false })
-      .limit(30);
+    const [notificationsResult, unreadResult] = await Promise.all([
+      supabase
+        .from("student_notifications")
+        .select("id, source_type, title, message, href, created_at, read_at")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false })
+        .limit(30),
+      supabase
+        .from("student_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", profile.id)
+        .is("read_at", null),
+    ]);
+    const { data, error: err } = notificationsResult;
     if (err) {
       console.error("student notifications load failed:", err);
       setError("مقدرناش نحمّل الإشعارات.");
     } else {
       setError("");
       const nextRows = (data ?? []) as Notification[];
+      setUnreadCount(unreadResult.error
+        ? nextRows.filter((row) => !row.read_at).length
+        : unreadResult.count ?? 0);
+      if (unreadResult.error) console.error("student unread notification count failed:", unreadResult.error);
       if (initializedRef.current) {
         const fresh = nextRows.filter((row) => !knownIdsRef.current.has(row.id));
         fresh.forEach((row) => knownIdsRef.current.add(row.id));
@@ -95,6 +108,7 @@ export default function StudentNotifications() {
         if (!row?.id || knownIdsRef.current.has(row.id)) return;
         knownIdsRef.current.add(row.id);
         setRows((current) => [row, ...current.filter((item) => item.id !== row.id)].slice(0, 30));
+        if (!row.read_at) setUnreadCount((count) => count + 1);
         setFloatingRows((current) => [row, ...current].slice(0, 3));
         window.setTimeout(() => {
           setFloatingRows((current) => current.filter((item) => item.id !== row.id));
@@ -126,6 +140,7 @@ export default function StudentNotifications() {
     if (row.read_at) return;
     const readAt = new Date().toISOString();
     setRows((current) => current.map((item) => item.id === row.id ? { ...item, read_at: readAt } : item));
+    setUnreadCount((count) => Math.max(0, count - 1));
     const { error: err } = await supabase.from("student_notifications").update({ read_at: readAt }).eq("id", row.id).eq("user_id", profile.id);
     if (err) {
       console.error("notification mark read failed:", err);
@@ -143,7 +158,10 @@ export default function StudentNotifications() {
     if (err) {
       console.error("mark all notifications read failed:", err);
       setError("مقدرناش نحدّث الإشعارات. جرّب تاني.");
-    } else setRows((current) => current.map((row) => row.read_at ? row : { ...row, read_at: readAt }));
+    } else {
+      setRows((current) => current.map((row) => row.read_at ? row : { ...row, read_at: readAt }));
+      setUnreadCount(0);
+    }
   }
 
   async function deleteNotification(row: Notification) {
@@ -151,6 +169,7 @@ export default function StudentNotifications() {
     setDeletingId(row.id);
     setError("");
     setRows((current) => current.filter((item) => item.id !== row.id));
+    if (!row.read_at) setUnreadCount((count) => Math.max(0, count - 1));
     const { error: err } = await supabase
       .from("student_notifications")
       .delete()
@@ -177,10 +196,10 @@ export default function StudentNotifications() {
       </div>}
       <button type="button" className={`notifications-trigger${open ? " is-open" : ""}`} aria-label={`الإشعارات${unread ? `، ${unread} غير مقروء` : ""}`} aria-expanded={open} onClick={() => { setOpen((value) => !value); if (!open) load(true); }}>
         <i className="fa-regular fa-bell" />
-        {unread > 0 && <span className="notifications-count">{unread > 9 ? "٩+" : unread.toLocaleString("ar-EG")}</span>}
+        {unread > 0 && <span className="notifications-count">{unread.toLocaleString("en-US")}</span>}
       </button>
       {open && <section className="notifications-popover" aria-label="الإشعارات">
-        <header className="notifications-head"><div><b>إشعاراتك</b><span>{unread ? `${unread.toLocaleString("ar-EG")} غير مقروءة` : "كلها مقروءة"}</span></div><button type="button" disabled={!unread || busy} onClick={markAllRead}>{busy ? "جاري التحديث..." : "تحديد الكل كمقروء"}</button></header>
+        <header className="notifications-head"><div><b>إشعاراتك</b><span>{unread ? `${unread.toLocaleString("ar-EG-u-nu-latn")} غير مقروءة` : "كلها مقروءة"}</span></div><button type="button" disabled={!unread || busy} onClick={markAllRead}>{busy ? "جاري التحديث..." : "تحديد الكل كمقروء"}</button></header>
         {error && <p className="notifications-error">{error}</p>}
         <div className="notifications-list">
           {loading && rows.length === 0 ? <p className="notifications-empty">بنحمّل إشعاراتك...</p> : rows.length === 0 ? <div className="notifications-empty"><i className="fa-regular fa-bell-slash" /><b>مفيش إشعارات جديدة</b><span>هنبلغك لما ينزل كورس أو امتحان أو جدول جديد.</span></div> : rows.map((row) => <div key={row.id} className={`notification-item${row.read_at ? " is-read" : " is-unread"}`}>

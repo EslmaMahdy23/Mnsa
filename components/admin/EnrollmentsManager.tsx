@@ -120,7 +120,7 @@ export default function EnrollmentsManager({ courseId, isPaid }: { courseId: str
   return (
     <section className="card adm-section">
       <h2>
-        المسجّلين {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG")})</span>}
+        المسجّلين {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG-u-nu-latn")})</span>}
       </h2>
 
       {isPaid && (

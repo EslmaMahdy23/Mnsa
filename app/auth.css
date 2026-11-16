@@ -176,6 +176,84 @@
 .auth-screen .auth-submit:disabled { opacity: .7; cursor: wait; }
 .auth-screen .auth-foot { margin: 18px 0 0; color: #8994a3; font-size: .82rem; text-align: center; }
 .auth-screen .auth-foot a { color: var(--auth-cyan-dark); font-weight: 800; text-decoration: none; }
+.signup-wizard-card{position:relative;max-width:760px!important;padding:clamp(20px,4vw,38px)!important;border:1px solid #e0e7ee!important;border-radius:24px!important;background:#fff!important;box-shadow:0 18px 50px rgba(21,55,87,.09)!important;cursor:default}
+.auth-screen-signup,.auth-screen-signup *{cursor:default;caret-color:transparent}
+.auth-screen-signup :is(input,textarea,[contenteditable="true"],[contenteditable="plaintext-only"]){cursor:text;caret-color:auto}
+.auth-screen-signup :is(button,a,select,[role="button"]){cursor:pointer}
+.auth-screen-signup :disabled{cursor:not-allowed}
+.signup-wizard-card :is(button,a,select){cursor:pointer}
+.signup-wizard-card input{cursor:text}
+.signup-wizard-home{position:absolute;top:16px;inset-inline-start:16px;display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid #dce7ef;border-radius:10px;background:#f6fbfe;color:#147fa5;font-size:.75rem;font-weight:850;text-decoration:none;transition:background .16s,border-color .16s}
+.signup-wizard-home:hover{border-color:#9bdcf2;background:#eaf8fd}
+.signup-wizard-card .auth-brand{margin-bottom:16px}
+.signup-wizard-card .signup-welcome{margin-bottom:3px!important;color:#24153b!important;font-size:clamp(1.6rem,4vw,2rem)!important;font-weight:950!important}
+.signup-wizard-card>.auth-sub{margin-bottom:17px}
+.signup-wizard-progress{display:flex;align-items:center;justify-content:center;gap:8px;width:min(100%,340px);margin:0 auto 22px;direction:rtl}
+.signup-progress-part{display:contents}
+.signup-progress-step{display:grid;place-items:center;flex:none;width:34px;height:34px;border:1px solid #d8e0e9;border-radius:9px;background:#edf1f6;color:#718199;font-size:.8rem;font-weight:900;transition:background .16s,border-color .16s,color .16s}
+.signup-progress-step.current{border-color:#10a8e8;background:#10a8e8;color:#fff;box-shadow:0 4px 12px #10a8e84a}
+.signup-progress-step.completed{border-color:#16a05a;background:#16a05a;color:#fff}
+.signup-progress-line{flex:1;height:3px;min-width:14px;border-radius:9px;background:#d9e1e9}
+.signup-progress-line.completed{background:#16a05a}
+.signup-wizard-step-head{margin:0 0 16px;text-align:center}
+.signup-wizard-step-head>span{display:inline-block;margin-bottom:6px;color:#128db6;font-size:.68rem;font-weight:850}
+.signup-wizard-step-head h2{margin:0;color:#24153b;font-size:1.12rem;font-weight:900}
+.signup-wizard-step-head p{margin:4px 0 0;color:#8290a1;font-size:.79rem;line-height:1.6}
+.signup-wizard-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}
+.signup-wizard-fields>.auth-field{min-width:0}
+.signup-wizard-fields.step-1>.auth-field:nth-child(1),.signup-wizard-fields.step-1>.auth-field:nth-child(2){grid-column:span 1}
+.signup-wizard-fields.step-1>.auth-field:nth-child(3){grid-column:1}
+.signup-wizard-fields.step-1>.auth-field:nth-child(4){grid-column:2;grid-row:2}
+.signup-wizard-fields.step-1>.auth-field:nth-child(5){grid-column:1;grid-row:3}
+.signup-wizard-fields .auth-control input,.signup-wizard-fields .auth-control select{border-radius:10px;background:#f5f7fa}
+.signup-wizard-fields .pw-wrap input[dir="ltr"]{padding-left:56px!important}
+.signup-password-toggle{left:8px;right:auto;inset-inline-end:auto!important;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#e9f7fc!important;color:#098bb7!important;font-size:.9rem!important}
+.signup-password-toggle:hover{background:#d9f1fa!important}
+.signup-wizard-fields .auth-control input:focus,.signup-wizard-fields .auth-control select:focus{background:#fff}
+.signup-grade-wrap{grid-column:1/-1;width:min(100%,460px);margin:4px auto 10px}
+.signup-grade-wrap>label,.signup-parent-wrap>label{display:block;margin-bottom:7px;color:#66768a;font-size:.78rem;font-weight:800}
+.signup-grade-wrap .auth-control{position:relative}
+.signup-grade-wrap .auth-control::after{position:absolute;top:50%;left:15px;transform:translateY(-50%);content:"\f078";font-family:"Font Awesome 6 Free";font-size:.7rem;font-weight:900;color:#77889a;pointer-events:none}
+.signup-grade-wrap .auth-control select{padding-left:39px}
+.signup-grade-note{display:flex;align-items:center;gap:7px;margin-top:10px;color:#7d8c9d;font-size:.71rem;line-height:1.6}
+.signup-grade-note i{color:#1699c4}
+.signup-parent-wrap{grid-column:1/-1;width:min(100%,460px);margin:0 auto 10px;padding:18px;border:1px solid #e5ebf1;border-radius:14px;background:#f8fafc}
+.signup-parent-icon{display:grid;place-items:center;width:42px;height:42px;margin:0 auto 10px;border-radius:13px;background:#e4f6fc;color:#0d91bd;font-size:1.05rem}
+.signup-parent-wrap>label,.signup-parent-wrap>p{text-align:center}
+.signup-parent-wrap>p{margin:0 0 12px;color:#8693a2;font-size:.74rem;line-height:1.6}
+.signup-wizard-actions{display:flex;grid-column:1/-1;gap:11px;margin-top:9px}
+.signup-wizard-next{display:flex;flex:1;align-items:center;justify-content:center;gap:9px;min-height:49px}
+.signup-wizard-back{display:flex;align-items:center;justify-content:center;gap:8px;min-width:140px;padding:10px 16px;border:1px solid #d8e1e9;border-radius:11px;background:#edf1f6;color:#26344b;font:inherit;font-size:.86rem;font-weight:850;cursor:pointer}
+.signup-wizard-login{margin-top:16px!important}
+.signup-otp-step{margin-top:4px}
+.signup-otp-step form{display:flex;flex-direction:column;gap:8px}
+.signup-otp-step form>h1{margin:0!important;color:#24153b!important;font-size:1.16rem!important}
+.signup-otp-step form .auth-sub{margin-bottom:9px;font-size:.82rem}
+.signup-otp-step form .field{margin:0}
+.eh.dark-mode .signup-wizard-card{border-color:#293b61!important;background:#111936!important;box-shadow:0 18px 50px rgba(0,0,0,.3)!important}
+.eh.dark-mode .signup-wizard-card .signup-welcome,.eh.dark-mode .signup-wizard-step-head h2,.eh.dark-mode .signup-otp-step form>h1{color:#e8ecf8!important}
+.eh.dark-mode .signup-wizard-step-head p,.eh.dark-mode .signup-grade-note,.eh.dark-mode .signup-parent-wrap>p{color:#98a6c8}
+.eh.dark-mode .signup-wizard-fields .auth-control input,.eh.dark-mode .signup-wizard-fields .auth-control select{border-color:#2a3466;background:#131840;color:#e8ecf8;color-scheme:dark}
+.eh.dark-mode .signup-parent-wrap{border-color:#2a365d;background:#171f40}
+.eh.dark-mode .signup-parent-icon{background:#1a3852;color:#4cc3f5}
+.eh.dark-mode .signup-wizard-back{border-color:#2a365d;background:#1a2242;color:#dce4fa}
+.eh.dark-mode .signup-wizard-home{border-color:#2a365d;background:#182443;color:#9be0fb}
+.signup-instructions-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:rgba(8,20,39,.68);backdrop-filter:blur(5px)}
+.signup-instructions-card{width:100%;max-width:690px;max-height:min(92dvh,900px);overflow:auto;padding:clamp(18px,3vw,30px);border:1px solid #dce7f0;border-radius:22px;background:#fff;box-shadow:0 18px 50px rgba(21,55,87,.2)}
+.signup-instructions-kicker{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 7px;color:#078cbd;font-size:.8rem;font-weight:900}
+.signup-instructions-card h1{font-size:clamp(1.25rem,3vw,1.7rem)!important}
+.signup-instructions-card h2{margin:0 0 7px;color:#10233d;font-size:clamp(1.25rem,3vw,1.7rem);font-weight:900;text-align:center}
+.signup-instructions-intro{margin:0 0 17px;color:#8490a0;font-size:.9rem;line-height:1.7;text-align:center}
+.signup-instructions-list{display:grid;gap:9px;margin:18px 0 18px;padding:0;list-style:none}
+.signup-instructions-list li{display:flex;align-items:center;gap:12px;min-width:0;padding:12px 13px;border:1px solid #e1e9f0;border-radius:12px;background:#f6f8fb}
+.signup-instructions-list li>span{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:9px;background:#10a8e8;color:#fff;font-size:.9rem;font-weight:950}
+.signup-instructions-list li p{margin:0;color:#283b54;font-size:.85rem;line-height:1.7}
+.signup-instructions-continue{display:flex;align-items:center;justify-content:center;gap:9px;min-height:52px;border-radius:11px;font-size:.95rem}
+.eh.dark-mode .signup-instructions-card{border-color:#293b61;background:#111936;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+.eh.dark-mode .signup-instructions-card h2{color:#e8ecf8}
+.eh.dark-mode .signup-instructions-list li{border-color:#2a365d;background:#171f40}
+.eh.dark-mode .signup-instructions-list li>span{background:#10a8e8;color:#fff}
+.eh.dark-mode .signup-instructions-list li p{color:#dce4fa}
 .auth-screen .auth-login-form > .field { margin-bottom: 14px; }
 .auth-screen-login .auth-card h1 { margin-bottom: 8px; }
 .auth-screen-login .auth-sub { margin-bottom: 24px; }
@@ -230,4 +308,23 @@
   .auth-signup-form > .msg-error,
   .auth-signup-form > .auth-submit { grid-column: 1; }
   .auth-screen .auth-field-row { grid-template-columns: 1fr; gap: 4px; }
+  .signup-instructions-card{padding:16px!important;border-radius:16px!important}
+  .signup-instructions-list{gap:7px;margin:14px 0}
+  .signup-instructions-list li{align-items:flex-start;gap:9px;padding:10px}
+  .signup-instructions-list li>span{width:29px;height:29px;font-size:.8rem}
+  .signup-instructions-list li p{font-size:.79rem}
+  .signup-instructions-continue{font-size:.86rem}
+  .signup-wizard-card{padding:19px 16px!important;border-radius:18px!important}
+  .signup-wizard-card .auth-brand{margin-bottom:14px}
+  .signup-wizard-progress{width:min(100%,290px);gap:6px;margin-bottom:18px}
+  .signup-progress-step{width:31px;height:31px;border-radius:8px}
+  .signup-wizard-step-head{margin-bottom:12px}
+  .signup-wizard-fields{grid-template-columns:1fr;gap:2px}
+  .signup-wizard-fields.step-1>.auth-field:nth-child(n){grid-column:1;grid-row:auto}
+  .signup-grade-wrap,.signup-parent-wrap{width:100%}
+  .signup-wizard-actions{gap:8px}
+  .signup-wizard-back{min-width:104px;padding:9px 11px;font-size:.8rem}
+  .signup-wizard-next{font-size:.84rem}
+  .signup-wizard-login{margin-top:14px!important}
+  .signup-otp-step form .otp-actions{align-items:flex-start}
 }

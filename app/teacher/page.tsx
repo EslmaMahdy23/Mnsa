@@ -4,6 +4,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { fmtDate } from "@/lib/admin";
 import { useProfile } from "@/components/dashboard/ProfileContext";
+import { TEACHER_BUCKET } from "@/lib/teacher-application";
 
 type TeacherCourse = {
   id: string;
@@ -15,7 +16,7 @@ type TeacherCourse = {
   created_at: string;
 };
 
-const num = (n: number | null) => (n === null ? "—" : n.toLocaleString("ar-EG"));
+const num = (n: number | null) => (n === null ? "—" : n.toLocaleString("ar-EG-u-nu-latn"));
 
 function courseStatus(course: TeacherCourse) {
   if (course.approval_status === "pending") return { label: "قيد المراجعة", className: "pending" };
@@ -31,7 +32,20 @@ export default function TeacherHome() {
   const [courses, setCourses] = useState<number | null>(null);
   const [enrollments, setEnrollments] = useState<number | null>(null);
   const [recentCourses, setRecentCourses] = useState<TeacherCourse[]>([]);
+  const [profilePhoto, setProfilePhoto] = useState("");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.from("teacher_applications").select("photo_path").eq("user_id", p.id).maybeSingle();
+      if (error) { console.error("teacher dashboard photo load failed:", error); return; }
+      if (!data?.photo_path) return;
+      const { data: signed } = await supabase.storage.from(TEACHER_BUCKET).createSignedUrl(data.photo_path, 3600);
+      if (!cancelled && signed?.signedUrl) setProfilePhoto(signed.signedUrl);
+    })();
+    return () => { cancelled = true; };
+  }, [p.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,17 +92,17 @@ export default function TeacherHome() {
       <section className="tch-hero tch-hero-modern">
         <div className="tch-hero-copy">
           <span className="tch-eyebrow"><i className="fa-solid fa-sparkles" /> مساحة عملك التعليمية</span>
-          <h1>أهلاً يا {firstName}</h1>
+          <h1>أهلًا يا مستر {firstName}</h1>
           <p>تابع كورساتك من مكان واحد، وطوّر المحتوى الذي تقدمه لطلابك خطوة بخطوة.</p>
           <div className="tch-hero-actions">
             <Link href="/teacher/courses/new" className="btn"><i className="fa-solid fa-plus" /> إنشاء كورس جديد</Link>
             <Link href="/teacher/courses" className="tch-secondary-action">عرض كل الكورسات <i className="fa-solid fa-arrow-left" /></Link>
           </div>
         </div>
-        <div className="tch-hero-art" aria-hidden="true">
+        <div className="tch-hero-art tch-hero-profile-art" aria-hidden="true">
           <span className="tch-art-ring tch-art-ring-one" />
           <span className="tch-art-ring tch-art-ring-two" />
-          <i className="fa-solid fa-chalkboard-user" />
+          {profilePhoto ? <img src={profilePhoto} alt="" /> : <i className="fa-solid fa-chalkboard-user" />}
           <small><i className="fa-solid fa-circle-check" /> حسابك مفعّل</small>
         </div>
       </section>
@@ -120,6 +134,7 @@ export default function TeacherHome() {
           <div className="tch-quick-links">
             <Link href="/teacher/courses/new"><span><i className="fa-solid fa-file-circle-plus" /></span><div><b>كورس جديد</b><small>ابدأ محتوى جديدًا</small></div><i className="fa-solid fa-chevron-left" /></Link>
             <Link href="/teacher/courses"><span><i className="fa-solid fa-folder-open" /></span><div><b>إدارة الكورسات</b><small>راجع المحتوى والحالة</small></div><i className="fa-solid fa-chevron-left" /></Link>
+            <Link href="/teacher/lecture-schedules"><span><i className="fa-solid fa-calendar-days" /></span><div><b>جداول المحاضرات</b><small>نظّم مواعيد محاضرات كورساتك</small></div><i className="fa-solid fa-chevron-left" /></Link>
             <Link href="/teacher/profile"><span><i className="fa-solid fa-id-card" /></span><div><b>بيانات الحساب</b><small>حدّث معلوماتك</small></div><i className="fa-solid fa-chevron-left" /></Link>
           </div>
         </section>

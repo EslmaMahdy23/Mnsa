@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { LessonCompletion } from "@/components/dashboard/useLessonCompletions";
+import type { ExamActivity } from "@/components/dashboard/useExamActivities";
 
 const DAY_LABELS = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -14,22 +15,27 @@ function startOfSaturdayWeek(date: Date) {
   return start;
 }
 
-function chartValues(completions: LessonCompletion[]) {
+function chartValues(completions: LessonCompletion[], examActivities: ExamActivity[]) {
   const currentStart = startOfSaturdayWeek(new Date());
-  const previousStart = new Date(currentStart.getTime() - 7 * DAY_MS);
+  const previousStart = new Date(currentStart);
+  previousStart.setDate(previousStart.getDate() - 7);
+  const dayIndex = (date: Date) => Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY_MS);
+  const currentStartDay = dayIndex(currentStart);
+  const previousStartDay = dayIndex(previousStart);
   const current = Array(7).fill(0) as number[];
   const previous = Array(7).fill(0) as number[];
-  completions.forEach((row) => {
-    const date = new Date(row.completed_at);
-    const offset = Math.floor((new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime() - currentStart.getTime()) / DAY_MS);
+  [...completions.map((row) => row.completed_at), ...examActivities.map((event) => event.activity_at)].forEach((activityAt) => {
+    const date = new Date(activityAt);
+    const activityDay = dayIndex(date);
+    const offset = activityDay - currentStartDay;
     if (offset >= 0 && offset < 7) current[offset] += 1;
-    else if (offset >= -7 && offset < 0) previous[offset + 7] += 1;
+    else if (activityDay >= previousStartDay && activityDay < currentStartDay) previous[activityDay - previousStartDay] += 1;
   });
   return { current, previous };
 }
 
-function ActivityChart({ completions }: { completions: LessonCompletion[] }) {
-  const { current, previous } = chartValues(completions);
+function ActivityChart({ completions, examActivities }: { completions: LessonCompletion[]; examActivities: ExamActivity[] }) {
+  const { current, previous } = chartValues(completions, examActivities);
   const max = Math.max(1, ...current, ...previous);
   const width = 700;
   const height = 200;
@@ -43,7 +49,7 @@ function ActivityChart({ completions }: { completions: LessonCompletion[] }) {
 
   return (
     <section className="card learning-activity" aria-labelledby="learning-activity-title">
-      <div className="learning-panel-title"><span className="learning-panel-icon"><i className="fa-solid fa-chart-line" /></span><div><h2 id="learning-activity-title">نشاطك التعليمي</h2><p>عدد الدروس والملفات اللي أنجزتها كل يوم</p></div></div>
+      <div className="learning-panel-title"><span className="learning-panel-icon"><i className="fa-solid fa-chart-line" /></span><div><h2 id="learning-activity-title">نشاطك التعليمي</h2><p>إنجاز الدروس وبدء الامتحانات وتسليمها يوميًا</p></div></div>
       <div className="learning-chart-legend"><span><i className="previous" /> الأسبوع الماضي</span><span><i className="current" /> الأسبوع الحالي</span></div>
       <svg className="learning-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="مقارنة إنجازات الأسبوع الحالي بالأسبوع الماضي">
         {Array.from({ length: 5 }, (_, index) => {
@@ -57,17 +63,19 @@ function ActivityChart({ completions }: { completions: LessonCompletion[] }) {
         {previous.map((value, index) => <circle key={`p${index}`} cx={x(index)} cy={y(value)} r="3.5" className="learning-point previous" />)}
         {current.map((value, index) => <circle key={`c${index}`} cx={x(index)} cy={y(value)} r="3.5" className="learning-point current" />)}
       </svg>
-      {completions.length === 0 && <p className="learning-chart-empty">ابدأ بإنجاز درس أو فتح مذكرة، وهتظهر هنا متابعتك الأسبوعية.</p>}
+      {completions.length === 0 && examActivities.length === 0 && <p className="learning-chart-empty">إنجاز الدروس أو بدء الامتحانات وتسليمها هيظهر هنا في سجل نشاطك.</p>}
     </section>
   );
 }
 
 export default function StudentLearningOverview({
   completions,
+  examActivities,
   totalLessons,
   activeCourse,
 }: {
   completions: LessonCompletion[];
+  examActivities: ExamActivity[];
   totalLessons: number;
   activeCourse: { id: string; title: string } | null;
 }) {
@@ -79,15 +87,15 @@ export default function StudentLearningOverview({
     <section className="learning-overview" aria-label="ملخص التقدم التعليمي">
       <div className="card learning-progress-card">
         <div className="learning-ring" style={{ "--learning-percent": `${percent}%` } as CSSProperties}>
-          <div><b>{percent.toLocaleString("ar-EG")}%</b><small>إنجاز</small></div>
+          <div><b>{percent.toLocaleString("ar-EG-u-nu-latn")}%</b><small>إنجاز</small></div>
         </div>
         <strong className="learning-progress-label">تقدمك</strong>
-        <p>أنجزت {completed.toLocaleString("ar-EG")} من {totalLessons.toLocaleString("ar-EG")} درسًا في كورساتك الحالية.</p>
-        <span className="learning-remaining">{remaining.toLocaleString("ar-EG")} درس متبقي</span>
+        <p>أنجزت {completed.toLocaleString("ar-EG-u-nu-latn")} من {totalLessons.toLocaleString("ar-EG-u-nu-latn")} درسًا في كورساتك الحالية.</p>
+        <span className="learning-remaining">{remaining.toLocaleString("ar-EG-u-nu-latn")} درس متبقي</span>
         {activeCourse ? <Link href={`/dashboard/courses/${activeCourse.id}`} className="btn learning-continue">كمّل مذاكرة <i className="fa-solid fa-arrow-left" /></Link> : <Link href="/dashboard/courses" className="btn learning-continue">تصفّح الكورسات</Link>}
         {recent && <div className="learning-last"><small>آخر إنجاز</small><Link href={`/dashboard/courses/${recent.course_id}`}>{recent.title} · {recent.course_title}</Link></div>}
       </div>
-      <ActivityChart completions={completions} />
+      <ActivityChart completions={completions} examActivities={examActivities} />
     </section>
   );
 }

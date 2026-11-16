@@ -96,7 +96,7 @@ export default function PublicTeacherPage() {
     return () => { cancelled = true; };
   }, [slug]);
 
-  const number = (value: number) => Number(value ?? 0).toLocaleString("ar-EG");
+  const number = (value: number) => Number(value ?? 0).toLocaleString("ar-EG-u-nu-latn");
   const teacherGrades = Array.from(new Set(courses.map((course) => course.grade).filter((grade): grade is number => grade !== null)))
     .sort((a, b) => a - b);
 

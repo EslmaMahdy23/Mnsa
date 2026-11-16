@@ -85,7 +85,7 @@ export default function CourseRequestsPage() {
   return (
     <>
       <div className="adm-head">
-        <h1>طلبات الكورسات {rows.length > 0 && <span className="adm-sub">({rows.length.toLocaleString("ar-EG")})</span>}</h1>
+        <h1>طلبات الكورسات {rows.length > 0 && <span className="adm-sub">({rows.length.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
       </div>
       <p className="adm-sub" style={{ marginBottom: 14 }}>
         كورسات المدرّسين اللي مستنية موافقتك. الموافقة بتنشر الكورس للطلاب، والرفض بيرجّعه للمدرّس بملاحظتك. السعر بتحدده انت من صفحة الكورس.
@@ -98,7 +98,7 @@ export default function CourseRequestsPage() {
           <h3>{r.title}</h3>
           <p className="adm-sub">
             المدرّس: {teachers[r.teacher_id] ?? "..."} · المادة: {r.subject ?? "—"} ·{" "}
-            {GRADES.find((g) => g.value === r.grade)?.label ?? "كل السنوات"} · {(r.lessons[0]?.count ?? 0).toLocaleString("ar-EG")} درس
+            {GRADES.find((g) => g.value === r.grade)?.label ?? "كل السنوات"} · {(r.lessons[0]?.count ?? 0).toLocaleString("ar-EG-u-nu-latn")} درس
             {r.submitted_at && <> · اتبعت {fmtDate(r.submitted_at)}</>}
           </p>
           {r.description && <p style={{ marginTop: 8 }}>{r.description}</p>}

@@ -97,7 +97,7 @@ export default function WalletCardsManager() {
         <div className="wallet-cards-results-head"><h2>الأكواد الجديدة</h2><button className="btn btn-outline btn-sm" onClick={() => void copyAll()}><i className="fa-regular fa-copy" /> نسخ كل الأكواد</button></div>
         <div className="wallet-cards-grid">
           {cards.map((card) => <article className="card wallet-card-code" key={card.generated_code}>
-            <code dir="ltr">{card.generated_code}</code><span>{fmtMoney(Number(card.card_amount))} · ٠/{card.max_uses.toLocaleString("ar-EG")}</span>
+            <code dir="ltr">{card.generated_code}</code><span>{fmtMoney(Number(card.card_amount))} · 0/{card.max_uses.toLocaleString("ar-EG-u-nu-latn")}</span>
           </article>)}
         </div>
         <p className="wallet-cards-warning"><i className="fa-solid fa-triangle-exclamation" /> الأكواد تظهر هنا مرة واحدة فقط. كل كود صالح لعدد الاستخدامات المحدد، وكل طالب يقدر يشحنه مرة واحدة.</p>

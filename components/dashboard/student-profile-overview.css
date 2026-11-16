@@ -1,0 +1,38 @@
+.is-student-profile>.profile-intro,.is-student-profile>.profile-hero,.is-student-profile>.profile-details{display:none}
+.student-profile-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:16px;margin:0 0 20px;align-items:stretch}
+.student-profile-hero{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:310px;overflow:hidden;padding:16px;border:1px solid #0784f8;border-radius:17px;background:#0784f8;color:#fff;box-shadow:0 8px 20px rgba(0,112,235,.14)}
+.student-profile-glow{position:absolute;z-index:-1;inset:15px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));pointer-events:none}
+.student-profile-identity{display:flex;align-items:flex-start;gap:12px;padding:17px 15px}
+.student-profile-avatar{display:grid;place-items:center;width:58px;height:58px;flex:none;border-radius:13px;background:rgba(255,255,255,.25);color:#fff;font-size:1.55rem;font-weight:900}
+.student-profile-identity>div{min-width:0}
+.student-profile-identity small{color:#d8edff;font-size:.72rem;font-weight:800}
+.student-profile-identity h1{margin:4px 0;color:#fff;font-size:1.16rem;font-weight:900;overflow-wrap:anywhere}
+.student-profile-identity p{margin:0;color:#d8edff;font-size:.75rem}
+.student-profile-phone{display:inline-flex;align-items:center;gap:7px;margin-top:10px;color:#e7f4ff;font-size:.72rem}
+.student-profile-phone b{font-weight:850}
+.student-profile-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 10px 12px}
+.student-profile-metrics>div{display:grid;gap:5px;align-content:end;min-width:0;padding:12px 13px;border:1px solid rgba(255,255,255,.17);border-radius:11px;background:rgba(0,55,150,.12)}
+.student-profile-metrics span{color:#d6ecff;font-size:.71rem;font-weight:700}
+.student-profile-metrics strong{color:#fff;font-size:1.4rem;font-weight:950;line-height:1.2;overflow-wrap:anywhere}
+.student-profile-details{min-width:0;padding:19px;border:1px solid #e8edf4;border-radius:17px;background:#fff;box-shadow:0 7px 22px rgba(29,48,83,.045)}
+.student-profile-details>header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.student-profile-details>header>span{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:11px;background:#eaf5ff;color:#0787ed}
+.student-profile-details h2{margin:0;color:#172b49;font-size:.93rem;font-weight:900}
+.student-profile-details>header p{margin:3px 0 0;color:#8a96a6;font-size:.67rem}
+.student-profile-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.student-profile-field{display:flex;align-items:center;gap:8px;min-width:0;min-height:53px;padding:8px 9px;border-radius:9px;background:#f3f4f6}
+.student-profile-field-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:8px;background:#fff;color:#348bd9;font-size:.73rem}
+.student-profile-field>div{display:grid;gap:3px;min-width:0}
+.student-profile-field small{color:#8b95a3;font-size:.63rem}
+.student-profile-field strong{color:#1b2b42;font-size:.73rem;font-weight:850;overflow-wrap:anywhere}
+.student-profile-edit{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:39px;margin-top:12px;border:0;border-radius:8px;background:#078bf3;color:#fff;font:inherit;font-size:.75rem;font-weight:850;cursor:pointer;transition:background .18s ease}
+.student-profile-edit:hover{background:#0079df}
+@media(max-width:760px){.student-profile-overview{grid-template-columns:1fr}.student-profile-hero{min-height:260px}}
+@media(max-width:420px){.student-profile-details{padding:15px}.student-profile-fields{grid-template-columns:1fr}.student-profile-identity{padding:13px 9px}.student-profile-metrics strong{font-size:1.2rem}}
+.dash-shell.dark-mode .student-profile-details { border-color:#2b4053;background:#111b27;box-shadow:0 8px 24px rgba(0,0,0,.18); }
+.dash-shell.dark-mode .student-profile-details h2 { color:#e7eef5; }
+.dash-shell.dark-mode .student-profile-details>header p { color:#a6b6c6; }
+.dash-shell.dark-mode .student-profile-field { background:#1a2a39; }
+.dash-shell.dark-mode .student-profile-field-icon { background:#24394c;color:#76cfff; }
+.dash-shell.dark-mode .student-profile-field small { color:#9fb0c0; }
+.dash-shell.dark-mode .student-profile-field strong { color:#e7eef5; }

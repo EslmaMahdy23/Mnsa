@@ -44,7 +44,7 @@ export default function MyCoursesTab() {
               <h3>{c.title}</h3>
               <p className="course-meta"><i className="fa-solid fa-chalkboard-user" /> {teachers[c.teacher_id] ?? "—"}</p>
               <p className="course-meta"><i className="fa-solid fa-graduation-cap" /> {gradeLabel ?? "كل السنوات"}</p>
-              <p className="course-meta"><i className="fa-solid fa-circle-play" /> {lessons.toLocaleString("ar-EG")} درس</p>
+              <p className="course-meta"><i className="fa-solid fa-circle-play" /> {lessons.toLocaleString("ar-EG-u-nu-latn")} درس</p>
             </div>
             <div className="course-foot">
               <span className="course-enrolled"><i className="fa-solid fa-circle-check" /> اشتركت في {fmtDateTime(r.enrolled_at)}</span>

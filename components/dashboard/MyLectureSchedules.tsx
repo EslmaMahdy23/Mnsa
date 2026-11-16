@@ -8,10 +8,10 @@ import { GRADES } from "@/lib/validation";
 import LoadingState from "@/components/dashboard/LoadingState";
 import "./lecture-schedules.css";
 
-type Schedule = { id: string; subject: string; grade: number; teacher_id: string; term_title: string; description: string | null };
+type Schedule = { id: string; course_id: string | null; subject: string; grade: number; teacher_id: string; term_title: string; description: string | null };
 type Lecture = { id: string; schedule_id: string; title: string; scheduled_at: string | null; topic: string | null; position: number };
 
-export default function MyLectureSchedules({ compact = false }: { compact?: boolean }) {
+export default function MyLectureSchedules({ compact = false, initialCourseId = "" }: { compact?: boolean; initialCourseId?: string }) {
   const profile = useProfile();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [lectures, setLectures] = useState<Lecture[]>([]);
@@ -24,11 +24,10 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      if (profile.role !== "student" || !profile.grade) { setLoading(false); return; }
+      if (profile.role !== "student") { setLoading(false); return; }
       const { data, error: scheduleError } = await supabase
         .from("lecture_schedules")
-        .select("id, subject, grade, teacher_id, term_title, description")
-        .eq("grade", profile.grade)
+        .select("id, course_id, subject, grade, teacher_id, term_title, description")
         .eq("is_published", true)
         .order("subject")
         .order("teacher_id");
@@ -39,7 +38,7 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
         setLoading(false);
         return;
       }
-      const rows = (data ?? []) as Schedule[];
+      const rows = ((data ?? []) as Schedule[]).filter((schedule) => !initialCourseId || schedule.course_id === initialCourseId);
       setSchedules(rows);
       if (!rows.length) { setLoading(false); return; }
       if (compact) { setLoading(false); return; }
@@ -61,7 +60,7 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
     }
     load();
     return () => { cancelled = true; };
-  }, [compact, profile.grade, profile.role]);
+  }, [compact, initialCourseId, profile.role]);
 
   const subjects = useMemo(() => [...new Set(schedules.map((schedule) => schedule.subject))], [schedules]);
   const teachersForSubject = useMemo(() => {
@@ -71,6 +70,10 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
   const visibleSchedules = schedules.filter((schedule) =>
     (!subject || schedule.subject === subject) && (!teacherId || schedule.teacher_id === teacherId)
   );
+  const upcomingLectures = lectures.filter((lecture) => lecture.scheduled_at && new Date(lecture.scheduled_at).getTime() >= Date.now())
+    .sort((a, b) => new Date(a.scheduled_at!).getTime() - new Date(b.scheduled_at!).getTime());
+  const nextLecture = upcomingLectures[0];
+  const formatLectureDate = (date: string) => new Intl.DateTimeFormat("ar-EG-u-nu-latn", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(new Date(date));
 
   useEffect(() => {
     if (teacherId && !teachersForSubject.includes(teacherId)) setTeacherId("");
@@ -82,21 +85,28 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
     return (
       <section className="card lecture-profile-section lecture-profile-compact" aria-labelledby="my-lectures-title">
         <div className="profile-section-heading"><span className="profile-heading-icon"><i className="fa-solid fa-calendar-days" /></span><div><h2 id="my-lectures-title">تفاصيل محاضراتي</h2><p>مواعيد محاضراتك وموضوعاتها في صفحة مستقلة.</p></div></div>
-        {loading ? <LoadingState label="بنحمّل جداول محاضراتك" detail="لحظة ونجهّز المواعيد" compact /> : error ? <p className="msg-error">{error}</p> : !profile.grade ? <p className="lecture-empty">حدّث السنة الدراسية في بيانات حسابك عشان نعرض الجداول المناسبة ليك.</p> : schedules.length === 0 ? <p className="lecture-empty lecture-compact-empty">مفيش جداول منشورة لصفك حاليًا.</p> : <div className="lecture-compact-summary"><span><i className="fa-solid fa-book-open" /> عندك {schedules.length.toLocaleString("ar-EG")} {schedules.length === 1 ? "جدول محاضرات" : "جداول محاضرات"}</span><Link className="lecture-open-page" href="/dashboard/lecture-schedules">عرض جداول محاضراتي <i className="fa-solid fa-arrow-left" /></Link></div>}
-        {!loading && !error && profile.grade && schedules.length === 0 && <Link className="lecture-open-page lecture-empty-link" href="/dashboard/lecture-schedules">فتح صفحة المحاضرات <i className="fa-solid fa-arrow-left" /></Link>}
+        {loading ? <LoadingState label="بنحمّل جداول محاضراتك" detail="لحظة ونجهّز المواعيد" compact /> : error ? <p className="msg-error">{error}</p> : schedules.length === 0 ? <p className="lecture-empty lecture-compact-empty">مفيش جداول منشورة لكورساتك حاليًا.</p> : <div className="lecture-compact-summary"><span><i className="fa-solid fa-book-open" /> عندك {schedules.length.toLocaleString("ar-EG-u-nu-latn")} {schedules.length === 1 ? "جدول محاضرات" : "جداول محاضرات"}</span><Link className="lecture-open-page" href="/dashboard/lecture-schedules">عرض جداول محاضراتي <i className="fa-solid fa-arrow-left" /></Link></div>}
+        {!loading && !error && schedules.length === 0 && <Link className="lecture-open-page lecture-empty-link" href="/dashboard/lecture-schedules">فتح صفحة المحاضرات <i className="fa-solid fa-arrow-left" /></Link>}
       </section>
     );
   }
 
   return (
-    <section className="card lecture-profile-section" aria-labelledby="my-lectures-title">
+    <section className="card lecture-profile-section lecture-full-schedules" aria-labelledby="my-lectures-title">
+      <header className="lecture-student-hero">
+        <div className="lecture-student-hero-copy"><span>خطتك الدراسية في مكان واحد</span><h1>تفاصيل جداول محاضراتك</h1><p>رتّب مواعيدك، راجع موضوع كل محاضرة، وخليك مستعد قبل موعدها.</p>
+          <div className="lecture-student-stats"><span><b>{schedules.length.toLocaleString("en-US")}</b> جدول متاح</span><span><b>{lectures.length.toLocaleString("en-US")}</b> محاضرة مسجلة</span></div>
+        </div>
+        <div className="lecture-student-hero-art" aria-hidden="true"><span><i className="fa-solid fa-calendar-check" /></span><small>نظّم مذاكرتك<br />محاضرة بخطوة</small></div>
+        <div className="lecture-student-next">{nextLecture ? <><small>أقرب محاضرة قادمة</small><strong>{nextLecture.title}</strong><span><i className="fa-regular fa-clock" /> {formatLectureDate(nextLecture.scheduled_at!)}</span></> : <><small>الموعد القادم</small><strong>{loading ? "بنحمّل مواعيدك" : "مفيش موعد محدد حاليًا"}</strong><span>المواعيد الجديدة هتظهر هنا</span></>}</div>
+      </header>
       <div className="profile-section-heading"><span className="profile-heading-icon"><i className="fa-solid fa-calendar-days" /></span><div><h2 id="my-lectures-title">تفاصيل محاضراتي</h2><p>جدول المحاضرات والموضوعات الخاصة بصفك الدراسي.</p></div></div>
-      {loading ? <LoadingState label="بنحمّل جداول محاضراتك" detail="لحظة ونجهّز المواعيد والتفاصيل" compact /> : error ? <p className="msg-error">{error}</p> : !profile.grade ? <p className="lecture-empty">حدّث السنة الدراسية في بيانات حسابك عشان نعرض الجداول المناسبة ليك.</p> : schedules.length === 0 ? <div className="lecture-empty"><i className="fa-regular fa-calendar-xmark" /><b>مفيش جدول محاضرات متاح لصفك حاليًا</b><span>لما الأدمن ينشر جدول جديد هتلاقيه هنا.</span></div> : (
+      {loading ? <LoadingState label="بنحمّل جداول محاضراتك" detail="لحظة ونجهّز المواعيد والتفاصيل" compact /> : error ? <p className="msg-error">{error}</p> : schedules.length === 0 ? <div className="lecture-empty"><i className="fa-regular fa-calendar-xmark" /><b>مفيش جدول محاضرات متاح لكورساتك حاليًا</b><span>لما المدرّس ينشر جدولًا لكورس أنت مشترك فيه هتلاقيه هنا.</span></div> : (
         <>
           <div className="lecture-filters">
             <label><span>المادة العلمية</span><select value={subject} onChange={(e) => { setSubject(e.target.value); setTeacherId(""); }}><option value="">كل المواد</option>{subjects.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
             <label><span>المدرس</span><select value={teacherId} onChange={(e) => setTeacherId(e.target.value)}><option value="">كل المدرسين</option>{teachersForSubject.map((id) => <option key={id} value={id}>{teachers[id] || "مدرس"}</option>)}</select></label>
-            <span className="lecture-grade"><i className="fa-solid fa-graduation-cap" /> {GRADES.find((g) => g.value === profile.grade)?.label ?? `الصف ${profile.grade}`}</span>
+            <span className="lecture-grade"><i className="fa-solid fa-graduation-cap" /> {profile.grade ? GRADES.find((g) => g.value === profile.grade)?.label ?? `الصف ${profile.grade}` : "جداول كورساتك"}</span>
           </div>
           <div className="lecture-schedule-list">
             {visibleSchedules.map((schedule) => {
@@ -104,7 +114,7 @@ export default function MyLectureSchedules({ compact = false }: { compact?: bool
               return <article className="lecture-schedule-card" key={schedule.id}>
                 <header className="lecture-schedule-head"><span className="lecture-teacher-avatar"><i className="fa-solid fa-user-tie" /></span><div><h3>{teachers[schedule.teacher_id] || "مدرس"}</h3><p>{schedule.subject} · {GRADES.find((g) => g.value === schedule.grade)?.label ?? `الصف ${schedule.grade}`}</p></div><span className="lecture-term">{schedule.term_title}</span></header>
                 {schedule.description && <p className="lecture-description">{schedule.description}</p>}
-                {rows.length === 0 ? <p className="lecture-no-items">تفاصيل المحاضرات هتظهر هنا قريبًا.</p> : <div className="lecture-table-wrap"><table className="lecture-table"><thead><tr><th>المحاضرة</th><th>الموعد</th><th>تفاصيل المحاضرة</th></tr></thead><tbody>{rows.map((lecture, index) => <tr key={lecture.id}><td><span className="lecture-number">{(index + 1).toLocaleString("ar-EG")}</span>{lecture.title}</td><td>{lecture.scheduled_at ? new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lecture.scheduled_at)) : "لم يحدد الموعد"}</td><td>{lecture.topic || "—"}</td></tr>)}</tbody></table></div>}
+                {rows.length === 0 ? <p className="lecture-no-items">تفاصيل المحاضرات هتظهر هنا قريبًا.</p> : <div className="lecture-table-wrap"><table className="lecture-table"><thead><tr><th>المحاضرة</th><th>الموعد</th><th>تفاصيل المحاضرة</th></tr></thead><tbody>{rows.map((lecture, index) => <tr key={lecture.id}><td><span className="lecture-number">{(index + 1).toLocaleString("ar-EG-u-nu-latn")}</span>{lecture.title}</td><td>{lecture.scheduled_at ? new Intl.DateTimeFormat("ar-EG-u-nu-latn", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lecture.scheduled_at)) : "لم يحدد الموعد"}</td><td>{lecture.topic || "—"}</td></tr>)}</tbody></table></div>}
               </article>;
             })}
           </div>

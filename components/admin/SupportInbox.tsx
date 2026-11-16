@@ -9,7 +9,7 @@ import "@/components/dashboard/support-attachments.css";
 type Ticket = { id: string; user_id: string; subject: string; status: string; created_at: string; updated_at: string; student_name: string; student_email: string; last_message: string | null };
 type Message = { id: string; sender_id: string; sender_role: "student" | "admin"; body: string; created_at: string; sender_name: string; attachment_path?: string | null; attachment_url?: string };
 const statusLabel: Record<string, string> = { waiting_admin: "بانتظار ردك", waiting_student: "بانتظار الطالب", closed: "مغلقة" };
-const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" });
+const dateLabel = (value: string) => new Date(value).toLocaleString("ar-EG-u-nu-latn", { dateStyle: "short", timeStyle: "short" });
 
 export default function SupportInbox() {
   const [tickets, setTickets] = useState<Ticket[]>([]);

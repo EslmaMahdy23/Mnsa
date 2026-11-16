@@ -19,30 +19,44 @@ export default function OtpStep({ email, onBack, redirectTo = "/dashboard", onVe
     const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [cooldown]);
+  useEffect(() => {
+    if (!error) return;
+    const t = window.setTimeout(() => setError(""), 5200);
+    return () => window.clearTimeout(t);
+  }, [error]);
 
   async function verify(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setInfo("");
     setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: toEnDigits(code).replace(/\s/g, ""),
-      type: "signup",
-    });
-    setLoading(false);
-    if (error) return setError("الكود غير صحيح أو انتهت صلاحيته");
-    if (onVerified) return onVerified();
-    router.push(redirectTo);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: toEnDigits(code).replace(/\s/g, ""),
+        type: "signup",
+      });
+      if (error) return setError(`تعذر تأكيد البريد: ${error.message}`);
+      if (onVerified) return onVerified();
+      router.push(redirectTo);
+    } catch {
+      setError("تعذر تأكيد البريد بسبب مشكلة في الاتصال. حاول مرة تانية.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function resend() {
     setError("");
     setInfo("");
-    const { error } = await supabase.auth.resend({ type: "signup", email });
-    if (error) return setError("مقدرناش نبعت الكود دلوقتي، استنى شوية وجرّب تاني");
-    setCooldown(60);
-    setInfo("اتبعت كود جديد على بريدك");
+    try {
+      const { error } = await supabase.auth.resend({ type: "signup", email });
+      if (error) return setError(`تعذر إرسال الكود: ${error.message}`);
+      setCooldown(60);
+      setInfo("اتبعت كود جديد على بريدك");
+    } catch {
+      setError("تعذر إرسال الكود بسبب مشكلة في الاتصال. حاول مرة تانية.");
+    }
   }
 
   return (

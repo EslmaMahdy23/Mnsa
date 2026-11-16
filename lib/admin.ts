@@ -18,4 +18,4 @@ export const escapeLike = (s: string) => s.replace(/[\\%_]/g, "\\$&");
 export const isHttpUrl = (s: string) => /^https?:\/\/\S+$/i.test(s);
 
 export const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" });
+  new Date(iso).toLocaleDateString("ar-EG-u-nu-latn", { year: "numeric", month: "short", day: "numeric" });

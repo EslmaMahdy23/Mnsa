@@ -1,0 +1,22 @@
+.actions{display:grid;gap:6px;min-width:220px;max-width:370px}
+.phone{display:flex;align-items:center;gap:6px;min-height:20px;color:#62748a;font-size:.72rem;direction:rtl}
+.phone i{color:#078fc1}
+.link{overflow:hidden;color:#64748b;font-size:.68rem;text-overflow:ellipsis;white-space:nowrap}
+.buttons{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.buttons button,.buttons a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:31px;padding:6px 9px;border:1px solid transparent;border-radius:9px;font:inherit;font-size:.69rem;font-weight:800;line-height:1.25;text-decoration:none;white-space:nowrap;cursor:pointer;transition:filter .15s,background .15s}
+.buttons button:disabled{opacity:.6;cursor:wait}
+.primary{background:#e9f7fd;color:#067eac;border-color:#bde9f8!important}
+.primary:hover:not(:disabled){background:#d7f1fb}
+.secondary{background:#f2f5f8;color:#40516a;border-color:#dfe6ee!important}
+.secondary:hover:not(:disabled){background:#e8eef4}
+.whatsapp{background:#eaf8ef;color:#13884c;border-color:#c7ebd4!important}
+.whatsapp:hover{filter:brightness(.97)}
+.notice{color:#168456;font-size:.68rem;line-height:1.4}
+.period,.periodWarning{display:flex;align-items:center;gap:5px;font-size:.67rem;line-height:1.45}.period{color:#18865b}.periodWarning{color:#bd7414}.disabled{opacity:.48;pointer-events:none;filter:grayscale(.3)}
+:global(.dash-shell.dark-mode) .phone,:global(.tch-shell) .phone{color:#aebdd0}
+:global(.dash-shell.dark-mode) .link,:global(.tch-shell) .link{color:#9badc2}
+:global(.dash-shell.dark-mode) .secondary,:global(.tch-shell) .secondary{background:#19283a;color:#d7e4f2;border-color:#2d4258!important}
+:global(.dash-shell.dark-mode) .primary,:global(.tch-shell) .primary{background:#12354a;color:#8bdcff;border-color:#245c77!important}
+:global(.dash-shell.dark-mode) .whatsapp,:global(.tch-shell) .whatsapp{background:#173629;color:#83d9a9;border-color:#285941!important}
+:global(.dash-shell.dark-mode) .period,:global(.tch-shell) .period{color:#78d7a8}:global(.dash-shell.dark-mode) .periodWarning,:global(.tch-shell) .periodWarning{color:#f1bd69}
+@media(max-width:760px){.actions{min-width:195px}.buttons button,.buttons a{font-size:.66rem;padding:6px 8px}}

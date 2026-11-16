@@ -17,7 +17,7 @@ export default function Pagination({ page, pageSize, total, onChange }: Props) {
         السابق
       </button>
       <span>
-        صفحة {page.toLocaleString("ar-EG")} من {pages.toLocaleString("ar-EG")}
+        صفحة {page.toLocaleString("ar-EG-u-nu-latn")} من {pages.toLocaleString("ar-EG-u-nu-latn")}
       </span>
       <button className="btn btn-outline btn-sm" disabled={page >= pages} onClick={() => onChange(page + 1)}>
         التالي

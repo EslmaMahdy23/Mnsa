@@ -38,6 +38,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin/forum", label: "إدارة المنتدى", icon: "fa-comments" },
   { href: "/dashboard/admin/courses", label: "إدارة الكورسات", icon: "fa-layer-group" },
   { href: "/dashboard/admin/exams", label: "إدارة الامتحانات", icon: "fa-file-circle-question" },
+  { href: "/dashboard/essay-grading/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
   { href: "/dashboard/admin/topups", label: "طلبات الشحن", icon: "fa-money-bill-transfer" },
   { href: "/dashboard/admin/wallet-cards", label: "كروت شحن المحفظة", icon: "fa-ticket-simple" },
   { href: "/dashboard/admin/notifications", label: "إشعارات الطلاب", icon: "fa-bell" },
@@ -45,10 +46,12 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin/staff", label: "حسابات الوكلاء", icon: "fa-user-shield" },
   { href: "/dashboard/admin/teacher-applications", label: "طلبات المدرسين", icon: "fa-chalkboard-user" },
   { href: "/dashboard/admin/course-requests", label: "طلبات الكورسات", icon: "fa-clipboard-check" },
+  { href: "/dashboard/admin/exam-requests", label: "طلبات الامتحانات", icon: "fa-file-circle-check" },
   { href: "/dashboard/admin/cleanup", label: "تنظيف بيانات التجارب", icon: "fa-broom" },
 ];
 const GRADER_NAV: NavItem[] = [
   { href: "/dashboard/essay-grading", label: "تصحيح المقالي", icon: "fa-marker" },
+  { href: "/dashboard/essay-grading/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
 ];
 const COURSE_MANAGER_NAV: NavItem[] = [
   { href: "/dashboard/admin/courses", label: "إدارة الكورسات", icon: "fa-book-open" },
@@ -200,9 +203,19 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   // نقفل السايد بار لما يتنقل لصفحة تانية
   useEffect(() => setOpen(false), [pathname]);
 
+  // مساعد مدرّس (مصحح مقالي مربوط بمدرّس) له مساحته الخاصة في /teacher (فيها متابعة أولياء الأمور)،
+  // والمصحح غير المربوط بمدرّس بيفضل في مساحة فريق التصحيح القديمة في /dashboard
   useEffect(() => {
-    const isEssayGraderPath = pathname === "/dashboard/essay-grading" || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname);
-    if (profile?.role === "essay_grader" && !isEssayGraderPath) router.replace("/dashboard/essay-grading");
+    if (profile?.role !== "essay_grader") return;
+    let cancelled = false;
+    supabase.rpc("is_teacher_assistant").then(({ data, error }) => {
+      if (cancelled) return;
+      if (error) console.error("is_teacher_assistant failed:", error);
+      if (data === true) return router.replace("/teacher/essay-grading");
+      const isEssayGraderPath = pathname === "/dashboard/essay-grading" || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname);
+      if (!isEssayGraderPath) router.replace("/dashboard/essay-grading");
+    });
+    return () => { cancelled = true; };
   }, [profile?.role, pathname, router]);
 
   useEffect(() => {
@@ -321,7 +334,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         return base[item.key];
       });
   const visibleNavItems = profile.role === "student"
-    ? [...navItems, { href: "/dashboard/forum", label: "المنتدى", icon: "fa-comments" }]
+    ? [...navItems, { href: "/dashboard/shared-files", label: "ملفاتي", icon: "fa-folder-open" }, { href: "/dashboard/live-sessions", label: "الحصص المباشرة", icon: "fa-video" }, { href: "/dashboard/forum", label: "المنتدى", icon: "fa-comments" }]
     : navItems;
   // الرئيسية ولوحة الأدمن بيتطابقوا بالظبط، غير كده بنشوف المسار بيبدأ بإيه
   const isActive = (href: string) =>

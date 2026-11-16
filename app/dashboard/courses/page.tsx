@@ -25,6 +25,7 @@ export default function CoursesPage() {
   const [enrolled, setEnrolled] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -108,6 +109,7 @@ export default function CoursesPage() {
   async function enroll(c: Course) {
     setBusyId(c.id);
     setError("");
+    setSuccess("");
     const { error: err } = await supabase.from("enrollments").insert({ user_id: p.id, course_id: c.id });
     setBusyId(null);
     // 23505 = مسجّل قبل كده، يعني التسجيل أصلاً محفوظ فنعتبره نجح
@@ -118,6 +120,7 @@ export default function CoursesPage() {
     setEnrolled((prev) => new Set(prev).add(c.id));
     rememberEnrolled(p.id, c.id);
     removeCache(p.id, "my-enrollments");
+    setSuccess("تم اشتراكك في الكورس وإضافة رصيد 8 محاضرات لك.");
   }
 
   if (loading) return <LoadingState label="بنحمّل الكورسات" detail="ثواني ونجهّز لك كورساتك والكورسات المتاحة" />;
@@ -143,6 +146,7 @@ export default function CoursesPage() {
   return (
     <>
       {error && <p className="msg-error">{error}</p>}
+      {success && <p className="msg-ok" role="status">{success}</p>}
       {searchQuery && <p className="card" style={{ marginBottom: 16 }}>نتائج البحث عن «{searchQuery}»</p>}
 
       <h2 className="section-title">كورساتي</h2>

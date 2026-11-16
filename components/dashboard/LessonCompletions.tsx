@@ -5,7 +5,7 @@ import LoadingState from "@/components/dashboard/LoadingState";
 import type { LessonCompletion } from "@/components/dashboard/useLessonCompletions";
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ar-EG", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("ar-EG-u-nu-latn", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
 }
 
 export default function LessonCompletions({ completions, loading }: { completions: LessonCompletion[]; loading: boolean }) {
@@ -14,7 +14,7 @@ export default function LessonCompletions({ completions, loading }: { completion
       <div className="profile-section-heading">
         <span className="profile-heading-icon profile-completions-icon"><i className="fa-solid fa-circle-check" /></span>
         <div><h2 id="profile-completions-title">إنجازاتي</h2><p>الدروس ومذكرات PDF اللي أنجزتها، محفوظة في حسابك.</p></div>
-        <span className="profile-completions-count">{completions.length.toLocaleString("ar-EG")} إنجاز</span>
+        <span className="profile-completions-count">{completions.length.toLocaleString("ar-EG-u-nu-latn")} إنجاز</span>
       </div>
       {loading ? <LoadingState label="بنحمّل إنجازاتك" detail="لحظة ونجهّز الدروس المكتملة" compact /> : completions.length === 0 ? (
         <div className="profile-completions-empty"><i className="fa-solid fa-book-open-reader" /><b>لسه مفيش إنجازات</b><span>لما تكمّل درس أو تفتح مذكرة، هتلاقيها هنا.</span><Link href="/dashboard/courses" className="btn btn-outline btn-sm">افتح كورساتك</Link></div>

@@ -8,6 +8,7 @@ import { useBalance, useProfile, useRefreshProfile } from "@/components/dashboar
 import { fmtMoney } from "@/lib/wallet";
 import { removeCache } from "@/lib/cache";
 import LoadingState from "@/components/dashboard/LoadingState";
+import ConfirmDialog from "@/components/dashboard/ConfirmDialog";
 import "./checkout.css";
 
 type Quote = { course_id: string; course_title: string; price: number; discount: number; total: number; code: string | null; code_type: "percent" | "fixed" | "activation" | null; code_valid: boolean | null; message: string | null; already_enrolled: boolean };
@@ -25,6 +26,7 @@ export default function CourseCheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [buying, setBuying] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [receipt, setReceipt] = useState<Receipt | null>(null);
@@ -61,11 +63,24 @@ export default function CourseCheckoutPage() {
     } finally { setChecking(false); }
   }
 
+  // الضغط على زر الدفع ما بيخصمش فلوس: بيفتح نافذة تأكيد الأول (المبلغ والرصيد قبل وبعد)
+  function askConfirm() {
+    if (!quote || quote.code_valid === false) return;
+    const activation = quote.code_type === "activation" && Boolean(appliedCode);
+    if (!activation && balance !== null && balance < quote.total) {
+      setError("رصيد محفظتك مش كافي. اشحن رصيدك وبعدها كمّل الدفع.");
+      return;
+    }
+    setError("");
+    setConfirmOpen(true);
+  }
+
   async function purchase() {
     if (!quote || quote.code_valid === false) return;
     setBuying(true); setError("");
     const { data, error: err } = await supabase.rpc("purchase_course_with_code", { p_course: id, p_code: appliedCode || null });
     setBuying(false);
+    setConfirmOpen(false);
     if (err) {
       if (err.code === "EH001") setError("رصيد محفظتك مش كافي. اشحن رصيدك وبعدها كمّل الدفع.");
       else if (err.code === "23505") setError("أنت مشترك في الكورس بالفعل.");
@@ -92,8 +107,36 @@ export default function CourseCheckoutPage() {
         <form className="checkout-promo" onSubmit={applyCode}><label htmlFor="promo-code">كود خصم أو تفعيل</label><div><input id="promo-code" value={code} onChange={(e) => { setCode(e.target.value.toUpperCase()); setAppliedCode(""); setNotice(""); }} placeholder="مثال: EDU20" maxLength={32} autoComplete="off"/><button className="btn btn-outline" disabled={checking}>{checking ? "جارٍ التحقق..." : "تطبيق الكود"}</button></div>{notice && <small className="checkout-notice"><i className="fa-solid fa-circle-check" />{notice}</small>}</form>
         <div className="checkout-summary"><div><span>سعر الكورس</span><b>{fmtMoney(quote.price)}</b></div>{quote.discount > 0 && <div className="checkout-discount"><span>الخصم {appliedCode && <small>({appliedCode})</small>}</span><b>− {fmtMoney(quote.discount)}</b></div>}<div className="checkout-total"><span>الإجمالي</span><b>{quote.code_type === "activation" && appliedCode ? "تفعيل مجاني" : fmtMoney(quote.total)}</b></div></div>
         {error && <p className="checkout-error" role="alert"><i className="fa-solid fa-circle-exclamation" />{error}{error.includes("رصيد") && <> <Link href="/dashboard/wallet">اشحن رصيدك</Link></>}</p>}
-        <button className="btn checkout-pay" onClick={purchase} disabled={buying || checking || quote.code_valid === false}>{buying ? <><i className="fa-solid fa-spinner fa-spin" /> جارٍ تأكيد الاشتراك...</> : quote.code_type === "activation" && appliedCode ? <><i className="fa-solid fa-unlock-keyhole" /> فعّل الكورس الآن</> : <><i className="fa-solid fa-lock" /> أكّد الاشتراك · {fmtMoney(quote.total)}</>}</button>
+        <button className="btn checkout-pay" onClick={askConfirm} disabled={buying || checking || quote.code_valid === false}>{buying ? <><i className="fa-solid fa-spinner fa-spin" /> جارٍ تأكيد الاشتراك...</> : quote.code_type === "activation" && appliedCode ? <><i className="fa-solid fa-unlock-keyhole" /> فعّل الكورس الآن</> : <><i className="fa-solid fa-lock" /> أكّد الاشتراك · {fmtMoney(quote.total)}</>}</button>
         <p className="checkout-secure"><i className="fa-solid fa-shield-halved" /> {quote.code_type === "activation" && appliedCode ? "كود التفعيل هيسجل اشتراكك من غير خصم من المحفظة." : `الدفع من رصيد محفظتك الحالي${balance === null ? "" : ` · رصيدك ${fmtMoney(balance)}`}.`}</p>
+        <ConfirmDialog
+          open={confirmOpen}
+          tone="primary"
+          icon="fa-shield-halved"
+          title={quote.code_type === "activation" && appliedCode ? "تأكيد تفعيل الكورس" : "تأكيد الاشتراك والدفع"}
+          confirmLabel={quote.code_type === "activation" && appliedCode ? "أيوه، فعّل الكورس" : `أيوه، ادفع ${fmtMoney(quote.total)}`}
+          cancelLabel="إلغاء"
+          busy={buying}
+          busyLabel="جارٍ تأكيد الاشتراك"
+          onConfirm={purchase}
+          onCancel={() => setConfirmOpen(false)}
+        >
+          <p>هتشترك في كورس <strong>{quote.course_title}</strong>.</p>
+          <div className="cd-rows">
+            <div><span>سعر الكورس</span><b>{fmtMoney(quote.price)}</b></div>
+            {quote.discount > 0 && <div><span>الخصم</span><b>− {fmtMoney(quote.discount)}</b></div>}
+            {quote.code_type === "activation" && appliedCode ? (
+              <div className="cd-total"><span>المبلغ المخصوم من المحفظة</span><b>{fmtMoney(0)}</b></div>
+            ) : (
+              <>
+                {balance !== null && <div><span>رصيدك دلوقتي</span><b>{fmtMoney(balance)}</b></div>}
+                <div className="cd-total"><span>المبلغ المخصوم من المحفظة</span><b>{fmtMoney(quote.total)}</b></div>
+                {balance !== null && <div><span>رصيدك بعد الدفع</span><b>{fmtMoney(Math.max(0, balance - quote.total))}</b></div>}
+              </>
+            )}
+          </div>
+          <div className="cd-warning"><i className="fa-solid fa-circle-info" /> العملية مش بتتلغى بعد التأكيد، وهتتسجل في فاتورة باسمك.</div>
+        </ConfirmDialog>
       </section>
       <aside className="checkout-trust"><span><i className="fa-solid fa-file-invoice" /></span><h3>اشتراك موثّق</h3><p>بعد التأكيد، هيتسجل الاشتراك في حسابك وتقدر تراجع الفاتورة من صفحة حسابك.</p><div><i className="fa-solid fa-circle-check" /> فاتورة محفوظة في حسابك</div><div><i className="fa-solid fa-circle-check" /> وصول فوري لمحتوى الكورس</div><div><i className="fa-solid fa-circle-check" /> خصم واضح قبل التأكيد</div></aside>
     </div>}

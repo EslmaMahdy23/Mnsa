@@ -1,0 +1,57 @@
+.student-live-page{max-width:1080px;margin:0 auto;padding:4px 0 28px;color:#20304a}
+.student-live-intro{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:19px 21px;border:1px solid #d0eaf3;border-radius:17px;background:linear-gradient(120deg,#effafe,#fff);box-shadow:0 10px 25px rgba(22,126,169,.07)}
+.student-live-intro>span{display:grid;place-items:center;width:49px;height:49px;flex:none;border-radius:15px;background:#def4fb;color:#0883aa;font-size:1.1rem}
+.student-live-intro>div{flex:1;min-width:0}
+.student-live-intro small{color:#087fa8;font-size:.7rem;font-weight:900}
+.student-live-intro h1{margin:3px 0;color:#21324d;font-size:1.2rem;font-weight:900}
+.student-live-intro p{margin:0;color:#718198;font-size:.77rem;line-height:1.7}
+.student-live-intro>b{flex:none;padding:8px 11px;border-radius:10px;background:#e3f6fb;color:#08799f;font-size:.72rem}
+.student-live-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:15px}
+.student-live-tabs{display:flex;gap:8px;margin:0 0 13px;padding:5px;border:1px solid #dcecf0;border-radius:12px;background:#f7fcfd}
+.student-live-tabs button{display:flex;align-items:center;gap:7px;min-height:37px;padding:7px 12px;border:0;border-radius:9px;background:transparent;color:#61768b;font:inherit;font-size:.74rem;font-weight:800;cursor:pointer}
+.student-live-tabs button.active{background:#fff;color:#087f9a;box-shadow:0 2px 8px rgba(28,90,110,.1)}
+.student-live-tabs button span{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#e5f5f8;color:#087f9a;font-size:.65rem}
+.student-live-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dfebf1;border-radius:16px;background:#fff;box-shadow:0 7px 21px rgba(27,55,86,.04)}
+.student-live-date-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;background:#d8f8fb;color:#087c91}
+.student-live-date-banner span{font-size:.7rem;font-weight:800}
+.student-live-date-banner strong{font-size:.76rem;text-align:left}
+.student-live-card>header{display:flex;align-items:center;gap:11px;padding:15px 17px;border-bottom:1px solid #e8f0f4;background:#f8fcfe}
+.student-live-card-icon{display:grid;place-items:center;width:41px;height:41px;flex:none;border-radius:13px;background:#e2f5fb;color:#0984aa}
+.student-live-card>header>div{flex:1;min-width:0}
+.student-live-card>header small{color:#75869a;font-size:.68rem}
+.student-live-card h2{margin:3px 0 0;color:#273953;font-size:.94rem}
+.student-live-status{flex:none;padding:6px 9px;border-radius:999px;background:#e9f8ef;color:#268554;font-size:.65rem;font-weight:850}
+.student-live-status.booked{background:#e6f4ff;color:#0874ad}
+.student-live-status.closed{background:#f2f4f6;color:#788394}
+.student-live-card-topic{margin:13px 17px;color:#5e7087;font-size:.79rem;line-height:1.8;white-space:pre-line}
+.student-live-card-meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 17px 14px;color:#718197;font-size:.71rem}
+.student-live-card-meta span{display:inline-flex;align-items:center;gap:6px}
+.student-live-card-meta i{color:#178bb0}
+.student-live-courses{margin:0 17px 12px}
+.student-live-courses>b{display:block;margin-bottom:7px;color:#556b80;font-size:.7rem}
+.student-live-courses>div{display:flex;flex-wrap:wrap;gap:6px}
+.student-live-courses span{padding:5px 9px;border:1px solid #c9edf1;border-radius:999px;background:#f1fcfd;color:#08798e;font-size:.67rem;font-weight:750}
+.student-live-credit-select{display:grid;gap:6px;margin:0 17px 13px;color:#566c80;font-size:.71rem;font-weight:800}
+.student-live-credit-select select{width:100%;min-height:40px;padding:8px 10px;border:1px solid #d6e6eb;border-radius:9px;background:#fff;color:#29445b;font:inherit}
+.student-live-credit-box{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 17px 10px;padding:11px 14px;border:1px solid #a9e5ed;border-radius:12px;background:linear-gradient(115deg,#e4fbfc,#f4fdfe);color:#087a8d}
+.student-live-credit-box>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px}
+.student-live-credit-box small{grid-column:1/-1;color:#4c7b86;font-size:.69rem;font-weight:800}
+.student-live-credit-box strong{grid-row:2;color:#066b82;font-size:1.65rem;font-weight:950;line-height:1.15}
+.student-live-credit-box span{align-self:center;color:#477480;font-size:.71rem;font-weight:750}
+.student-live-credit-box>i{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#c9f3f6;color:#05849c;font-size:1rem}
+.student-live-confirmed{margin:0 17px 13px;padding:9px 11px;border:1px solid #b7ead6;border-radius:9px;background:#effbf5;color:#158052;font-size:.74rem;font-weight:800}
+.student-live-card>footer{display:flex;align-items:center;gap:9px;margin-top:auto;padding:12px 17px;border-top:1px solid #edf2f5}
+.student-live-book,.student-live-join{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:9px 14px;border:0;border-radius:10px;background:linear-gradient(110deg,#087fa8,#19a6ce);color:#fff;font:inherit;font-size:.76rem;font-weight:850;text-decoration:none;cursor:pointer}
+.student-live-book:disabled{background:#e9edf1;color:#929dad;cursor:not-allowed}
+.student-live-empty{display:grid;justify-items:center;gap:9px;padding:36px 18px;border:1px dashed #d2e4ed;border-radius:16px;background:#fff;color:#7b899c;text-align:center}
+.student-live-empty>i{color:#24a0c4;font-size:1.55rem}
+.student-live-empty>b{color:#354961;font-size:.88rem}
+.student-live-empty>span{font-size:.75rem;line-height:1.65}
+@media(max-width:760px){.student-live-list{grid-template-columns:1fr}}
+@media(max-width:600px){.student-live-intro{align-items:flex-start;flex-wrap:wrap;padding:15px}.student-live-intro>div{flex-basis:calc(100% - 70px)}.student-live-intro>b{margin-inline-start:60px}.student-live-card>header{align-items:flex-start;flex-wrap:wrap;padding:13px}.student-live-status{margin-inline-start:0}.student-live-card>footer{align-items:stretch;flex-direction:column;padding:12px}.student-live-book,.student-live-join{width:100%}}
+.dash-shell.dark-mode .student-live-intro { border-color:#29485d;background:linear-gradient(120deg,#122839,#172f40);box-shadow:0 10px 25px rgba(0,0,0,.16); }
+.dash-shell.dark-mode .student-live-intro>span { background:#1d4357;color:#83dbf5; }
+.dash-shell.dark-mode .student-live-intro small { color:#80d8f2; }
+.dash-shell.dark-mode .student-live-intro h1 { color:#f0f7fc; }
+.dash-shell.dark-mode .student-live-intro p { color:#b5c8d7; }
+.dash-shell.dark-mode .student-live-intro>b { background:#1c3b4d;color:#a5e5f4; }

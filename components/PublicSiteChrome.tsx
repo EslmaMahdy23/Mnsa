@@ -15,8 +15,6 @@ const links = [
 
 // الصفحات اللي الوضع الليلي شغّال فيها (الزرار بيظهر في الناف بار والتصميم الليلي بيتطبّق).
 // بنضيف صفحة واحدة واحدة: ضيف مسارها هنا بعد ما تتأكد إن ستايلها فيه قواعد .eh.dark-mode.
-const DARK_PAGES = ["/", "/courses"];
-
 export default function PublicSiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const maintenanceAdmin = useContext(MaintenanceAdminContext);
@@ -27,7 +25,8 @@ export default function PublicSiteChrome({ children }: { children: React.ReactNo
 
 function PublicSiteFrame({ pathname, children, maintenanceAdmin }: { pathname: string; children: React.ReactNode; maintenanceAdmin: boolean }) {
   const isHome = pathname === "/";
-  const themeEnabled = DARK_PAGES.includes(pathname);
+  // All public routes share the homepage theme and its persistent toggle.
+  const themeEnabled = true;
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -73,6 +72,7 @@ function PublicSiteFrame({ pathname, children, maintenanceAdmin }: { pathname: s
         <ul className="nav-links">
           {links.map(([href, label]) => <li key={href}><a href={hrefFor(href)}>{label}</a></li>)}
         </ul>
+        <div className="nav-controls">
         <div className="nav-btns">
           {themeEnabled && !maintenanceAdmin && (
             <button type="button" className="dm-toggle" onClick={toggleDark} title="الوضع الليلي" aria-label="تبديل الوضع الليلي">
@@ -94,6 +94,7 @@ function PublicSiteFrame({ pathname, children, maintenanceAdmin }: { pathname: s
         <button ref={buttonRef} className={`hamburger-nav${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen((open) => !open)} aria-label="القائمة" aria-expanded={menuOpen}>
           <span /><span /><span />
         </button>
+        </div>
       </nav>
       <div ref={menuRef} className={`nav-mobile-menu${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen(false)}>
         {links.map(([href, label, icon]) => <a href={hrefFor(href)} key={href}><i className={`fa-solid ${icon}`} /> {label}</a>)}

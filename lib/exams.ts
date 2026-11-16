@@ -21,8 +21,26 @@ export function examErrorMessage(err: DbError, fallback: string): string {
   return fallback;
 }
 
+// أخطاء دوال المدرّس (teacher_save_exam / teacher_submit_exam / teacher_delete_exam): الدوال بترمي نصوص ثابتة
+export function teacherExamErrorMessage(err: DbError, fallback: string): string {
+  if (!err) return fallback;
+  if (err.code === "PGRST202" || err.code === "42703") {
+    return "لازم تشغّل ملف supabase/61_teacher_exams.sql في Supabase الأول";
+  }
+  const m = err.message ?? "";
+  if (m.includes("essay_not_allowed")) return "الأسئلة المقالية للأدمن بس دلوقتي، استخدم أسئلة اختيار من متعدد";
+  if (m.includes("locked")) return "الامتحان ده اتبعت للمراجعة أو اتعتمد، فمش هينفع تعدّله أو تمسحه";
+  if (m.includes("bad_question")) return "راجع الأسئلة: كل سؤال له نص ومن 2 لـ 6 اختيارات وإجابة صح";
+  if (m.includes("no_questions")) return "ضيف سؤال واحد على الأقل واحفظ قبل ما تبعت الامتحان";
+  if (m.includes("bad_state")) return "الامتحان ده اتبعت للمراجعة قبل كده";
+  if (m.includes("course_not_found") || m.includes("exam_not_found")) return "مش لاقي الكورس أو الامتحان ده في حسابك";
+  if (err.code === "42501") return "مفيش عندك صلاحية للعملية دي";
+  if (err.code === "22023") return "البيانات مش صحيحة (ممكن القسم مش تابع لنفس الكورس)";
+  return fallback;
+}
+
 export const fmtDuration = (mins: number | null) =>
-  mins ? `${mins.toLocaleString("ar-EG")} دقيقة` : "من غير وقت محدد";
+  mins ? `${mins.toLocaleString("ar-EG-u-nu-latn")} دقيقة` : "من غير وقت محدد";
 
 // 3725 ثانية => 1:02:05
 export function fmtClock(totalSeconds: number): string {
@@ -35,4 +53,4 @@ export function fmtClock(totalSeconds: number): string {
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
-export const fmtPct = (n: number | null) => (n === null ? "—" : `${n.toLocaleString("ar-EG")}٪`);
+export const fmtPct = (n: number | null) => (n === null ? "—" : `${n.toLocaleString("ar-EG-u-nu-latn")}٪`);

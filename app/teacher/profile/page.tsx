@@ -6,14 +6,17 @@ import { fmtDate } from "@/lib/admin";
 import { useProfile } from "@/components/dashboard/ProfileContext";
 import ChangePasswordCard from "@/components/dashboard/ChangePasswordCard";
 import TeacherPublicProfileForm from "@/components/teacher/TeacherPublicProfileForm";
+import TeacherTeachingProfileEditor from "@/components/teacher/TeacherTeachingProfileEditor";
+import "@/components/teacher/teacher-teaching-profile.css";
 import { EXPERIENCE_LABELS, STAGE_LABELS, TEACHER_BUCKET, formatStageGrades } from "@/lib/teacher-application";
 import "@/app/dashboard/profile/profile.css";
 
 type App = {
+  status: string;
   full_name: string; phone: string; alt_phone: string; email: string; governorate: string; city: string;
   qualification: string; graduation_year: number; specialization: string; postgraduate: string | null;
   experience_range: string; previous_workplaces: string | null; subjects: string;
-  stages: string[]; primary_grades: number[]; stage_grades?: Record<string, number[]> | null;
+  stages: string[]; primary_grades: number[] | null; stage_grades?: Record<string, number[]> | null;
   photo_path: string;
 };
 
@@ -21,7 +24,7 @@ type App = {
 function stageGradeRows(a: App): [string, number[]][] {
   const sg: Record<string, number[]> = a.stage_grades && typeof a.stage_grades === "object" ? a.stage_grades : {};
   const rows = a.stages.filter((s) => Array.isArray(sg[s]) && sg[s].length > 0).map((s): [string, number[]] => [s, sg[s]]);
-  if (rows.length === 0 && a.primary_grades.length > 0) rows.push(["primary", a.primary_grades]);
+  if (rows.length === 0 && (a.primary_grades?.length ?? 0) > 0) rows.push(["primary", a.primary_grades ?? []]);
   return rows;
 }
 
@@ -30,6 +33,7 @@ export default function TeacherProfilePage() {
   const [app, setApp] = useState<App | null>(null);
   const [photo, setPhoto] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editingTeachingInfo, setEditingTeachingInfo] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,6 +90,13 @@ export default function TeacherProfilePage() {
           </dl>
         )}
       </section>
+
+      {!loading && app?.status === "approved" && <div className="teacher-profile-edit-area">
+        <button type="button" className="teacher-profile-toggle" aria-expanded={editingTeachingInfo} onClick={() => setEditingTeachingInfo((open) => !open)}>
+          <i className={editingTeachingInfo ? "fa-solid fa-xmark" : "fa-solid fa-pen-to-square"} /> {editingTeachingInfo ? "إغلاق التعديل" : "تعديل بيانات التدريس"}
+        </button>
+        {editingTeachingInfo && <TeacherTeachingProfileEditor app={app} onSaved={(next) => setApp({ ...app, ...next })} />}
+      </div>}
 
       <ChangePasswordCard />
     </>

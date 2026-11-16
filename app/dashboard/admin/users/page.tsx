@@ -8,6 +8,9 @@ import { GRADES } from "@/lib/validation";
 import Pagination from "@/components/admin/Pagination";
 import UserEditModal, { type AdminUser } from "@/components/admin/UserEditModal";
 import { useDebounce } from "@/components/admin/useDebounce";
+import ParentReportActions from "@/components/parent-report/ParentReportActions";
+import ParentReportPeriodPicker from "@/components/parent-report/ParentReportPeriodPicker";
+import { defaultParentReportPeriod, type ParentReportPeriod } from "@/components/parent-report/period";
 
 const PAGE_SIZE = 20;
 
@@ -24,6 +27,8 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [parentLinks, setParentLinks] = useState<Record<string, { token: string; period: ParentReportPeriod | null }>>({});
+  const [reportPeriod, setReportPeriod] = useState<ParentReportPeriod>(defaultParentReportPeriod);
 
   const q = useDebounce(search.trim());
   const reqId = useRef(0); // عشان نتجاهل أي ردّ قديم وصل بعد ردّ أحدث
@@ -46,6 +51,22 @@ export default function AdminUsersPage() {
     }
     setError("");
     const list = (data ?? []) as Row[];
+    const studentIds = list.filter((user) => user.role === "student").map((user) => user.id);
+    if (studentIds.length > 0) {
+      const { data: links, error: linksError } = await supabase.rpc("get_parent_report_links", { p_students: studentIds });
+      if (id !== reqId.current) return;
+      if (linksError) {
+        console.error("get_parent_report_links failed:", linksError);
+        setParentLinks({});
+      } else {
+        setParentLinks(Object.fromEntries((links ?? []).map((link: { student_id: string; token: string; report_from?: string | null; report_to?: string | null }) => [link.student_id, {
+          token: link.token,
+          period: link.report_from && link.report_to ? { from: link.report_from, to: link.report_to } : null,
+        }])));
+      }
+    } else {
+      setParentLinks({});
+    }
     setRows(list);
     setTotal(list[0]?.total_count ?? 0);
   }, [q, role, page]);
@@ -73,7 +94,7 @@ export default function AdminUsersPage() {
   return (
     <>
       <div className="adm-head">
-        <h1>المستخدمين {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG")})</span>}</h1>
+        <h1>المستخدمين {total > 0 && <span className="adm-sub">({total.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
       </div>
 
       <div className="adm-toolbar">
@@ -106,6 +127,8 @@ export default function AdminUsersPage() {
         </select>
       </div>
 
+      <ParentReportPeriodPicker value={reportPeriod} onChange={setReportPeriod} />
+
       {error && <p className="msg-error">{error}</p>}
 
       <div className="card adm-table-wrap">
@@ -114,6 +137,7 @@ export default function AdminUsersPage() {
             <tr>
               <th>الاسم</th>
               <th>الإيميل والهاتف</th>
+              <th>متابعة ولي الأمر</th>
               <th>السنة</th>
               <th>كورسات</th>
               <th>التسجيل</th>
@@ -132,8 +156,16 @@ export default function AdminUsersPage() {
                   <div className="adm-ltr">{u.email}</div>
                   <div className="adm-sub adm-ltr">{u.phone ?? "—"}</div>
                 </td>
+                <td>{u.role === "student" ? <ParentReportActions
+                  studentId={u.id}
+                  studentName={u.full_name}
+                  parentPhone={u.parent_phone}
+                  initialToken={parentLinks[u.id]?.token}
+                  initialPeriod={parentLinks[u.id]?.period}
+                  selectedPeriod={reportPeriod}
+                /> : "—"}</td>
                 <td>{GRADES.find((g) => g.value === u.grade)?.label ?? "—"}</td>
-                <td>{u.enrollments_count.toLocaleString("ar-EG")}</td>
+                <td>{u.enrollments_count.toLocaleString("ar-EG-u-nu-latn")}</td>
                 <td className="adm-sub">{fmtDate(u.created_at)}</td>
                 <td>
                   <select

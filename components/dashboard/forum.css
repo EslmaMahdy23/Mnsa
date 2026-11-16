@@ -18,7 +18,7 @@
 
 /* Student forum feed: familiar post cards, with the EduHelp cyan identity. */
 .forum-page:not(.forum-admin-page){max-width:none;padding:22px clamp(12px,3vw,38px) 40px;background:#f3f5f8;border-radius:18px}
-.forum-page:not(.forum-admin-page)>.forum-hero{max-width:920px;width:100%;min-height:132px;margin:0 auto 4px;padding:24px 28px;border:0;border-radius:18px;background:linear-gradient(125deg,#087da8,#16a0c8);box-shadow:0 10px 28px #087da81c;color:#fff}
+.forum-page:not(.forum-admin-page)>.forum-hero{max-width:920px;width:100%;min-height:132px;margin:0 auto 4px;padding:24px 28px;border:0;border-radius:18px;background:#0784f8;box-shadow:0 10px 28px #0784f82e;color:#fff}
 .forum-page:not(.forum-admin-page)>.forum-hero>span{width:54px;height:54px;border:1px solid #ffffff38;background:#ffffff20;color:#fff;font-size:1.35rem}
 .forum-page:not(.forum-admin-page)>.forum-hero p,.forum-page:not(.forum-admin-page)>.forum-hero h1,.forum-page:not(.forum-admin-page)>.forum-hero small{color:#fff}
 .forum-page:not(.forum-admin-page)>.forum-hero h1{font-size:1.35rem}.forum-page:not(.forum-admin-page)>.forum-hero small{opacity:.82}

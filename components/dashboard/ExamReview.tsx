@@ -24,14 +24,14 @@ export default function ReviewList({ mode, questions, essays = [] }: { mode: "no
   return (
     <section aria-label="مراجعة الإجابات">
       {(mode !== "none" && questions.length > 0) && <h2 className="ex-rv-title">
-        مراجعة إجاباتك · {right.toLocaleString("ar-EG")} من {questions.length.toLocaleString("ar-EG")} صح
+        مراجعة إجاباتك · {right.toLocaleString("ar-EG-u-nu-latn")} من {questions.length.toLocaleString("ar-EG-u-nu-latn")} صح
       </h2>}
       {questions.map((q, qi) => {
         const unanswered = q.my_index === null || q.my_index === undefined;
         return (
           <div className="ex-q" key={qi}>
             <div className="ex-q-head">
-              <span className="ex-q-no">{(qi + 1).toLocaleString("ar-EG")}</span>
+              <span className="ex-q-no">{(qi + 1).toLocaleString("ar-EG-u-nu-latn")}</span>
               <div className="ex-q-body">{q.body}</div>
               {unanswered && <span className="ex-badge open">من غير إجابة</span>}
             </div>
@@ -63,7 +63,7 @@ export default function ReviewList({ mode, questions, essays = [] }: { mode: "no
         );
       })}
       {essays.map((q, qi) => <div className="ex-q" key={"essay-" + qi}>
-        <div className="ex-q-head"><span className="ex-q-no">مقالي</span><div className="ex-q-body">{q.body}</div><span className="ex-badge pass">{(q.score ?? 0).toLocaleString("ar-EG")} / {q.points.toLocaleString("ar-EG")}</span></div>
+        <div className="ex-q-head"><span className="ex-q-no">مقالي</span><div className="ex-q-body">{q.body}</div><span className="ex-badge pass">{(q.score ?? 0).toLocaleString("ar-EG-u-nu-latn")} / {q.points.toLocaleString("ar-EG-u-nu-latn")}</span></div>
         <p><b>إجابتك:</b></p><div style={{ whiteSpace: "pre-wrap" }}>{q.answer || "بدون إجابة"}</div>
         {q.feedback && <div className="ex-rv-expl"><b>ملاحظة المدرّس:</b> {q.feedback}</div>}
       </div>)}

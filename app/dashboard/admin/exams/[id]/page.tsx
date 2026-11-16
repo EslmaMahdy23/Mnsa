@@ -54,7 +54,7 @@ export default function EditExamPage() {
       const [e, q] = await Promise.all([
         supabase
           .from("exams")
-          .select("id, title, description, course_id, section_id, grade, duration_minutes, pass_percent, is_published, review_mode, lock_following")
+          .select("id, title, description, course_id, section_id, grade, duration_minutes, pass_percent, is_published, review_mode, lock_following, gates_next_section")
           .eq("id", id)
           .maybeSingle(),
         supabase.from("exam_questions").select("body, options, correct_index, points, explanation, question_type").eq("exam_id", id).order("position"),
@@ -149,10 +149,10 @@ export default function EditExamPage() {
 
       {isAdmin && <section className="adm-section">
         <h2>
-          نتايج الطلاب ({attempts.length.toLocaleString("ar-EG")})
+          نتايج الطلاب ({attempts.length.toLocaleString("ar-EG-u-nu-latn")})
           {avg !== null && (
             <span className="adm-sub">
-              {" "}· المتوسط {fmtPct(avg)} · نجح {passedCount.toLocaleString("ar-EG")} من {done.length.toLocaleString("ar-EG")}
+              {" "}· المتوسط {fmtPct(avg)} · نجح {passedCount.toLocaleString("ar-EG-u-nu-latn")} من {done.length.toLocaleString("ar-EG-u-nu-latn")}
             </span>
           )}
         </h2>
@@ -179,7 +179,7 @@ export default function EditExamPage() {
                     {a.student?.phone && <div className="adm-sub adm-ltr">{a.student.phone}</div>}
                   </td>
                   <td>
-                    {a.submitted_at && !a.essay_pending ? `${(a.score ?? 0).toLocaleString("ar-EG")} / ${(a.total ?? 0).toLocaleString("ar-EG")}` : "—"}
+                    {a.submitted_at && !a.essay_pending ? `${(a.score ?? 0).toLocaleString("ar-EG-u-nu-latn")} / ${(a.total ?? 0).toLocaleString("ar-EG-u-nu-latn")}` : "—"}
                   </td>
                   <td>{a.submitted_at && !a.essay_pending ? fmtPct(a.percent) : "—"}</td>
                   <td>
@@ -214,7 +214,7 @@ export default function EditExamPage() {
         <div className="ex-modal-box">
           <div className="ex-modal-head"><b>{essayAttempt.title} · {essayAttempt.student}</b><button type="button" className="btn btn-outline btn-sm" onClick={() => setEssayAttempt(null)}>إغلاق</button></div>
           {essayAttempt.questions.map((q, i) => <section className="ex-q" key={q.id}>
-            <h3>السؤال { (i + 1).toLocaleString("ar-EG") } · الدرجة الكاملة {q.points.toLocaleString("ar-EG")}</h3>
+            <h3>السؤال { (i + 1).toLocaleString("ar-EG-u-nu-latn") } · الدرجة الكاملة {q.points.toLocaleString("ar-EG-u-nu-latn")}</h3>
             <p>{q.body}</p>
             <div className="card" style={{ whiteSpace: "pre-wrap" }}>{q.answer || "لم يكتب الطالب إجابة"}</div>
             <div className="field"><label>درجة الطالب</label><input type="number" min="0" max={q.points} step="0.5" value={essayScores[q.id] ?? ""} onChange={(e) => setEssayScores((prev) => ({ ...prev, [q.id]: e.target.value }))} /></div>

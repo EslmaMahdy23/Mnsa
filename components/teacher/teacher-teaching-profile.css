@@ -1,0 +1,27 @@
+.teacher-profile-edit-area{margin:18px 0}
+.teacher-profile-toggle{display:inline-flex;align-items:center;gap:8px;min-height:41px;padding:9px 14px;border:1px solid #cfe6ec;border-radius:10px;background:#f2fbfd;color:#087f9f;font:inherit;font-size:.78rem;font-weight:850;cursor:pointer;transition:background .18s ease,transform .18s ease}
+.teacher-profile-toggle:hover{background:#e3f6f9;transform:translateY(-1px)}
+.teacher-profile-editor{margin:18px 0;padding:20px;border:1px solid #deebf1;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(26,59,86,.045);color:#263b53}
+.teacher-profile-editor>header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.teacher-profile-editor>header small{color:#0785a8;font-size:.71rem;font-weight:850}
+.teacher-profile-editor>header h2{margin:3px 0;color:#213752;font-size:1.05rem}
+.teacher-profile-editor>header p{margin:0;color:#77889a;font-size:.75rem}
+.teacher-profile-editor>header>i{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#e7f8fb;color:#0985a6;font-size:1.1rem}
+.teacher-profile-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.teacher-profile-fields>label{display:grid;gap:6px;color:#52667d;font-size:.74rem;font-weight:800}
+.teacher-profile-fields input,.teacher-profile-fields select,.teacher-profile-fields textarea{width:100%;min-height:40px;padding:8px 10px;border:1px solid #dce6ed;border-radius:9px;background:#fff;color:#293c54;font:inherit;font-size:.79rem}
+.teacher-profile-fields textarea{min-height:72px;resize:vertical}
+.teacher-profile-fields input:focus,.teacher-profile-fields select:focus,.teacher-profile-fields textarea:focus{outline:2px solid #d4f0f4;border-color:#43b5c5}
+.teacher-profile-field-wide{grid-column:1/-1}
+.teacher-profile-stage{min-width:0;margin:0;padding:12px;border:1px solid #deebf1;border-radius:11px;background:#f8fcfd}
+.teacher-profile-stage legend{padding:0 5px;color:#354a63;font-size:.77rem;font-weight:900}
+.teacher-profile-stage-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.teacher-profile-stage-list section{padding:9px;border:1px solid #e5edf1;border-radius:9px;background:#fff}
+.teacher-profile-check,.teacher-profile-grades label{display:flex;align-items:center;gap:7px;color:#465c73;font-size:.72rem;font-weight:750}
+.teacher-profile-check input,.teacher-profile-grades input{width:15px;height:15px;min-height:15px;accent-color:#0789ad}
+.teacher-profile-grades{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px;padding-top:8px;border-top:1px solid #edf2f5}
+.teacher-profile-stage-list small{display:block;margin-top:7px;color:#8291a2;font-size:.68rem}
+.teacher-profile-editor>footer{display:flex;justify-content:flex-start;margin-top:14px}
+.teacher-profile-editor>footer button{min-height:40px;padding:8px 14px;border:0;border-radius:9px;background:linear-gradient(110deg,#087fa8,#1ba7c8);color:white;font:inherit;font-size:.77rem;font-weight:850;cursor:pointer}
+.teacher-profile-editor>footer button:disabled{opacity:.6;cursor:wait}
+@media(max-width:600px){.teacher-profile-editor{padding:15px}.teacher-profile-fields,.teacher-profile-stage-list{grid-template-columns:1fr}.teacher-profile-field-wide{grid-column:auto}}

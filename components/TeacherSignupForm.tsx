@@ -34,6 +34,17 @@ const empty = {
 type Stage = "form" | "otp" | "finish" | "done";
 type ExistingApp = { status: "pending" | "approved" | "rejected"; admin_note: string | null; created_at: string };
 
+function TeacherWizardProgress({ step, total = 4 }: { step: 1 | 2 | 3 | 4; total?: 3 | 4 }) {
+  return <div className="signup-wizard-progress" aria-label={`الخطوة ${step} من ${total}`} dir="rtl">
+    {Array.from({ length: total }, (_, index) => index + 1).map((number, index) => <div className="signup-progress-part" key={number}>
+      <span className={`signup-progress-step${step === number ? " current" : step > number ? " completed" : ""}`} aria-current={step === number ? "step" : undefined}>
+        {step > number ? <i className="fa-solid fa-check" /> : number.toLocaleString("en-US")}
+      </span>
+      {index < total - 1 && <span className={`signup-progress-line${step > number ? " completed" : ""}`} />}
+    </div>)}
+  </div>;
+}
+
 function toggle<T>(list: T[], v: T): T[] {
   return list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 }
@@ -60,6 +71,7 @@ export default function TeacherSignupForm() {
   const [resubmit, setResubmit] = useState(false);
 
   const [stage, setStage] = useState<Stage>("form");
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [f, setF] = useState(empty);
   const [stages, setStages] = useState<string[]>([]);
   const [stageGrades, setStageGrades] = useState<Record<string, number[]>>({}); // الصفوف المختارة لكل مرحلة
@@ -135,34 +147,38 @@ export default function TeacherSignupForm() {
     setPhoto(file);
   }
 
-  function validate(): string {
-    if (!isFullName(f.fullName)) return "اكتب الاسم بالكامل زي البطاقة (ثلاثي أو رباعي)";
-    if (!isValidNationalId(f.nationalId)) return "الرقم القومي غير صحيح (14 رقم)";
-    const phone = cleanPhone(f.phone);
-    const alt = cleanPhone(f.altPhone);
-    if (!isEgPhone(phone)) return "رقم الواتساب غير صحيح (مثال: 01012345678)";
-    if (!isEgPhone(alt)) return "الرقم البديل غير صحيح (مثال: 01012345678)";
-    if (phone === alt) return "الرقم البديل لازم يكون مختلف عن رقم الواتساب";
-    if (!sessionEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return "البريد الإلكتروني غير صحيح";
-    if (!f.governorate) return "اختار المحافظة";
-    if (f.city.trim().length < 2) return "اكتب المدينة / المنطقة";
-    if (f.qualification.trim().length < 3) return "اكتب المؤهل الدراسي (الكلية والجامعة والمؤهل)";
-    const year = Number(toEnDigits(f.graduationYear).trim());
-    if (!/^\d{4}$/.test(toEnDigits(f.graduationYear).trim()) || year < 1970 || year > new Date().getFullYear()) return "سنة التخرج غير صحيحة";
-    if (!f.experience) return "اختار عدد سنوات الخبرة";
-    if (f.subjects.trim().length < 2) return "اكتب المادة أو المواد اللي بتدرّسها";
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.subjects.trim())) return "اكتب المواد اللي بتدرّسها، مش البريد الإلكتروني";
-    if (stages.length === 0) return "اختار مرحلة تعليمية واحدة على الأقل";
-    for (const s of stages) {
-      if (STAGE_GRADE_OPTIONS[s] && !stageGrades[s]?.length) return `حدّد صف واحد على الأقل من ${STAGE_LABELS[s] ?? "المرحلة"}`;
+  function validate(currentStep: 1 | 2 | 3): string {
+    if (currentStep === 1) {
+      if (!isFullName(f.fullName)) return "اكتب الاسم بالكامل زي البطاقة (ثلاثي أو رباعي)";
+      if (!isValidNationalId(f.nationalId)) return "الرقم القومي غير صحيح (14 رقم)";
+      const phone = cleanPhone(f.phone);
+      const alt = cleanPhone(f.altPhone);
+      if (!isEgPhone(phone)) return "رقم الواتساب غير صحيح (مثال: 01012345678)";
+      if (!isEgPhone(alt)) return "الرقم البديل غير صحيح (مثال: 01112345678)";
+      if (phone === alt) return "الرقم البديل لازم يكون مختلف عن رقم الواتساب";
+      if (!sessionEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return "البريد الإلكتروني غير صحيح";
+      if (!sessionEmail && f.password.length < 8) return "كلمة السر لازم تكون 8 حروف أو أرقام على الأقل";
+      if (!sessionEmail && f.password !== f.confirm) return "كلمتا السر غير متطابقتين";
     }
-    if (!cv) return cvErr || "ارفع السيرة الذاتية بصيغة PDF";
-    if (!photo) return photoErr || "ارفع صورة شخصية حديثة";
-    if (!sessionEmail) {
-      if (f.password.length < 8) return "كلمة السر لازم تكون 8 حروف أو أرقام على الأقل";
-      if (f.password !== f.confirm) return "كلمتا السر غير متطابقتين";
+    if (currentStep === 2) {
+      if (!f.governorate) return "اختار المحافظة";
+      if (f.city.trim().length < 2) return "اكتب المدينة / المنطقة";
+      if (f.qualification.trim().length < 3) return "اكتب المؤهل الدراسي (الكلية والجامعة والمؤهل)";
+      const year = Number(toEnDigits(f.graduationYear).trim());
+      if (!/^\d{4}$/.test(toEnDigits(f.graduationYear).trim()) || year < 1970 || year > new Date().getFullYear()) return "سنة التخرج غير صحيحة";
+      if (!f.experience) return "اختار عدد سنوات الخبرة";
+      if (f.subjects.trim().length < 2) return "اكتب المادة أو المواد اللي بتدرّسها";
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.subjects.trim())) return "اكتب المواد اللي بتدرّسها، مش البريد الإلكتروني";
+      if (stages.length === 0) return "اختار مرحلة تعليمية واحدة على الأقل";
+      for (const s of stages) {
+        if (STAGE_GRADE_OPTIONS[s] && !stageGrades[s]?.length) return `حدّد صف واحد على الأقل من ${STAGE_LABELS[s] ?? "المرحلة"}`;
+      }
     }
-    if (!agree) return "لازم تأكد صحة البيانات علشان نكمّل";
+    if (currentStep === 3) {
+      if (!cv) return cvErr || "ارفع السيرة الذاتية بصيغة PDF";
+      if (!photo) return photoErr || "ارفع صورة شخصية حديثة";
+      if (!agree) return "لازم تأكد صحة البيانات علشان نكمّل";
+    }
     return "";
   }
 
@@ -225,9 +241,14 @@ export default function TeacherSignupForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const problem = validate();
+    const problem = validate(step);
     if (problem) return setError(problem);
     setError("");
+
+    if (step < 3) {
+      setStep((current) => Math.min(3, current + 1) as 1 | 2 | 3);
+      return;
+    }
 
     // مسجّل دخول بالفعل (طالب عايز يقدّم، أو كمّل بعد انقطاع): نحفظ الطلب على حسابه
     if (sessionEmail) return finalize();
@@ -264,8 +285,13 @@ export default function TeacherSignupForm() {
 
   if (stage === "otp" && otpEmail) {
     return (
-      <div className="auth-wrap auth-screen">
-        <div className="card auth-card">
+      <div className="auth-wrap auth-screen auth-screen-signup">
+        <div className="card auth-card wide signup-wizard-card">
+          <Link href="/" className="signup-wizard-home"><i className="fa-solid fa-house" /> الرئيسية</Link>
+          <Link href="/" className="auth-logo auth-brand">Edu<span>Help</span><i className="fa-solid fa-book-open-reader" /></Link>
+          <h1 className="signup-welcome">تأكيد البريد</h1>
+          <p className="auth-sub">آخر خطوة قبل إرسال طلبك للمدرس.</p>
+          <TeacherWizardProgress step={4} />
           <OtpStep email={otpEmail} onBack={() => { setStage("form"); setOtpEmail(null); }} onVerified={finalize} />
         </div>
       </div>
@@ -335,15 +361,23 @@ export default function TeacherSignupForm() {
 
   return (
     <div className="auth-wrap auth-screen auth-screen-signup auth-screen-teacher">
-      <div className="card auth-card wide">
+      <div className="card auth-card wide signup-wizard-card">
+        <Link href="/" className="signup-wizard-home"><i className="fa-solid fa-house" /> الرئيسية</Link>
         <Link href="/" className="auth-logo auth-brand">Edu<span>Help</span><i className="fa-solid fa-book-open-reader" /></Link>
-        <h1>التسجيل كمدرّس</h1>
+        <h1 className="signup-welcome">التسجيل كمدرّس</h1>
         <p className="auth-sub">
           املا بياناتك بدقة زي ما هي في البطاقة. هنراجع الطلب وبعد الموافقة هيتفعّل حسابك كمدرّس.
           {sessionEmail && <><br />هيتم حفظ الطلب على حسابك الحالي: <b dir="ltr">{sessionEmail}</b></>}
         </p>
 
-        <form className="auth-signup-form" onSubmit={onSubmit} noValidate>
+        <TeacherWizardProgress step={step} total={sessionEmail ? 3 : 4} />
+        <div className="signup-wizard-step-head">
+          <span>الخطوة {step.toLocaleString("en-US")} من {sessionEmail ? 3 : 4}</span>
+          <h2>{step === 1 ? "بياناتك الشخصية" : step === 2 ? "المؤهلات والتدريس" : "المستندات وإرسال الطلب"}</h2>
+          <p>{step === 1 ? "اكتب بيانات التواصل والحساب كما هي." : step === 2 ? "حدّد خبراتك والمراحل والصفوف التي تدرّسها." : "أرفق الملفات المطلوبة وراجع إقرارك قبل الإرسال."}</p>
+        </div>
+        <form className={`auth-signup-form signup-wizard-fields step-${step}`} onSubmit={onSubmit} noValidate>
+          {step === 1 && <>
           <h2 className="ts-section-title"><i className="fa-solid fa-id-card" /> البيانات الشخصية</h2>
 
           <Field id="fullName" label="الاسم بالكامل (ثلاثي أو رباعي كما في البطاقة)" wide>
@@ -367,6 +401,24 @@ export default function TeacherSignupForm() {
           <Field id="altPhone" label="رقم هاتف بديل (للطوارئ)">
             <div className="auth-control"><i className="fa-solid fa-phone" /><input id="altPhone" type="tel" inputMode="numeric" dir="ltr" value={f.altPhone} onChange={set("altPhone")} placeholder="01112345678" /></div>
           </Field>
+
+          {!sessionEmail && <>
+            <h2 className="ts-section-title"><i className="fa-solid fa-lock" /> بيانات الدخول</h2>
+            <Field id="password" label="كلمة السر">
+              <div className="pw-wrap auth-control">
+                <i className="fa-solid fa-lock" />
+                <input id="password" type={showPw ? "text" : "password"} dir="ltr" value={f.password} onChange={set("password")} autoComplete="new-password" />
+                <button type="button" className="pw-toggle signup-password-toggle" aria-label={showPw ? "إخفاء كلمة السر" : "إظهار كلمة السر"} onClick={() => setShowPw((s) => !s)}><i className={`fa-solid ${showPw ? "fa-eye-slash" : "fa-eye"}`} /></button>
+              </div>
+            </Field>
+            <Field id="confirm" label="تأكيد كلمة السر">
+              <div className="auth-control"><i className="fa-solid fa-lock" /><input id="confirm" type={showPw ? "text" : "password"} dir="ltr" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" placeholder="أعد كتابة كلمة السر" /></div>
+            </Field>
+            <p className="hint ts-wide">كلمة السر 8 حروف أو أرقام على الأقل.</p>
+          </>}
+          </>}
+
+          {step === 2 && <>
 
           <Field id="governorate" label="المحافظة">
             <div className="auth-control"><i className="fa-solid fa-location-dot" />
@@ -446,6 +498,9 @@ export default function TeacherSignupForm() {
             ))}
           </div>
 
+          </>}
+
+          {step === 3 && <>
           <h2 className="ts-section-title"><i className="fa-solid fa-paperclip" /> الملفات المطلوبة</h2>
 
           <Field id="cv" label="السيرة الذاتية (CV) بصيغة PDF" hint="PDF فقط، حد أقصى 5 ميجا.">
@@ -463,35 +518,25 @@ export default function TeacherSignupForm() {
             {photoErr && <p className="msg-error">{photoErr}</p>}
           </Field>
 
-          {!sessionEmail && (
-            <>
-              <h2 className="ts-section-title"><i className="fa-solid fa-lock" /> بيانات الدخول</h2>
-              <Field id="password" label="كلمة السر">
-                <div className="pw-wrap auth-control">
-                  <i className="fa-solid fa-lock" />
-                  <input id="password" type={showPw ? "text" : "password"} dir="ltr" value={f.password} onChange={set("password")} autoComplete="new-password" />
-                  <button type="button" className="pw-toggle" onClick={() => setShowPw((s) => !s)}>{showPw ? "إخفاء" : "إظهار"}</button>
-                </div>
-              </Field>
-              <Field id="confirm" label="تأكيد كلمة السر">
-                <div className="auth-control"><i className="fa-solid fa-lock" /><input id="confirm" type={showPw ? "text" : "password"} dir="ltr" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" placeholder="أعد كتابة كلمة السر" /></div>
-              </Field>
-              <p className="hint ts-wide">كلمة السر 8 حروف أو أرقام على الأقل.</p>
-            </>
-          )}
+
 
           <label className="ts-agree ts-wide">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
             <span>أقرّ بصحة البيانات والمستندات المرفوعة، وأوافق على استخدامها في مراجعة طلبي والتواصل معي والتعريف بي على المنصة بعد الموافقة.</span>
           </label>
 
-          {error && <p className="msg-error">{error}</p>}
-          <button className="btn auth-submit" style={{ width: "100%" }} disabled={busy}>
-            {busy ? "برجاء الانتظار..." : sessionEmail ? "إرسال الطلب" : "إنشاء الحساب وإرسال الطلب"}
-          </button>
+          </>}
+
+          {error && <p className="msg-error ts-wide">{error}</p>}
+          <div className="signup-wizard-actions">
+            {step > 1 && <button type="button" className="signup-wizard-back" disabled={busy} onClick={() => { setError(""); setStep((current) => Math.max(1, current - 1) as 1 | 2 | 3); }}><i className="fa-solid fa-arrow-right" /> السابق</button>}
+            <button className="btn auth-submit signup-wizard-next" disabled={busy}>
+              {busy ? <><i className="fa-solid fa-spinner fa-spin" /> برجاء الانتظار...</> : step < 3 ? <>التالي <i className="fa-solid fa-arrow-left" /></> : sessionEmail ? "إرسال الطلب" : <>إنشاء الحساب وإرسال الكود <i className="fa-solid fa-envelope-circle-check" /></>}
+            </button>
+          </div>
         </form>
 
-        <p className="auth-foot">
+        <p className="auth-foot signup-wizard-login">
           {sessionEmail ? <Link href="/dashboard">الرجوع لحسابي</Link> : <>عندك حساب؟ <Link href="/login?next=%2Fteacher-signup">سجّل الدخول</Link> · أنت طالب؟ <Link href="/signup">سجّل كطالب</Link></>}
         </p>
       </div>

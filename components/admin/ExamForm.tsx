@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { examErrorMessage } from "@/lib/exams";
+import { examErrorMessage, teacherExamErrorMessage } from "@/lib/exams";
 import { GRADES } from "@/lib/validation";
+import { useProfile } from "@/components/dashboard/ProfileContext";
 import "@/app/dashboard/exams/exams.css";
 
 export type ExamData = {
@@ -19,6 +20,9 @@ export type ExamData = {
   is_published: boolean;
   review_mode: "none" | "marks" | "full";
   lock_following: boolean;
+  gates_next_section?: boolean;
+  approval_status?: "draft" | "pending" | "approved" | "rejected";
+  approval_note?: string | null;
 };
 
 export type QuestionData = {
@@ -51,6 +55,8 @@ export default function ExamForm({
   fixedSectionId?: string;
 }) {
   const router = useRouter();
+  // المدرّس يحفظ ويفعّل امتحانه مباشرة، والسنة بتتحدد من الكورس
+  const isTeacher = useProfile().role === "teacher";
   const keyRef = useRef(0);
   const nextKey = () => ++keyRef.current;
 
@@ -69,7 +75,8 @@ export default function ExamForm({
     pass: exam ? String(exam.pass_percent) : "50",
     published: exam?.is_published ?? false,
     review: exam?.review_mode ?? "none",
-    lockFollowing: exam?.lock_following ?? false,
+    lockFollowing: exam?.lock_following ?? true,
+    gatesNext: exam?.gates_next_section ?? true,
   });
   const [qs, setQs] = useState<Q[]>(() =>
     (questions && questions.length > 0 ? questions : [blankQ()]).map((q) => ({
@@ -85,7 +92,7 @@ export default function ExamForm({
 
   // قايمة الكورسات محتاجها بس لو الكورس مش متحدد مسبقاً
   useEffect(() => {
-    if (courseLocked) return;
+    if (courseLocked || isTeacher) return;
     supabase
       .from("courses")
       .select("id, title")
@@ -95,7 +102,7 @@ export default function ExamForm({
         if (err) return console.error("courses load failed:", err);
         setCourses((data ?? []) as CourseOpt[]);
       });
-  }, [courseLocked]);
+  }, [courseLocked, isTeacher]);
 
   // أقسام الكورس المختار (للاختيار بينها)
   useEffect(() => {
@@ -161,7 +168,7 @@ export default function ExamForm({
     if (f.published && qs.length === 0) return "ضيف سؤال واحد على الأقل قبل النشر";
     for (let i = 0; i < qs.length; i++) {
       const q = qs[i];
-      const n = (i + 1).toLocaleString("ar-EG");
+      const n = (i + 1).toLocaleString("ar-EG-u-nu-latn");
       if (!q.body.trim()) return `السؤال ${n}: اكتب نص السؤال`;
       if (q.question_type === "essay") {
         if (!Number.isInteger(q.points) || q.points < 1 || q.points > 100) return `السؤال ${n}: الدرجة من 1 لـ 100`;
@@ -183,7 +190,7 @@ export default function ExamForm({
     setOk("");
     setLoading(true);
 
-    const { data, error: err } = await supabase.rpc("admin_save_exam", {
+    const { data, error: err } = await supabase.rpc(isTeacher ? "teacher_save_exam" : "admin_save_exam", {
       p_id: exam?.id ?? null,
       p_data: {
         title: f.title.trim(),
@@ -195,6 +202,7 @@ export default function ExamForm({
         pass_percent: Number(f.pass),
         is_published: f.published,
         review_mode: f.review,
+        lock_following: f.lockFollowing,
         questions: qs.map((q) => ({
           question_type: q.question_type ?? "choice",
           body: q.body.trim(),
@@ -209,18 +217,29 @@ export default function ExamForm({
 
     if (err || !data) {
       console.error("exam save failed:", err);
-      return setError(examErrorMessage(err, "مقدرناش نحفظ الامتحان، جرّب تاني"));
+      return setError(isTeacher ? teacherExamErrorMessage(err, "مقدرناش نحفظ الامتحان، جرّب تاني") : examErrorMessage(err, "مقدرناش نحفظ الامتحان، جرّب تاني"));
     }
     const savedExamId = (exam?.id ?? data) as string;
-    const { error: lockError } = await supabase.from("exams").update({ lock_following: f.lockFollowing }).eq("id", savedExamId);
+    const { error: lockError } = isTeacher
+      ? { error: null }
+      : await supabase.from("exams").update({ lock_following: f.lockFollowing }).eq("id", savedExamId);
     if (lockError) {
       console.error("exam lock setting save failed:", lockError);
       return setError("اتحفظ الامتحان، لكن إعداد قفل العناصر بعده ما اتحفظش. شغّل ملف 28_exam_following_locks.sql في Supabase.");
     }
+    const { error: gateError } = await supabase.rpc("set_exam_gates_next_section", { p_exam: savedExamId, p_value: f.gatesNext });
+    if (gateError) {
+      console.error("exam gate setting save failed:", gateError);
+      return setError("اتحفظ الامتحان، لكن إعداد (شرط فتح القسم التالي) ما اتحفظش. شغّل ملف 67_section_preview_and_exam_gate.sql في Supabase.");
+    }
     if (exam) return setOk("اتحفظ الامتحان ✔");
     // لو ضافه من صفحة كورس نرجعه للكورس عشان يشوف الامتحان في القايمة
-    if (fixedCourseId) return router.push(`/dashboard/admin/courses/${fixedCourseId}`);
-    router.push(`/dashboard/admin/exams/${data as string}`);
+    if (fixedCourseId) {
+      router.push(isTeacher ? `/teacher/courses/${fixedCourseId}` : `/dashboard/admin/courses/${fixedCourseId}`);
+      router.refresh();
+      return;
+    }
+    router.push(isTeacher ? `/teacher/exams/${data as string}` : `/dashboard/admin/exams/${data as string}`);
   }
 
   const totalPoints = qs.reduce((s, q) => s + (Number.isFinite(q.points) ? q.points : 0), 0);
@@ -235,6 +254,10 @@ export default function ExamForm({
       {f.sectionId && <label className="adm-check">
         <input type="checkbox" checked={f.lockFollowing} onChange={(e) => { touch(); setF({ ...f, lockFollowing: e.target.checked }); }} />
         اقفل الدروس والاختبارات اللي بعد الامتحان في نفس القسم لحد ما الطالب ينجح
+      </label>}
+      {f.sectionId && <label className="adm-check">
+        <input type="checkbox" checked={f.gatesNext} onChange={(e) => { touch(); setF({ ...f, gatesNext: e.target.checked }); }} />
+        الامتحان ده شرط لفتح القسم اللي بعده (لو مش معلّم، القسم التالي بيتفتح من غير ما الطالب ينجح فيه)
       </label>}
       <div className="field">
         <label htmlFor="e-desc">وصف أو تعليمات (اختياري)</label>
@@ -266,15 +289,17 @@ export default function ExamForm({
             <p className="hint">لو اخترت قسم، الامتحان هيظهر جواه مع الفيديوهات والملفات.</p>
           </div>
         )}
-        <div className="field">
-          <label htmlFor="e-grade">السنة الدراسية</label>
-          <select id="e-grade" value={f.grade} onChange={set("grade")}>
-            <option value="">كل السنوات</option>
-            {GRADES.map((g) => (
-              <option key={g.value} value={g.value}>{g.label}</option>
-            ))}
-          </select>
-        </div>
+        {!isTeacher && (
+          <div className="field">
+            <label htmlFor="e-grade">السنة الدراسية</label>
+            <select id="e-grade" value={f.grade} onChange={set("grade")}>
+              <option value="">كل السنوات</option>
+              {GRADES.map((g) => (
+                <option key={g.value} value={g.value}>{g.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="field-row">
@@ -300,27 +325,29 @@ export default function ExamForm({
         </p>
       </div>
 
-      <label className="adm-check">
-        <input
-          type="checkbox"
-          checked={f.published}
-          onChange={(e) => {
-            touch();
-            setF({ ...f, published: e.target.checked });
-          }}
-        />
-        منشور (يظهر للطلاب)
-      </label>
+      {!isTeacher && (
+        <label className="adm-check">
+          <input
+            type="checkbox"
+            checked={f.published}
+            onChange={(e) => {
+              touch();
+              setF({ ...f, published: e.target.checked });
+            }}
+          />
+          منشور (يظهر للطلاب)
+        </label>
+      )}
 
       <h2 className="adm-section" style={{ marginTop: 8 }}>
-        الأسئلة ({qs.length.toLocaleString("ar-EG")}) · إجمالي الدرجات {totalPoints.toLocaleString("ar-EG")}
+        الأسئلة ({qs.length.toLocaleString("ar-EG-u-nu-latn")}) · إجمالي الدرجات {totalPoints.toLocaleString("ar-EG-u-nu-latn")}
       </h2>
       <p className="ex-hint">علّم على الدايرة الخضرا جنب الإجابة الصح. الطلاب مش هيشوفوا الإجابات الصح خالص.</p>
 
       {qs.map((q, qi) => (
         <div className="ex-qcard" key={q.key}>
           <div className="ex-qcard-head">
-            <b>سؤال {(qi + 1).toLocaleString("ar-EG")}</b>
+            <b>سؤال {(qi + 1).toLocaleString("ar-EG-u-nu-latn")}</b>
             <button type="button" className="btn btn-danger btn-sm" onClick={() => removeQ(q.key)}>
               حذف السؤال
             </button>
@@ -355,7 +382,7 @@ export default function ExamForm({
               <input
                 type="text"
                 value={o}
-                placeholder={`الاختيار ${(oi + 1).toLocaleString("ar-EG")}`}
+                placeholder={`الاختيار ${(oi + 1).toLocaleString("ar-EG-u-nu-latn")}`}
                 onChange={(e) =>
                   patchQ(q.key, (x) => ({ ...x, options: x.options.map((v, idx) => (idx === oi ? e.target.value : v)) }))
                 }

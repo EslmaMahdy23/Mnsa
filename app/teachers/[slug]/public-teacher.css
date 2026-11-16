@@ -137,6 +137,33 @@
   max-height: 420px !important;
   overflow: hidden !important;
 }
+.eh.dark-mode .public-teacher-page { background:#0d1524;color:#e7eef5; }
+.eh.dark-mode .public-teacher-breadcrumb { color:#a6b6c6; }
+.eh.dark-mode .public-teacher-profile-card,
+.eh.dark-mode .public-teacher-course,
+.eh.dark-mode .public-teacher-empty,
+.eh.dark-mode .public-teacher-section-head>b { border-color:#2b4053;background:#111b27;color:#e7eef5;box-shadow:0 10px 26px rgba(0,0,0,.2); }
+.eh.dark-mode .public-teacher-profile-copy h2 { color:#e7eef5!important; }
+.eh.dark-mode .public-teacher-profile-copy>p,
+.eh.dark-mode .public-teacher-course-body>p,
+.eh.dark-mode .public-teacher-course-footer>span:first-child,
+.eh.dark-mode .public-teacher-empty p,
+.eh.dark-mode .public-teacher-state p { color:#a6b6c6; }
+.eh.dark-mode .public-teacher-kicker,
+.eh.dark-mode .public-teacher-section-head>div>span { color:#8bdcf6; }
+.eh.dark-mode .public-teacher-section-head h2,
+.eh.dark-mode .public-teacher-course-body h3,
+.eh.dark-mode .public-teacher-empty h3,
+.eh.dark-mode .public-teacher-state h1 { color:#e7eef5; }
+.eh.dark-mode .public-teacher-tags>span,
+.eh.dark-mode .public-teacher-stats>div,
+.eh.dark-mode .public-teacher-course-grade { border-color:rgba(255,255,255,.16);background:#172c40;color:#c8eafa; }
+.eh.dark-mode .public-teacher-bio,
+.eh.dark-mode .public-teacher-stats small,
+.eh.dark-mode .public-teacher-section-head p { color:#d0dfeb; }
+.eh.dark-mode .public-teacher-course-cta { color:#7bd5f3; }
+.eh.dark-mode .public-teacher-course-footer { border-color:#2b4053; }
+.eh.dark-mode .public-teacher-photo-wrap { border-color:#293d50;background:#182b3a; }
 
 .public-teacher-hero > img,
 .public-teacher-hero > span {

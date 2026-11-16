@@ -10,6 +10,7 @@ import { fmtDateTime } from "@/lib/billing";
 import StudentLearningOverview from "@/components/dashboard/StudentLearningOverview";
 import ExamLeaderboard from "@/components/dashboard/ExamLeaderboard";
 import { useLessonCompletions } from "@/components/dashboard/useLessonCompletions";
+import { useExamActivities } from "@/components/dashboard/useExamActivities";
 import { DEFAULT_STUDENT_DASHBOARD, parseStudentDashboardSettings, type StudentDashboardSectionKey } from "@/lib/student-dashboard";
 import "./learning-overview.css";
 
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const enrolledCourses = rows.filter((row) => row.course);
   const enrolledCourseIds = new Set(enrolledCourses.map((row) => row.course_id));
   const enrolledCompletions = completions.filter((row) => enrolledCourseIds.has(row.course_id));
+  const examActivities = useExamActivities(p.id, enrolledCourses.map((row) => row.course_id));
   const totalLessons = enrolledCourses.reduce((sum, row) => sum + (row.course?.lessons?.[0]?.count ?? 0), 0);
   const activeCourse = enrolledCourses.find((row) => row.course && enrolledCompletions.some((done) => done.course_id === row.course_id))?.course
     ?? enrolledCourses[0]?.course
@@ -62,7 +64,7 @@ export default function Dashboard() {
       )}
 
       <div className="dash-home-sections">
-      {sectionVisible("learning") && <div style={{ order: sectionOrder("learning") }}><StudentLearningOverview completions={enrolledCompletions} totalLessons={totalLessons} activeCourse={activeCourse ? { id: activeCourse.id, title: activeCourse.title } : null} /></div>}
+      {sectionVisible("learning") && <div style={{ order: sectionOrder("learning") }}><StudentLearningOverview completions={enrolledCompletions} examActivities={examActivities} totalLessons={totalLessons} activeCourse={activeCourse ? { id: activeCourse.id, title: activeCourse.title } : null} /></div>}
 
       {sectionVisible("recent") && recent.length > 0 && (
         <section style={{ marginBottom: 16, order: sectionOrder("recent") }}>
@@ -100,7 +102,7 @@ export default function Dashboard() {
                     <h3>{c.title}</h3>
                     <p className="course-meta"><i className="fa-solid fa-chalkboard-user" /> {teachers[c.teacher_id] ?? "—"}</p>
                     <p className="course-meta"><i className="fa-solid fa-graduation-cap" /> {cGrade ?? "كل السنوات"}</p>
-                    <p className="course-meta"><i className="fa-solid fa-circle-play" /> {lessons.toLocaleString("ar-EG")} درس</p>
+                    <p className="course-meta"><i className="fa-solid fa-circle-play" /> {lessons.toLocaleString("ar-EG-u-nu-latn")} درس</p>
                   </div>
                   <div className="course-foot">
                     <span className="course-enrolled"><i className="fa-solid fa-circle-check" /> اشتركت في {fmtDateTime(r.enrolled_at)}</span>

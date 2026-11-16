@@ -80,7 +80,7 @@ export default function CourseExams({ courseId }: { courseId: string }) {
   return (
     <section className="adm-section card">
       <div className="adm-head" style={{ marginBottom: 8 }}>
-        <h2 style={{ margin: 0 }}>امتحانات من غير قسم {rows.length > 0 && <span className="adm-sub">({rows.length.toLocaleString("ar-EG")})</span>}</h2>
+        <h2 style={{ margin: 0 }}>امتحانات من غير قسم {rows.length > 0 && <span className="adm-sub">({rows.length.toLocaleString("ar-EG-u-nu-latn")})</span>}</h2>
       </div>
       <p className="adm-sub" style={{ marginBottom: 8 }}>
         الامتحانات دي بتظهر للطالب تحت الدروس. لو عايز امتحان يبقى جوه قسم، اضغط "تعديل ونتايج" واختار القسم.
@@ -91,11 +91,11 @@ export default function CourseExams({ courseId }: { courseId: string }) {
 
       {rows.map((x, i) => (
         <div className="adm-lesson" key={x.id}>
-          <span className="adm-lesson-no">{(i + 1).toLocaleString("ar-EG")}</span>
+          <span className="adm-lesson-no">{(i + 1).toLocaleString("ar-EG-u-nu-latn")}</span>
           <div className="adm-lesson-title">
             {x.title}
             <div className="adm-sub">
-              {x.question_count.toLocaleString("ar-EG")} سؤال · {fmtDuration(x.duration_minutes)}{!isContentManager && ` · ${(x.exam_attempts?.[0]?.count ?? 0).toLocaleString("ar-EG")} محاولة`}
+              {x.question_count.toLocaleString("ar-EG-u-nu-latn")} سؤال · {fmtDuration(x.duration_minutes)}{!isContentManager && ` · ${(x.exam_attempts?.[0]?.count ?? 0).toLocaleString("ar-EG-u-nu-latn")} محاولة`}
             </div>
           </div>
           <span className={`adm-badge ${x.is_published ? "ok" : "draft"}`}>{x.is_published ? "منشور" : "مسودة"}</span>

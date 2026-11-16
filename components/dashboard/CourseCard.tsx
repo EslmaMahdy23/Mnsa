@@ -37,7 +37,7 @@ export default function CourseCard({ course: c, teacherName, enrolled, busy, onE
           <div className="course-ph"><i className="fa-solid fa-book-open" /></div>
         )}
         <span className={`course-price ${free ? "free" : "paid"}`}>
-          {free ? "مجاني" : `${price.toLocaleString("ar-EG")} جنيه`}
+          {free ? "مجاني" : `${price.toLocaleString("ar-EG-u-nu-latn")} جنيه`}
         </span>
       </div>
 

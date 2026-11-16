@@ -91,7 +91,7 @@ export default function AdminNotificationComposer() {
     }
     const recipientCount = Number(data ?? 0);
     if (recipientCount === 0) return setError("الإشعار ما اتبعتش؛ مفيش طلاب مستهدفين في الاختيار ده.");
-    setSuccess(`اتبعث الإشعار بنجاح لـ ${recipientCount.toLocaleString("ar-EG")} طالب.`);
+    setSuccess(`اتبعث الإشعار بنجاح لـ ${recipientCount.toLocaleString("ar-EG-u-nu-latn")} طالب.`);
     setTitle(""); setMessage("");
   }
 
@@ -115,7 +115,7 @@ export default function AdminNotificationComposer() {
       </div>}
 
       <form className="admin-notification-form card" onSubmit={send}>
-        <section className="notification-compose-step"><span className="notification-step-no">١</span><div className="notification-step-content"><h2>مين يستقبل الإشعار؟</h2><p>اختار جمهور الإشعار، وبعدها حدّد الكورس أو الصف أو الطالب.</p>
+        <section className="notification-compose-step"><span className="notification-step-no">1</span><div className="notification-step-content"><h2>مين يستقبل الإشعار؟</h2><p>اختار جمهور الإشعار، وبعدها حدّد الكورس أو الصف أو الطالب.</p>
           <div className="notification-audiences">
             <label className={audience === "course" ? "selected" : ""}><input type="radio" name="audience" checked={audience === "course"} onChange={() => setAudience("course")} /><i className="fa-solid fa-book-open" /><span><b>مشتركو كورس</b><small>طلاب كورس محدد</small></span></label>
             <label className={audience === "student" ? "selected" : ""}><input type="radio" name="audience" checked={audience === "student"} onChange={() => { setAudience("student"); setSelectedStudent(null); }} /><i className="fa-solid fa-user" /><span><b>طالب معين</b><small>اختيار حساب طالب</small></span></label>
@@ -128,10 +128,10 @@ export default function AdminNotificationComposer() {
           <p className="notification-audience-note"><i className="fa-solid fa-circle-info" /> {audienceDescription}{audience === "course" && selectedCourse && ` عدد المسجلين هو اللي هيحدد عدد المستلمين.`}</p>
         </div></section>
 
-        <section className="notification-compose-step"><span className="notification-step-no">٢</span><div className="notification-step-content"><h2>اكتب الإشعار</h2><p>خلي العنوان واضح والرسالة مختصرة.</p>
+        <section className="notification-compose-step"><span className="notification-step-no">2</span><div className="notification-step-content"><h2>اكتب الإشعار</h2><p>خلي العنوان واضح والرسالة مختصرة.</p>
           <label className="notification-field">عنوان الإشعار<input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder="مثال: امتحان جديد في كورس الرياضيات" /></label>
           <label className="notification-field">نص الرسالة<textarea value={message} onChange={(e) => setMessage(e.target.value)} maxLength={3000} rows={5} placeholder="اكتب التفاصيل اللي محتاج توصل للطلاب..." /></label>
-          <div className="notification-compose-footer"><small>{message.length.toLocaleString("ar-EG")} / ٣٠٠٠ حرف</small><button className="btn" disabled={sending}>{sending ? <><i className="fa-solid fa-spinner fa-spin" /> جاري الإرسال...</> : <><i className="fa-solid fa-paper-plane" /> إرسال الإشعار</>}</button></div>
+          <div className="notification-compose-footer"><small>{message.length.toLocaleString("ar-EG-u-nu-latn")} / 3000 حرف</small><button className="btn" disabled={sending}>{sending ? <><i className="fa-solid fa-spinner fa-spin" /> جاري الإرسال...</> : <><i className="fa-solid fa-paper-plane" /> إرسال الإشعار</>}</button></div>
         </div></section>
       </form>
     </div>

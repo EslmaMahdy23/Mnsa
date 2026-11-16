@@ -92,7 +92,7 @@ export default function InvoicesTab() {
           <tbody>
             {rows.map((d) => (
               <tr key={`${d.kind}-${d.id}`}>
-                <td>{Number(d.serial).toLocaleString("ar-EG", { useGrouping: false })}</td>
+                <td>{Number(d.serial).toLocaleString("ar-EG-u-nu-latn", { useGrouping: false })}</td>
                 <td><bdi dir="ltr">{d.invoice_no}</bdi></td>
                 <td><span className={`bill-badge ${d.kind}`}>{INVOICE_KIND[d.kind]}</span></td>
                 <td>
@@ -120,7 +120,7 @@ export default function InvoicesTab() {
           </tbody>
         </table>
         <div className="bill-foot">
-          {first.toLocaleString("ar-EG")} - {(first + rows.length - 1).toLocaleString("ar-EG")} من {total.toLocaleString("ar-EG")}
+          {first.toLocaleString("ar-EG-u-nu-latn")} - {(first + rows.length - 1).toLocaleString("ar-EG-u-nu-latn")} من {total.toLocaleString("ar-EG-u-nu-latn")}
         </div>
       </div>
 

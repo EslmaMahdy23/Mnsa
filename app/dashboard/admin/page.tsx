@@ -16,7 +16,7 @@ type Stats = {
   pending_topups: number;
 };
 
-const num = (n: number | undefined) => (n === undefined ? "…" : n.toLocaleString("ar-EG"));
+const num = (n: number | undefined) => (n === undefined ? "…" : n.toLocaleString("ar-EG-u-nu-latn"));
 
 export default function AdminHome() {
   const [stats, setStats] = useState<Stats | null>(null);

@@ -106,7 +106,7 @@ export default function AdminCleanupPage() {
       <div className="cleanup-list-head"><div><h2>تذاكر الدعم المغلقة</h2><p>حذف التذكرة يمسح المحادثة من لوحة الأدمن وسجل الدعم عند الطالب، ويزيل صور المرفقات.</p></div><span>{preview.support_tickets.length}</span></div>
       {preview.support_tickets.length ? preview.support_tickets.map((item) => <label className="cleanup-row" key={item.id}>
         <input type="checkbox" checked={selectedTickets.includes(item.id)} onChange={() => toggle(item.id, selectedTickets, setSelectedTickets)}/>
-        <span className="cleanup-item-copy"><b>{item.title}</b><small>{item.student_name} · {new Date(item.created_at).toLocaleDateString("ar-EG")} · {item.message_count || 0} رسائل · {(item.attachments || []).length} مرفقات</small></span>
+        <span className="cleanup-item-copy"><b>{item.title}</b><small>{item.student_name} · {new Date(item.created_at).toLocaleDateString("ar-EG-u-nu-latn")} · {item.message_count || 0} رسائل · {(item.attachments || []).length} مرفقات</small></span>
         <code>{item.id}</code>
       </label>) : <p className="cleanup-empty">لا توجد تذاكر دعم مغلقة.</p>}
     </section>
@@ -114,7 +114,7 @@ export default function AdminCleanupPage() {
       <div className="cleanup-list-head"><div><h2>الكورسات الآمنة للحذف</h2><p>حذف الكورس يزيل أقسامه ودروسه التابعة تلقائيًا.</p></div><span>{preview.courses.length}</span></div>
       {preview.courses.length ? preview.courses.map((item) => <label className="cleanup-row" key={item.id}>
         <input type="checkbox" checked={selectedCourses.includes(item.id)} onChange={() => toggle(item.id, selectedCourses, setSelectedCourses)}/>
-        <span className="cleanup-item-copy"><b>{item.title}</b><small>{new Date(item.created_at).toLocaleDateString("ar-EG")} · {item.sections || 0} أقسام · {item.lessons || 0} دروس</small></span>
+        <span className="cleanup-item-copy"><b>{item.title}</b><small>{new Date(item.created_at).toLocaleDateString("ar-EG-u-nu-latn")} · {item.sections || 0} أقسام · {item.lessons || 0} دروس</small></span>
         <code>{item.id}</code>
       </label>) : <p className="cleanup-empty">لا توجد كورسات مستوفية لشروط الحذف الآمن.</p>}
     </section>
@@ -122,7 +122,7 @@ export default function AdminCleanupPage() {
       <div className="cleanup-list-head"><div><h2>الامتحانات الآمنة للحذف</h2><p>أي امتحان له محاولة طالب لا يظهر هنا، وتظل النتائج محفوظة.</p></div><span>{preview.exams.length}</span></div>
       {preview.exams.length ? preview.exams.map((item) => <label className="cleanup-row" key={item.id}>
         <input type="checkbox" checked={selectedExams.includes(item.id)} onChange={() => toggle(item.id, selectedExams, setSelectedExams)}/>
-        <span className="cleanup-item-copy"><b>{item.title}</b><small>{new Date(item.created_at).toLocaleDateString("ar-EG")}</small></span>
+        <span className="cleanup-item-copy"><b>{item.title}</b><small>{new Date(item.created_at).toLocaleDateString("ar-EG-u-nu-latn")}</small></span>
         <code>{item.id}</code>
       </label>) : <p className="cleanup-empty">لا توجد امتحانات بلا محاولات.</p>}
     </section>

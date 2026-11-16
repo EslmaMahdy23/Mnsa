@@ -1,0 +1,61 @@
+.page{min-height:100vh;padding:108px 18px 64px;background:radial-gradient(ellipse at 90% 0,#e5f7fd 0,transparent 38%),#f4f7fb;color:#182b44}
+.container{width:min(100%,980px);margin-inline:auto;display:grid;gap:20px}
+.header{position:relative;overflow:hidden;padding:28px 30px;border:1px solid #d8eaf3;border-radius:22px;background:linear-gradient(115deg,#102a4a,#126c9d 72%,#159dc1);color:#fff;box-shadow:0 14px 34px rgba(15,67,100,.13)}
+.header:after{position:absolute;inset:auto -40px -110px auto;width:300px;height:300px;border:1px solid #ffffff38;border-radius:50%;content:"";box-shadow:0 0 0 28px #ffffff20,0 0 0 57px #ffffff10}
+.brandLine{display:flex;align-items:center;gap:9px}
+.brandMark{display:grid;place-items:center;width:39px;height:39px;border:1px solid #ffffff38;border-radius:12px;background:#ffffff17;color:#b8edff;font-size:1.15rem}
+.brand{color:#fff;font-size:1.08rem;font-weight:950}
+.brand span{color:#69dcff}
+.header h1{position:relative;z-index:1;max-width:900px;margin:22px auto 6px;color:#fff;font-size:clamp(1.8rem,4.8vw,2.9rem);font-weight:950;line-height:1.4;text-align:center}
+.header h1 span{color:#8ee7ff}
+.header>p{position:relative;z-index:1;margin:0;color:#d7eefa;font-size:.9rem}
+.periodBadge{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:8px 12px;border:1px solid #ffffff42;border-radius:999px;background:#ffffff16;color:#e7f8ff;font-size:.74rem;font-weight:850}
+.activity{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.activity article{display:grid;gap:8px;min-width:0;padding:16px;border:1px solid #e0eaf2;border-radius:15px;background:#fff;box-shadow:0 5px 18px rgba(22,51,80,.045)}
+.activity article>span{display:flex;align-items:center;gap:7px;color:#74849a;font-size:.73rem;font-weight:750}
+.activity article>span i{color:#1598c5}
+.activity article>strong{overflow-wrap:anywhere;color:#1b3552;font-size:.9rem;font-weight:900}
+.activity .lastActivity{grid-column:span 2}
+.section{padding:21px;border:1px solid #e0eaf2;border-radius:18px;background:#fff;box-shadow:0 7px 22px rgba(22,51,80,.045)}
+.sectionHead{display:flex;align-items:center;gap:11px;margin-bottom:15px}
+.sectionIcon{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:12px;background:#eaf8fd;color:#118eb9}
+.sectionHead h2{margin:0;color:#1d3653;font-size:1.03rem;font-weight:900}
+.sectionHead p{margin:2px 0 0;color:#8795a7;font-size:.72rem;line-height:1.5}
+.courseGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.course{display:grid;gap:9px;padding:15px;border:1px solid #e6edf3;border-radius:14px;background:#fbfdff}
+.courseTitle{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.courseTitle h3{margin:0;color:#203854;font-size:.88rem;font-weight:850}
+.courseTitle strong{flex:none;color:#088cbd;font-size:1rem;font-weight:950}
+.progressTrack{height:8px;overflow:hidden;border-radius:99px;background:#eaf0f5}
+.progressTrack span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#13b1e8,#087fc1);transition:width .3s}
+.course small{color:#8492a3;font-size:.7rem}
+.results{display:grid}
+.result{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 2px;border-bottom:1px solid #edf1f5}
+.result:last-child{border-bottom:0}
+.resultMain{display:grid;gap:3px;min-width:0}
+.resultMain h3{overflow:hidden;margin:0;color:#203854;font-size:.82rem;font-weight:850;text-overflow:ellipsis;white-space:nowrap}
+.resultMain span{color:#8896a6;font-size:.68rem}
+.score{flex:none;color:#078fbd;font-size:.95rem}
+.score small{color:#75849a;font-size:.68rem;font-weight:700}
+.pending{flex:none;padding:5px 9px;border-radius:999px;background:#fff7e6;color:#9a6a12;font-size:.69rem;font-weight:800}
+.empty{margin:0;padding:22px 10px;border:1px dashed #dbe5ed;border-radius:12px;color:#8291a3;font-size:.82rem;text-align:center}
+.resultsLimit{display:block;margin-top:8px;color:#8492a3;font-size:.68rem}
+.invalid{width:min(100%,510px);margin:10vh auto 0;padding:32px 24px;border:1px solid #e0eaf2;border-radius:22px;background:#fff;box-shadow:0 14px 36px rgba(22,51,80,.08);text-align:center}
+.invalid .brandMark{margin:0 auto 8px;background:#eaf8fd;color:#118eb9}
+.invalid .brand{display:block;color:#18324f}
+.invalid .brand span{color:#1598c5}
+.invalidIcon{display:grid;place-items:center;width:55px;height:55px;margin:24px auto 11px;border-radius:17px;background:#fff0ef;color:#d54c4c;font-size:1.3rem}
+.invalid h1{margin:0;color:#1b3450;font-size:1.18rem;font-weight:950}
+.invalid p{margin:6px 0 0;color:#8190a2;font-size:.84rem}
+:global(.eh.dark-mode) .page{background:radial-gradient(ellipse at 90% 0,#112b42 0,transparent 38%),#0b1420;color:#e4edf5}
+:global(.eh.dark-mode) .activity article,:global(.eh.dark-mode) .section,:global(.eh.dark-mode) .invalid{border-color:#293d50;background:#111e2b;box-shadow:0 7px 22px rgba(0,0,0,.17)}
+:global(.eh.dark-mode) .activity article>strong,:global(.eh.dark-mode) .sectionHead h2,:global(.eh.dark-mode) .courseTitle h3,:global(.eh.dark-mode) .resultMain h3,:global(.eh.dark-mode) .invalid h1{color:#e4edf5}
+:global(.eh.dark-mode) .activity article>span,:global(.eh.dark-mode) .sectionHead p,:global(.eh.dark-mode) .course small,:global(.eh.dark-mode) .resultMain span,:global(.eh.dark-mode) .footer,:global(.eh.dark-mode) .invalid p{color:#9eb0c2}
+:global(.eh.dark-mode) .course{border-color:#2b4053;background:#142332}
+:global(.eh.dark-mode) .progressTrack{background:#24384a}
+:global(.eh.dark-mode) .result{border-color:#293d50}
+:global(.eh.dark-mode) .empty{border-color:#34495d;color:#9eb0c2}
+:global(.eh.dark-mode) .invalid .brand{color:#e4edf5}
+:global(.eh.dark-mode) .periodBadge{border-color:#ffffff30;background:#ffffff10;color:#e4f6fc}:global(.eh.dark-mode) .resultsLimit{color:#9eb0c2}
+@media(max-width:960px){.page{padding-top:100px}}
+@media(max-width:680px){.page{padding:86px 13px 42px}.header{padding:21px 18px;border-radius:17px}.secure{top:20px;left:17px;padding:6px 8px;font-size:.65rem}.header h1{margin-top:20px}.periodBadge{max-width:100%;font-size:.67rem}.activity{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.activity article{padding:12px}.activity article>span{font-size:.68rem}.activity article>strong{font-size:.8rem}.activity .lastActivity{grid-column:1/-1}.section{padding:16px 13px;border-radius:15px}.sectionHead{align-items:flex-start}.sectionHead p{max-width:270px}.courseGrid{grid-template-columns:1fr}.result{align-items:flex-start}.score{font-size:.86rem}}
