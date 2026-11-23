@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { clearAllCache } from "@/lib/cache";
 import { ProfileContext, type Profile } from "@/components/dashboard/ProfileContext";
 import LoadingState from "@/components/dashboard/LoadingState";
+import StudentNotifications from "@/components/dashboard/StudentNotifications";
 
 type NavItem = { href: string; label: string; icon: string; soon?: boolean };
 
@@ -18,10 +19,11 @@ const NAV: NavItem[] = [
   { href: "/teacher/lecture-schedules", label: "جداول محاضراتي", icon: "fa-calendar-days" },
   { href: "/teacher/live-sessions", label: "حصصي المباشرة", icon: "fa-video" },
   { href: "/teacher/students", label: "طلابي", icon: "fa-users" },
+  { href: "/teacher/certificates", label: "شهادات الطلاب", icon: "fa-award" },
   { href: "/teacher/essay-grading", label: "تصحيح المقالي", icon: "fa-marker" },
   { href: "/teacher/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
   { href: "/teacher/graders", label: "المساعدون", icon: "fa-user-check" },
-  { href: "/teacher/earnings", label: "الأرباح", icon: "fa-sack-dollar", soon: true },
+  { href: "/teacher/earnings", label: "مستحقاتي", icon: "fa-sack-dollar" },
 ];
 
 const ASSISTANT_NAV: NavItem[] = [
@@ -167,6 +169,7 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
               <Link href="/teacher/profile" className="dash-user" title={displayName} aria-label={`حسابي: ${displayName}`}>
                 <span className="dash-avatar" aria-hidden="true"><i className="fa-solid fa-chalkboard-user" /></span>
               </Link>
+              {profile.role === "teacher" && <StudentNotifications />}
             </div>
             <span className="tch-top-title">أهلاً {displayName}</span>
           </header>

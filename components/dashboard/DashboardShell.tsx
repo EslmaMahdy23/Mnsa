@@ -9,6 +9,7 @@ import { fmtMoney } from "@/lib/wallet";
 import LoadingState from "@/components/dashboard/LoadingState";
 import StudentNotifications from "@/components/dashboard/StudentNotifications";
 import StudentSupportWidget from "@/components/dashboard/StudentSupportWidget";
+import StudyAssistant from "@/components/dashboard/StudyAssistant";
 import TeacherApplicationGate from "@/components/dashboard/TeacherApplicationGate";
 import { clearAllCache, keepOnlyUser, readCache, writeCache } from "@/lib/cache";
 import { DEFAULT_STUDENT_DASHBOARD, parseStudentDashboardSettings, type StudentDashboardNavKey } from "@/lib/student-dashboard";
@@ -31,7 +32,9 @@ const NAV: NavItem[] = [
 const ADMIN_NAV: NavItem[] = [
   { href: "/", label: "معاينة الموقع", icon: "fa-arrow-up-right-from-square" },
   { href: "/dashboard/admin", label: "لوحة الأدمن", icon: "fa-gauge-high" },
+  { href: "/dashboard/admin/platform-status", label: "حالة المنصة", icon: "fa-shield-halved" },
   { href: "/dashboard/admin/users", label: "المستخدمين", icon: "fa-users" },
+  { href: "/dashboard/admin/teachers", label: "المدرسون", icon: "fa-chalkboard-user" },
   { href: "/dashboard/admin/home", label: "الصفحة الرئيسية", icon: "fa-house-chimney" },
   { href: "/dashboard/admin/student-dashboard", label: "إدارة داشبورد الطالب", icon: "fa-sliders" },
   { href: "/dashboard/admin/support", label: "تذاكر الدعم", icon: "fa-headset" },
@@ -40,6 +43,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin/exams", label: "إدارة الامتحانات", icon: "fa-file-circle-question" },
   { href: "/dashboard/essay-grading/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
   { href: "/dashboard/admin/topups", label: "طلبات الشحن", icon: "fa-money-bill-transfer" },
+  { href: "/dashboard/admin/finance", label: "المالية والأرباح", icon: "fa-chart-pie" },
   { href: "/dashboard/admin/wallet-cards", label: "كروت شحن المحفظة", icon: "fa-ticket-simple" },
   { href: "/dashboard/admin/notifications", label: "إشعارات الطلاب", icon: "fa-bell" },
   { href: "/dashboard/admin/promo-codes", label: "أكواد الخصم والتفعيل", icon: "fa-ticket" },
@@ -52,6 +56,7 @@ const ADMIN_NAV: NavItem[] = [
 const GRADER_NAV: NavItem[] = [
   { href: "/dashboard/essay-grading", label: "تصحيح المقالي", icon: "fa-marker" },
   { href: "/dashboard/essay-grading/retries", label: "طلبات إعادة الامتحان", icon: "fa-rotate-right" },
+  { href: "/dashboard/parent-reports", label: "متابعة أولياء الأمور", icon: "fa-user-group" },
 ];
 const COURSE_MANAGER_NAV: NavItem[] = [
   { href: "/dashboard/admin/courses", label: "إدارة الكورسات", icon: "fa-book-open" },
@@ -192,6 +197,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     if (profile?.role === "teacher") router.replace("/teacher");
   }, [profile?.role, router]);
 
+  useEffect(() => {
+    if (profile?.role === "admin" && pathname === "/dashboard") router.replace("/dashboard/admin");
+  }, [profile?.role, pathname, router]);
+
   // لو الطلب اترفض وضغط "المتابعة كطالب" في الجلسة دي، منعرضش شاشة الرفض تاني
   useEffect(() => {
     if (!profile || !teacherApp || teacherApp === "none") return;
@@ -211,8 +220,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     supabase.rpc("is_teacher_assistant").then(({ data, error }) => {
       if (cancelled) return;
       if (error) console.error("is_teacher_assistant failed:", error);
-      if (data === true) return router.replace("/teacher/essay-grading");
-      const isEssayGraderPath = pathname === "/dashboard/essay-grading" || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname);
+      if (data === true && pathname !== "/dashboard/parent-reports") return router.replace("/teacher/essay-grading");
+      const isEssayGraderPath = pathname === "/dashboard/essay-grading"
+        || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname)
+        || pathname === "/dashboard/parent-reports";
       if (!isEssayGraderPath) router.replace("/dashboard/essay-grading");
     });
     return () => { cancelled = true; };
@@ -283,7 +294,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     || pathname.startsWith("/dashboard/admin/courses/")
     || pathname === "/dashboard/admin/exams/new"
     || /^\/dashboard\/admin\/exams\/[^/]+$/.test(pathname);
-  const isEssayGraderPath = pathname === "/dashboard/essay-grading" || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname);
+  const isEssayGraderPath = pathname === "/dashboard/essay-grading"
+    || /^\/dashboard\/essay-grading\/[^/]+$/.test(pathname)
+    || pathname === "/dashboard/parent-reports";
   const isForumModeratorPath = pathname === "/dashboard/admin/forum";
   const isPaymentManagerPath = pathname === "/dashboard/admin/topups";
   const isSupportAgentPath = pathname === "/dashboard/admin/support";
@@ -334,7 +347,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         return base[item.key];
       });
   const visibleNavItems = profile.role === "student"
-    ? [...navItems, { href: "/dashboard/shared-files", label: "ملفاتي", icon: "fa-folder-open" }, { href: "/dashboard/live-sessions", label: "الحصص المباشرة", icon: "fa-video" }, { href: "/dashboard/forum", label: "المنتدى", icon: "fa-comments" }]
+    ? [...navItems, { href: "/dashboard/shared-files", label: "ملفاتي", icon: "fa-folder-open" }, { href: "/dashboard/certificates", label: "شهاداتي", icon: "fa-award" }, { href: "/dashboard/live-sessions", label: "الحصص المباشرة", icon: "fa-video" }, { href: "/dashboard/forum", label: "المنتدى", icon: "fa-comments" }]
     : navItems;
   // الرئيسية ولوحة الأدمن بيتطابقوا بالظبط، غير كده بنشوف المسار بيبدأ بإيه
   const isActive = (href: string) =>
@@ -418,7 +431,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           <div className="dash-content" key={freshKey}>{children}</div>
         </div>
       </div>
-      {profile.role === "student" && <StudentSupportWidget />}
+      {profile.role === "student" && <>
+        <StudentSupportWidget />
+        <StudyAssistant darkMode={darkMode} />
+      </>}
     </ProfileContext.Provider>
   );
 }

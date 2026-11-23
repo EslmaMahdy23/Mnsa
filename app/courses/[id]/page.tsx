@@ -24,6 +24,7 @@ export default function PublicCoursePage() {
   const [loading, setLoading] = useState(true);
   const [signedIn, setSignedIn] = useState(false);
   const [teacherPreview, setTeacherPreview] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -64,14 +65,16 @@ export default function PublicCoursePage() {
               items.push({ type: "exam", id: exam.id, title: exam.title, questions: exam.question_count, minutes: exam.duration_minutes, position: exam.position });
               itemsBySection.set(exam.section_id, items);
             }
-            setCourse({
+            const previewCourse: PublicCourse = {
               id: ownCourse.id, title: ownCourse.title, description: ownCourse.description, cover_url: ownCourse.cover_url,
               grade: ownCourse.grade, price: ownCourse.price, teacher_name: teacherResult.data?.full_name ?? null,
               sections: sectionRows.map((section) => ({
                 id: section.id, title: section.title, description: section.description,
                 items: (itemsBySection.get(section.id) ?? []).sort((a, b) => (a.position ?? 0) - (b.position ?? 0) || (a.type === "exam" ? 1 : -1)),
               })),
-            });
+            };
+            setCourse(previewCourse);
+            setExpandedSections(new Set(previewCourse.sections.slice(0, 1).map((section) => section.id)));
             setTeacherPreview(true);
             setLoading(false);
             return;
@@ -85,7 +88,9 @@ export default function PublicCoursePage() {
         console.error("public course load failed:", result.error);
         return;
       }
-      setCourse((result.data as PublicCourse | null) ?? null);
+      const publicCourse = (result.data as PublicCourse | null) ?? null;
+      setCourse(publicCourse);
+      setExpandedSections(new Set(publicCourse?.sections.slice(0, 1).map((section) => section.id) ?? []));
     }
     void load();
     return () => { cancelled = true; };
@@ -100,7 +105,6 @@ export default function PublicCoursePage() {
   if (!course) return <main className="public-course-state"><i className="fa-regular fa-face-frown" /><h1>الكورس مش متاح للمعاينة دلوقتي</h1><Link href="/">ارجع للرئيسية</Link></main>;
 
   const grade = GRADES.find((g) => g.value === course.grade)?.label;
-  const totalItems = course.sections.reduce((total, section) => total + section.items.length, 0);
   const actualContentCounts = course.sections.flatMap((section) => section.items).reduce(
     (counts, item) => {
       if (item.type === "video") counts.videos++;
@@ -113,46 +117,68 @@ export default function PublicCoursePage() {
 
   return (
     <main className="public-course-page course-view-page">
-      {teacherPreview && <div className="public-course-preview-banner"><span><i className="fa-solid fa-eye" /> معاينة قبل النشر · دي معاينة لمحتوى كورسك الحالي</span><Link href={"/teacher/courses/" + id}><i className="fa-solid fa-pen" /> رجوع لإدارة الكورس</Link></div>}
-      <section className="public-course-hero">
-        <div className="public-course-hero-copy">
-          <span className="public-course-kicker"><i className="fa-solid fa-circle-play" /> معاينة الكورس</span>
-          <h1>{course.title}</h1>
-          {course.description && <p>{course.description}</p>}
-          <div className="public-course-meta">
-            {course.teacher_name && <span><i className="fa-solid fa-chalkboard-user" /> {course.teacher_name}</span>}
-            {grade && <span><i className="fa-solid fa-graduation-cap" /> {grade}</span>}
-            <span><i className="fa-solid fa-layer-group" /> {course.sections.length.toLocaleString("ar-EG-u-nu-latn")} أقسام</span>
-            <span><i className="fa-solid fa-book-open" /> {totalItems.toLocaleString("ar-EG-u-nu-latn")} عنصر</span>
-          </div>
-          <CourseContentSummary {...actualContentCounts} sections={course.sections.length} />
-        </div>
-        <div className="public-course-cover">
-          {course.cover_url ? <img src={course.cover_url} alt={course.title} /> : <i className="fa-solid fa-book-open-reader" />}
-          <span>{Number(course.price) === 0 ? "كورس مجاني" : `${Number(course.price).toLocaleString("ar-EG-u-nu-latn")} جنيه`}</span>
-        </div>
+      {teacherPreview && <div className="public-course-preview-banner">
+        <span><i className="fa-solid fa-eye" /> معاينة قبل النشر · هذه معاينة لمحتوى كورسك</span>
+        <Link href={"/teacher/courses/" + id}><i className="fa-solid fa-pen" /> العودة لإدارة الكورس</Link>
+      </div>}
+
+      <section className="cv-hero">
+        <Link href="/courses" className="cv-hero-back"><i className="fa-solid fa-chevron-right" /> العودة للكورسات</Link>
+        <h1>{course.title}</h1>
+        {course.teacher_name && <p className="cv-hero-teacher"><i className="fa-solid fa-chalkboard-user" /> {course.teacher_name}</p>}
+        {grade && <p className="cv-hero-teacher"><i className="fa-solid fa-graduation-cap" /> {grade}</p>}
+        {course.description && <p className="cv-hero-desc">{course.description}</p>}
+        <CourseContentSummary {...actualContentCounts} sections={course.sections.length} />
       </section>
 
-      <div className="public-course-layout">
-        <section className="public-course-content">
-          <div className="public-course-section-heading"><div><span>محتويات الكورس</span><h2>استكشف الدروس والأقسام</h2></div><small>{course.sections.length.toLocaleString("ar-EG-u-nu-latn")} أقسام</small></div>
-          {course.sections.length === 0 ? <p className="public-course-empty">محتوى الكورس هيتضاف قريبًا.</p> : course.sections.map((section, sectionIndex) => (
-            <article className="public-course-section" key={section.id}>
-              <header><span className="public-course-section-no">{(sectionIndex + 1).toLocaleString("ar-EG-u-nu-latn")}</span><div><h3>{section.title}</h3>{section.description && <p>{section.description}</p>}</div><small>{section.items.length.toLocaleString("ar-EG-u-nu-latn")} عناصر</small></header>
-              {section.items.length > 0 && <div className="public-course-items">{section.items.map((item) => {
-                const icon = item.type === "exam" ? "fa-clipboard-list" : item.type === "file" ? "fa-file-pdf" : "fa-video";
-                return <div className="public-course-item cv-item cv-item-locked" key={item.id} aria-disabled="true">
-                  <span className="cv-locked-item-name"><i className={`fa-solid ${icon}`} /><span>{item.title}<small>{item.type === "exam" ? `امتحان${item.questions ? ` · ${item.questions.toLocaleString("ar-EG-u-nu-latn")} سؤال` : ""}` : item.type === "file" ? "PDF" : "فيديو"}</small></span></span>
-                  <span className="cv-locked-item-status"><b>المحتوى مقفول للزوار</b><i className="fa-solid fa-lock" aria-hidden="true" /></span>
-                  <i className="fa-solid fa-chevron-up cv-locked-item-chevron" aria-hidden="true" />
-                </div>;
-              })}</div>}
-            </article>
-          ))}
-        </section>
+      <div className="cv-grid public-course-grid">
+        <div>
+          <section className="cv-card public-course-content">
+            <h2 className="cv-h2">محتوى الكورس</h2>
+            {course.sections.length === 0 ? <p className="cv-note">محتوى الكورس هيتضاف قريبًا.</p> : course.sections.map((section, sectionIndex) => {
+              const isOpen = expandedSections.has(section.id);
+              return (
+                <article className={"cv-sec" + (isOpen ? " open" : "")} key={section.id}>
+                  <button className="cv-sec-head" type="button" aria-expanded={isOpen} onClick={() => setExpandedSections((current) => {
+                    const next = new Set(current);
+                    if (next.has(section.id)) next.delete(section.id); else next.add(section.id);
+                    return next;
+                  })}>
+                    <span className="public-course-section-no">{(sectionIndex + 1).toLocaleString("ar-EG-u-nu-latn")}</span>
+                    <div className="cv-sec-info"><b>{section.title}</b>{section.description && <small>{section.description}</small>}</div>
+                    <span className="cv-count">{section.items.length.toLocaleString("ar-EG-u-nu-latn")} عناصر</span>
+                    <i className="fa-solid fa-chevron-down cv-chev" />
+                  </button>
+                  {isOpen && <div className="cv-items">
+                    {section.items.length === 0 ? <p className="cv-note">لسه مفيش محتوى مضاف للقسم ده.</p> : section.items.map((item) => {
+                      const icon = item.type === "exam" ? "fa-clipboard-list" : item.type === "file" ? "fa-file-pdf" : "fa-video";
+                      const kind = item.type === "exam" ? "امتحان" : item.type === "file" ? "ملف PDF" : "فيديو";
+                      return (
+                        <div className="cv-item cv-item-locked public-course-item" key={item.id} aria-disabled="true">
+                          <span className="cv-locked-item-name"><i className={"fa-solid " + icon} /><span>{item.title}<small>{kind}</small></span></span>
+                          <span className="cv-locked-item-status"><b>متاح بعد الاشتراك</b><i className="fa-solid fa-lock" aria-hidden="true" /></span>
+                          <i className="fa-solid fa-lock cv-locked-item-chevron" aria-hidden="true" />
+                        </div>
+                      );
+                    })}
+                  </div>}
+                </article>
+              );
+            })}
+          </section>
+        </div>
 
-        <aside className="public-course-join"><span className="public-join-icon"><i className="fa-solid fa-graduation-cap" /></span><h2>جاهز تبدأ؟</h2><p>سجّل دخولك أو أنشئ حسابك عشان تشترك وتفتح كل محتوى الكورس.</p><button onClick={continueToCourse}>{signedIn ? "افتح الكورس" : "سجّل أو أنشئ حساب"} <i className="fa-solid fa-arrow-left" /></button><small>{Number(course.price) === 0 ? "التسجيل في الكورس مجاني" : `سعر الكورس ${Number(course.price).toLocaleString("ar-EG-u-nu-latn")} جنيه`}</small></aside>
-      </div>
-    </main>
+        <aside className="cv-aside">
+          <section className="cv-card">
+            <div className="cv-cover">
+              {course.cover_url ? <img src={course.cover_url} alt={course.title} /> : <div className="cv-ph"><i className="fa-solid fa-book-open-reader" /></div>}
+            </div>
+            <div className="public-course-price">{Number(course.price) === 0 ? "كورس مجاني" : Number(course.price).toLocaleString("ar-EG-u-nu-latn") + " جنيه"}</div>
+            <div className="cv-locked public-course-access"><i className="fa-solid fa-lock" /> معاينة للعناوين فقط. اشترك لفتح الدروس والملفات والامتحانات.</div>
+            <button className="btn cv-start" onClick={continueToCourse}>{signedIn ? "افتح الكورس" : "سجّل أو أنشئ حساب"} <i className="fa-solid fa-arrow-left" /></button>
+            <p className="public-course-join-note">{Number(course.price) === 0 ? "التسجيل في الكورس مجاني" : "سجّل الدخول لمتابعة خطوات الاشتراك"}</p>
+          </section>
+        </aside>
+      </div>    </main>
   );
 }

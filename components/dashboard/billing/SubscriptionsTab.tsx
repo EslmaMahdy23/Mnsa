@@ -1,17 +1,24 @@
 "use client";
 
+import { useState } from "react";
+
 import { useMyEnrollments, subKind } from "./useMyEnrollments";
 import { SUB_KIND, fmtDateTime } from "@/lib/billing";
 import { fmtMoney } from "@/lib/wallet";
 import LoadingState from "@/components/dashboard/LoadingState";
+import DashboardPagination from "@/components/dashboard/DashboardPagination";
+
+const PAGE_SIZE = 5;
 
 // اشتراكات الطالب: كل كورس مسجّل فيه ونوع الاشتراك (مدفوع من الرصيد / مجاني / من الإدارة)
 export default function SubscriptionsTab() {
   const { rows, loading, error } = useMyEnrollments();
+  const [page, setPage] = useState(1);
 
   if (loading) return <LoadingState label="بنحمّل اشتراكاتك" detail="لحظة ونجيب الكورسات المسجّل فيها" compact />;
   if (error) return <p className="msg-error">{error}</p>;
   if (rows.length === 0) return <p className="card empty">لسه ما اشتركتش في أي كورس.</p>;
+  const visibleRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="bill-wrap">
@@ -28,11 +35,11 @@ export default function SubscriptionsTab() {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r, i) => {
+          {visibleRows.map((r, i) => {
             const kind = subKind(r);
             return (
               <tr key={r.course_id}>
-                <td>{(i + 1).toLocaleString("ar-EG-u-nu-latn")}</td>
+                <td>{((page - 1) * PAGE_SIZE + i + 1).toLocaleString("ar-EG-u-nu-latn")}</td>
                 <td><strong>{r.course?.title ?? "كورس غير متاح حالياً"}</strong></td>
                 <td><span className={`bill-badge ${kind}`}>{SUB_KIND[kind]}</span></td>
                 <td>{kind === "purchase" && r.invoice ? fmtMoney(r.invoice.total) : kind === "free" ? "مجاني" : "—"}</td>
@@ -44,6 +51,8 @@ export default function SubscriptionsTab() {
           })}
         </tbody>
       </table>
+      <div className="bill-foot">{((page - 1) * PAGE_SIZE + 1).toLocaleString("ar-EG-u-nu-latn")} - {Math.min(page * PAGE_SIZE, rows.length).toLocaleString("ar-EG-u-nu-latn")} من {rows.length.toLocaleString("ar-EG-u-nu-latn")}</div>
+      <DashboardPagination page={page} pageSize={PAGE_SIZE} total={rows.length} onChange={setPage} />
     </div>
   );
 }

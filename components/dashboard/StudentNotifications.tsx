@@ -8,7 +8,7 @@ import { useProfile } from "@/components/dashboard/ProfileContext";
 
 type Notification = {
   id: string;
-  source_type: "course" | "exam" | "lecture_schedule" | "admin_broadcast" | "forum_answer" | "exam_essay_review";
+  source_type: "course" | "lesson" | "exam" | "exam_result" | "lecture_schedule" | "live_session" | "subscription" | "wallet_topup" | "certificate" | "admin_broadcast" | "forum_answer" | "exam_essay_review";
   title: string;
   message: string;
   href: string;
@@ -16,8 +16,12 @@ type Notification = {
   read_at: string | null;
 };
 
-const iconFor = (type: Notification["source_type"]) =>
-  type === "course" ? "fa-book-open" : type === "exam" || type === "exam_essay_review" ? "fa-file-circle-check" : type === "lecture_schedule" ? "fa-calendar-days" : type === "forum_answer" ? "fa-comments" : "fa-bullhorn";
+const iconFor = (type: Notification["source_type"]) => ({
+  course: "fa-book-open", lesson: "fa-play", exam: "fa-file-circle-question", exam_result: "fa-square-poll-vertical",
+  exam_essay_review: "fa-marker", lecture_schedule: "fa-calendar-days", live_session: "fa-video",
+  subscription: "fa-graduation-cap", wallet_topup: "fa-wallet", certificate: "fa-award",
+  forum_answer: "fa-comments", admin_broadcast: "fa-bullhorn",
+}[type]);
 
 const relativeDate = (value: string) => {
   const elapsed = Math.max(0, Date.now() - new Date(value).getTime());
@@ -202,7 +206,7 @@ export default function StudentNotifications() {
         <header className="notifications-head"><div><b>إشعاراتك</b><span>{unread ? `${unread.toLocaleString("ar-EG-u-nu-latn")} غير مقروءة` : "كلها مقروءة"}</span></div><button type="button" disabled={!unread || busy} onClick={markAllRead}>{busy ? "جاري التحديث..." : "تحديد الكل كمقروء"}</button></header>
         {error && <p className="notifications-error">{error}</p>}
         <div className="notifications-list">
-          {loading && rows.length === 0 ? <p className="notifications-empty">بنحمّل إشعاراتك...</p> : rows.length === 0 ? <div className="notifications-empty"><i className="fa-regular fa-bell-slash" /><b>مفيش إشعارات جديدة</b><span>هنبلغك لما ينزل كورس أو امتحان أو جدول جديد.</span></div> : rows.map((row) => <div key={row.id} className={`notification-item${row.read_at ? " is-read" : " is-unread"}`}>
+          {loading && rows.length === 0 ? <p className="notifications-empty">بنحمّل إشعاراتك...</p> : rows.length === 0 ? <div className="notifications-empty"><i className="fa-regular fa-bell-slash" /><b>مفيش إشعارات جديدة</b><span>هنبلغك بآخر الكورسات والدروس والامتحانات والحصص والنتائج والشهادات.</span></div> : rows.map((row) => <div key={row.id} className={`notification-item${row.read_at ? " is-read" : " is-unread"}`}>
             <Link href={row.href} className="notification-item-link" onClick={() => { markRead(row); setOpen(false); }}>
               <span className={`notification-icon notification-icon-${row.source_type}`}><i className={`fa-solid ${iconFor(row.source_type)}`} /></span>
               <span className="notification-copy"><b>{row.title}</b><span>{row.message}</span><small>{relativeDate(row.created_at)}</small></span>

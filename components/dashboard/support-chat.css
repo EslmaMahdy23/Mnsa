@@ -2,3 +2,27 @@
 @media(max-width:760px){.support-layout{grid-template-columns:1fr;min-height:0}.support-list{max-height:260px}.support-ticket-list{max-height:195px}.support-chat{min-height:520px}.support-heading{padding:15px}.support-heading h1{font-size:1.1rem}.support-heading>div>span{font-size:.72rem}.support-new-form{padding:20px}.support-message{max-width:90%}}
 .support-admin-list-head select{max-width:145px;padding:8px;border:1px solid #e0e8ef;border-radius:9px;background:#fff;color:#50647b;font:inherit;font-size:.7rem}.support-admin-person{min-width:0;flex:1}.support-admin-person>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.support-status-button{display:flex;align-items:center;gap:6px;flex:none;padding:8px 10px;border:1px solid #e4eaf0;border-radius:9px;background:#fff;color:#627389;font:inherit;font-size:.69rem;cursor:pointer}.support-status-button:hover{border-color:#b5ddec;background:#f5fbfe;color:#117eaa}.support-admin-placeholder{flex:1;align-content:center}
 @media(max-width:560px){.support-chat-head{flex-wrap:wrap}.support-status-button{margin-inline-start:50px}.support-composer{align-items:stretch}.support-composer button{justify-content:center;padding:0 10px}.support-composer button span{display:none}.support-admin-list-head select{max-width:125px}}
+.dash-shell.dark-mode .support-page .support-heading{border-color:#2b4053;background:#111b27;color:#e7eef5}
+.dash-shell.dark-mode .support-page .support-heading h1,.dash-shell.dark-mode .support-page .support-list-head h2,.dash-shell.dark-mode .support-page .support-chat-head h2,.dash-shell.dark-mode .support-page .support-new-form h2{color:#edf5fc}
+.dash-shell.dark-mode .support-page .support-heading p,.dash-shell.dark-mode .support-page .support-message>span{color:#75ccef}
+.dash-shell.dark-mode .support-page .support-heading>div>span,.dash-shell.dark-mode .support-page .support-list-head span,.dash-shell.dark-mode .support-page .support-chat-head>div>span,.dash-shell.dark-mode .support-page .support-ticket-last,.dash-shell.dark-mode .support-page .support-ticket time,.dash-shell.dark-mode .support-page .support-message time,.dash-shell.dark-mode .support-page .support-new-form>p{color:#aebdcc}
+.dash-shell.dark-mode .support-page .support-heading-icon,.dash-shell.dark-mode .support-page .support-agent-avatar,.dash-shell.dark-mode .support-page .support-new-icon{border:1px solid #29475e;background:#17344a;color:#82d9f4}
+.dash-shell.dark-mode .support-page .support-list,.dash-shell.dark-mode .support-page .support-chat,.dash-shell.dark-mode .support-page .support-new-form{border-color:#2b4053;background:#111b27;color:#e7eef5}
+.dash-shell.dark-mode .support-page .support-list-head,.dash-shell.dark-mode .support-page .support-chat-head,.dash-shell.dark-mode .support-page .support-composer{border-color:#2b4053;background:#111b27}
+.dash-shell.dark-mode .support-page .support-ticket{border-color:#26394b;background:#14202d;color:#e7eef5}
+.dash-shell.dark-mode .support-page .support-ticket:hover,.dash-shell.dark-mode .support-page .support-ticket.selected{background:#1a354a;color:#f2f8fd}
+.dash-shell.dark-mode .support-page .support-ticket-top>b{color:#e2edf6}
+.dash-shell.dark-mode .support-page .support-status{background:#3a3020;color:#f3cd82}
+.dash-shell.dark-mode .support-page .support-status.waiting_student{background:#173b52;color:#9cdef8}
+.dash-shell.dark-mode .support-page .support-status.closed{background:#273543;color:#bac8d5}
+.dash-shell.dark-mode .support-page .support-messages{border-color:#26394b;background:#0d1722;color:#e7eef5}
+.dash-shell.dark-mode .support-page .support-chat-note,.dash-shell.dark-mode .support-page .support-list-empty{color:#aab8c6}
+.dash-shell.dark-mode .support-page .support-list-empty p{color:#e3edf5}
+.dash-shell.dark-mode .support-page .support-list-empty span{color:#aebdcc}
+.dash-shell.dark-mode .support-page .support-message{border-color:#2a4053;background:#172431;color:#e7eef5;box-shadow:none}
+.dash-shell.dark-mode .support-page .support-message.mine{border-color:#28536b;background:#153247}
+.dash-shell.dark-mode .support-page .support-message p{color:#e2edf6}
+.dash-shell.dark-mode .support-page .support-closed{border-color:#2b4053;background:#172431;color:#c1cfdb}
+.dash-shell.dark-mode .support-page .support-new-form label{color:#c3d0dc}
+.dash-shell.dark-mode .support-page .support-composer textarea,.dash-shell.dark-mode .support-page .support-new-form input,.dash-shell.dark-mode .support-page .support-new-form textarea{border-color:#34495c;background:#0f1a26;color:#e7eef5}
+.dash-shell.dark-mode .support-page .support-composer textarea::placeholder,.dash-shell.dark-mode .support-page .support-new-form input::placeholder,.dash-shell.dark-mode .support-page .support-new-form textarea::placeholder{color:#8fa2b4}

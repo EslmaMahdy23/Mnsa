@@ -32,7 +32,7 @@ function statusLabel(course: Row): { text: string; cls: string } {
     case "rejected": return { text: "مرفوض — يحتاج تعديلًا", cls: "rejected" };
     default: return course.is_published
       ? { text: "منشور", cls: "ok" }
-      : { text: "معتمد — مخفي", cls: "draft" };
+      : { text: "معتمد — أكمل المحتوى", cls: "draft" };
   }
 }
 
@@ -52,6 +52,7 @@ export default function TeacherCoursesPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -73,6 +74,15 @@ export default function TeacherCoursesPage() {
   }, [me.id]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("eduhelp:course-request-sent") === "1") {
+        sessionStorage.removeItem("eduhelp:course-request-sent");
+        setSuccess("تم إرسال بيانات الكورس للأدمن. هتقدر تكمل المحتوى بعد الموافقة وتحديد السعر.");
+      }
+    } catch {}
+  }, []);
 
   async function submitForReview(course: Row) {
     setBusyId(course.id);
@@ -100,12 +110,13 @@ export default function TeacherCoursesPage() {
         <div>
           <span className="tch-kicker"><i className="fa-solid fa-layer-group" /> إدارة المحتوى</span>
           <h1>كورساتي <span>{rows.length.toLocaleString("ar-EG-u-nu-latn")}</span></h1>
-          <p>تابع حالة كل كورس، جهّز محتواه، وأرسله للمراجعة.</p>
+          <p>تابع مراجعة الكورسات، وأكمل محتوى الكورس بعد موافقة الأدمن.</p>
         </div>
         <Link href="/teacher/courses/new" className="btn"><i className="fa-solid fa-plus" /> كورس جديد</Link>
       </div>
 
       {error && <p className="msg-error" role="alert">{error}</p>}
+      {success && <p className="msg-ok" role="status"><i className="fa-solid fa-circle-check" /> {success}</p>}
 
       {loading && rows.length === 0 ? (
         <div className="tch-courses-empty"><i className="fa-solid fa-spinner fa-spin" /><p>بنحمّل كورساتك...</p></div>
@@ -139,8 +150,9 @@ export default function TeacherCoursesPage() {
                   </div>
                   {course.approval_status === "rejected" && <p className="tch-course-note"><i className="fa-solid fa-circle-exclamation" /> افتح الكورس لمراجعة ملاحظة الأدمن وتعديل المطلوب.</p>}
                   <div className="tch-course-footer"><small>أُنشئ {fmtDate(course.created_at)}</small><div className="tch-course-actions">
-                    <Link href={`/teacher/courses/${course.id}`} className="btn btn-outline btn-sm"><i className="fa-solid fa-pen" /> تعديل</Link>
-                    <Link href={`/teacher/lecture-schedules?course=${course.id}`} className="btn btn-outline btn-sm"><i className="fa-solid fa-calendar-days" /> جدول المحاضرات</Link>
+                    {course.approval_status !== "pending" && <Link href={`/teacher/courses/${course.id}`} className="btn btn-outline btn-sm"><i className={`fa-solid ${course.approval_status === "approved" ? "fa-list-check" : "fa-pen"}`} /> {course.approval_status === "approved" ? "إكمال المحتوى" : "تعديل البيانات"}</Link>}
+                    {course.approval_status === "approved" && <Link href={`/teacher/lecture-schedules?course=${course.id}`} className="btn btn-outline btn-sm"><i className="fa-solid fa-calendar-days" /> جدول المحاضرات</Link>}
+                    {course.approval_status === "pending" && <span className="tch-course-review-wait"><i className="fa-regular fa-clock" /> في انتظار موافقة الأدمن</span>}
                     {(course.approval_status === "draft" || course.approval_status === "rejected") && <button className="btn btn-sm" disabled={busyId === course.id} onClick={() => submitForReview(course)}>{busyId === course.id ? "جارٍ الإرسال..." : "إرسال للمراجعة"}</button>}
                   </div></div>
                 </div>

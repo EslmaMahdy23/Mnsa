@@ -74,6 +74,16 @@
 .profile-stat-copy strong { max-width:170px;font-size:.85rem;line-height:1.7; }
 .profile-stat-copy>span { margin-top:5px;color:#a0a9b7;font-size:.7rem; }
 .profile-stat-copy>b { color:#28344c;font-size:.82rem;font-weight:600; }
+@keyframes profile-water-sway{0%,100%{border-radius:36% 64% 0 0 / 13% 8% 0 0;transform:translateX(-4%)}50%{border-radius:63% 37% 0 0 / 7% 15% 0 0;transform:translateX(4%)}}
+@keyframes profile-water-glint{0%,100%{transform:translateX(-18%);opacity:.25}50%{transform:translateX(18%);opacity:.72}}
+.profile-stat-circle::before{right:auto;left:-10%;width:120%;animation:profile-water-sway 3.4s ease-in-out infinite;background:linear-gradient(180deg,#26a9df 0%,#168fc9 100%)}
+.profile-stat-circle::after{content:"";position:absolute;z-index:0;left:-50%;top:calc(100% - var(--stat-fill) - 5px);width:200%;height:9px;border-radius:50%;background:rgba(210,246,255,.34);animation:profile-water-glint 2.4s ease-in-out infinite}
+.dash-shell.dark-mode .profile-page .profile-stat-circle{border-color:#294455;background:#132a3a;color:#f2faff}
+.dash-shell.dark-mode .profile-page .profile-stat-copy>small{color:#9fb5c9}
+.dash-shell.dark-mode .profile-page .profile-stat-copy>span{color:#a9b8c7}
+.dash-shell.dark-mode .profile-page .profile-stat-copy>b{color:#c5d2de}
+.dash-shell.dark-mode .profile-page .profile-stat-circle::after{background:rgba(208,244,255,.22)}
+@media(prefers-reduced-motion:reduce){.profile-stat-circle::before,.profile-stat-circle::after{animation:none}}
 @media(max-width:1050px) { .profile-course-stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .profile-results { padding:21px 23px; border-color:#e9edf5; border-radius:20px; box-shadow:0 7px 22px rgba(31,50,90,.035); margin-bottom:0; }
 .profile-results-heading { margin-bottom:16px; }

@@ -99,6 +99,7 @@ export default function TeacherExamPage() {
         {error && <p className="msg-error">{error}</p>}
       </section>
 
+
       {editable ? (
         <section className="card">
           <h3>بيانات الامتحان وأسئلته</h3>

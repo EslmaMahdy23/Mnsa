@@ -10,7 +10,6 @@ const links = [
   ["#subjects", "الكورسات", "fa-book-open"],
   ["#how", "طريقة الاستخدام", "fa-circle-play"],
   ["#teach", "درّس معنا", "fa-chalkboard-user"],
-  ["#faq", "أسئلة شائعة", "fa-circle-question"],
 ];
 
 // الصفحات اللي الوضع الليلي شغّال فيها (الزرار بيظهر في الناف بار والتصميم الليلي بيتطبّق).
@@ -19,7 +18,7 @@ export default function PublicSiteChrome({ children }: { children: React.ReactNo
   const pathname = usePathname();
   const maintenanceAdmin = useContext(MaintenanceAdminContext);
   // الداشبورد ولوحة المدرّس (/teacher) لهم هيكلهم الخاص، مش ناف بار الموقع العام. (/teacher-signup صفحة عامة عادية)
-  if (pathname.startsWith("/dashboard") || pathname === "/teacher" || pathname.startsWith("/teacher/")) return children;
+  if (pathname.startsWith("/dashboard") || pathname === "/teacher" || pathname.startsWith("/teacher/") || pathname.startsWith("/certificates/")) return children;
   return <PublicSiteFrame pathname={pathname} maintenanceAdmin={maintenanceAdmin}>{children}</PublicSiteFrame>;
 }
 
@@ -81,7 +80,7 @@ function PublicSiteFrame({ pathname, children, maintenanceAdmin }: { pathname: s
           )}
           {maintenanceAdmin ? (
             <>
-              <Link href="/dashboard/admin/home" className="btn-ghost-nav">لوحة الإدارة</Link>
+              <Link href="/dashboard/admin" className="btn-ghost-nav">لوحة الإدارة</Link>
               <span className="admin-preview-badge"><i className="fa-solid fa-user-shield" /> وضع الأدمن</span>
             </>
           ) : (
@@ -100,7 +99,7 @@ function PublicSiteFrame({ pathname, children, maintenanceAdmin }: { pathname: s
         {links.map(([href, label, icon]) => <a href={hrefFor(href)} key={href}><i className={`fa-solid ${icon}`} /> {label}</a>)}
         <div className="menu-divider" />
         {maintenanceAdmin ? (
-          <Link href="/dashboard/admin/home"><i className="fa-solid fa-user-shield" /> لوحة الإدارة</Link>
+          <Link href="/dashboard/admin"><i className="fa-solid fa-user-shield" /> لوحة الإدارة</Link>
         ) : (
           <>
             <Link href="/login"><i className="fa-solid fa-right-to-bracket" /> تسجيل دخول</Link>

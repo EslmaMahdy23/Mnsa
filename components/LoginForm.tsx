@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { readAuthReturn } from "@/lib/auth-return";
+import { getUserDashboardPath, readAuthReturn } from "@/lib/auth-return";
 import OtpStep from "./OtpStep";
 import "@/app/auth.css";
 
@@ -22,9 +22,15 @@ export default function LoginForm() {
   useEffect(() => {
     const target = readAuthReturn();
     setReturnTo(target);
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace(target);
+    let cancelled = false;
+    void supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      const destination = target === "/dashboard"
+        ? await getUserDashboardPath(data.session.user.id).catch(() => "/dashboard")
+        : target;
+      if (!cancelled) router.replace(destination);
     });
+    return () => { cancelled = true; };
   }, [router]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -32,7 +38,7 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
     const cleanEmail = email.trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
 
     if (error) {
       // الحساب اتعمل بس البريد لسه ما اتأكدش: نبعت كود جديد ونفتح خطوة التأكيد
@@ -45,7 +51,11 @@ export default function LoginForm() {
       setLoading(false);
       return setError("البريد الإلكتروني أو كلمة السر غير صحيحة");
     }
-    router.push(readAuthReturn());
+    const target = readAuthReturn();
+    const destination = target === "/dashboard"
+      ? await getUserDashboardPath(signInData.user.id).catch(() => "/dashboard")
+      : target;
+    router.replace(destination);
   }
 
   if (needOtp) {

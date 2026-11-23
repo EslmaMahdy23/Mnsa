@@ -64,38 +64,36 @@ export default function HomeCourses() {
       {courses.map((c) => {
         const price = Number(c.price);
         const gradeLabel = GRADES.find((g) => g.value === c.grade)?.label;
+        const detailsHref = `/courses/${c.id}`;
+        const signupHref = `/signup?next=${encodeURIComponent(`/dashboard/courses/${c.id}`)}`;
         return (
-          <Link href={`/courses/${c.id}`} className="hc-card" key={c.id} onMouseMove={tilt} onMouseLeave={untilt}>
-            <div className="hc-cover">
+          <article className="hc-card" key={c.id} onMouseMove={tilt} onMouseLeave={untilt}>
+            <Link href={detailsHref} className="hc-cover" aria-label={`معاينة ${c.title}`}>
               {c.cover_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={c.cover_url} alt={c.title} loading="lazy" />
               ) : (
-                <div className="hc-ph"><i className="fa-solid fa-book-open" /></div>
+                <span className="hc-ph"><i className="fa-solid fa-book-open" /></span>
               )}
-              <span className={`hc-price ${price === 0 ? "free" : "paid"}`}>
-                {price === 0 ? "مجاني" : `${fmt(price)} جنيه`}
-              </span>
-              <span className="hc-grade">
-                <i className="fa-solid fa-graduation-cap" /> {gradeLabel ?? "كل السنوات"}
-              </span>
-            </div>
+            </Link>
             <div className="hc-body">
-              <h3>{c.title}</h3>
-              {c.teacher_name && (
-                <div className="hc-teacher">
-                  <span className="hc-av">{c.teacher_name.trim().charAt(0)}</span>
-                  <span className="hc-tname">{c.teacher_name}</span>
-                </div>
-              )}
+              <Link href={detailsHref} className="hc-title-link"><h3>{c.title}</h3></Link>
+              <div className="hc-meta-row">
+                <span><i className="fa-solid fa-graduation-cap" /> {gradeLabel ?? "كل السنوات"}</span>
+                {c.teacher_name && <span><i className="fa-solid fa-chalkboard-user" /> {c.teacher_name}</span>}
+              </div>
+              <div className="hc-price-line"><b>{price === 0 ? "مجاني" : `${fmt(price)} جنيه`}</b></div>
               {c.description && <p className="hc-desc">{c.description}</p>}
               <div className="hc-foot">
-                <span className="hc-chip"><i className="fa-solid fa-layer-group" /> {fmt(c.sections_count)} قسم</span>
-                <span className="hc-chip"><i className="fa-solid fa-circle-play" /> {fmt(c.lessons_count)} عنصر</span>
-                <span className="hc-go" aria-hidden="true"><i className="fa-solid fa-arrow-left" /></span>
+                <span className="hc-chip"><i className="fa-solid fa-layer-group" /> {fmt(c.sections_count)} أقسام</span>
+                <span className="hc-chip"><i className="fa-solid fa-circle-play" /> {fmt(c.lessons_count)} دروس</span>
+              </div>
+              <div className="hc-actions">
+                <Link href={detailsHref} className="hc-enter">الدخول للكورس</Link>
+                <Link href={signupHref} className="hc-subscribe">الاشتراك في الكورس <i className="fa-solid fa-arrow-left" /></Link>
               </div>
             </div>
-          </Link>
+          </article>
         );
       })}
       </div>

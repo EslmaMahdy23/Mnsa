@@ -36,6 +36,20 @@ export default function TeacherCoursePage() {
     return <div className="tch-course-manage" dir="rtl"><Link href="/teacher/courses" className="adm-back"><i className="fa-solid fa-arrow-right" /> رجوع لكورساتي</Link><p className={error ? "msg-error" : "card empty"}>{error || "الكورس ده مش موجود في كورساتك."}</p></div>;
   }
 
+  if (course.approval_status === "pending") {
+    return (
+      <main className="tch-course-manage" dir="rtl">
+        <Link href="/teacher/courses" className="tch-manage-back"><i className="fa-solid fa-arrow-right" /> كورساتي</Link>
+        <section className="card" style={{ maxWidth: 760, margin: "32px auto", padding: "clamp(24px, 5vw, 48px)", textAlign: "center" }}>
+          <span className="tch-manage-section-icon" style={{ marginInline: "auto", width: 58, height: 58 }}><i className="fa-regular fa-clock" /></span>
+          <h1 style={{ margin: "18px 0 8px" }}>الكورس قيد مراجعة الأدمن</h1>
+          <p>أرسلنا بيانات «{course.title}» للمراجعة. بعد الموافقة وتحديد السعر هيوصلك إشعار، وساعتها هتقدر تكمل الأقسام والدروس.</p>
+          <Link href="/teacher/courses" className="btn" style={{ marginTop: 18 }}>العودة إلى كورساتي</Link>
+        </section>
+      </main>
+    );
+  }
+
 
   return (
     <main className="tch-course-manage" dir="rtl">

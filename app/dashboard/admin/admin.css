@@ -186,6 +186,9 @@
 .admin-topups-view { display:inline-flex;align-items:center;gap:8px;margin-top:12px;color:#147db3;font-size:.81rem;font-weight:800; }
 .admin-topups-view i { transition:transform .18s ease; }
 .admin-topups-quick:hover .admin-topups-view i { transform:translateX(-3px); }
+.admin-home{max-width:1320px;margin:0 auto;padding-bottom:34px}.admin-home-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px;padding:26px 28px;border:1px solid #d8e8f3;border-radius:20px;background:radial-gradient(circle at 5% 0,#ffffff22,transparent 33%),linear-gradient(115deg,#102d4b,#087ca5 70%,#0aa4c5);box-shadow:0 14px 35px #113d5e17;color:#fff}.admin-home-hero h1{margin:8px 0 4px;color:#fff;font-size:clamp(1.45rem,3vw,2rem)}.admin-home-hero p{margin:0;color:#d5f3ff;font-size:.86rem}.admin-home-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #ffffff40;border-radius:999px;background:#ffffff15;color:#e2f8ff;font-size:.72rem;font-weight:800}.admin-home-hero-actions{display:flex;flex-wrap:wrap;gap:9px}.admin-home-hero-actions a{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #ffffff45;border-radius:11px;color:#fff;text-decoration:none;font-size:.8rem;font-weight:850;transition:.16s ease}.admin-home-hero-actions a:hover{transform:translateY(-1px);background:#ffffff18}.admin-home-hero-actions .admin-home-primary{border-color:#fff;background:#fff;color:#086a93}.admin-home-hero-actions .admin-home-primary:hover{background:#e9f8ff}.admin-home-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}.admin-home-metric{display:flex;align-items:center;gap:12px;min-width:0;padding:15px;border:1px solid var(--border);border-radius:15px;background:var(--card);box-shadow:0 5px 18px #12344a08}.admin-home-metric>span{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:13px;background:#e8f6fc;color:#078cb8}.admin-home-metric>div{display:grid;gap:4px;min-width:0}.admin-home-metric small{overflow:hidden;color:var(--muted);font-size:.72rem;text-overflow:ellipsis;white-space:nowrap}.admin-home-metric b{color:var(--text);font-size:1.28rem;line-height:1.1;font-variant-numeric:tabular-nums}.admin-home-metric.is-alert{border-color:#f3d8c8;background:linear-gradient(120deg,#fff,#fff8f3)}.admin-home-metric.is-alert>span{background:#fff0e5;color:#d27435}.admin-home-groups{display:grid;gap:20px}.admin-home-group{padding:17px;border:1px solid var(--border);border-radius:18px;background:var(--card);box-shadow:0 6px 22px #12344a08}.admin-home-group>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.admin-home-group>header h2{margin:0;color:var(--text);font-size:1rem}.admin-home-group>header p{margin:4px 0 0;color:var(--muted);font-size:.75rem;line-height:1.6}.admin-home-group>header>span{flex:none;padding:6px 9px;border-radius:9px;background:#e9f6fb;color:#1883a8;font-size:.68rem;font-weight:850}.admin-home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.admin-home-action{display:flex;align-items:center;gap:11px;min-width:0;padding:11px 12px;border:1px solid var(--border);border-radius:13px;background:var(--card);color:inherit;text-decoration:none;transition:border-color .16s ease,background .16s ease,transform .16s ease}.admin-home-action:hover{transform:translateY(-1px);border-color:#9ed3e7;background:#f8fcff}.admin-home-action-icon{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:#e8f6fc;color:#078cb8}.admin-home-action-copy{display:grid;gap:3px;flex:1;min-width:0}.admin-home-action-copy b{color:var(--text);font-size:.79rem}.admin-home-action-copy small{overflow:hidden;color:var(--muted);font-size:.68rem;text-overflow:ellipsis;white-space:nowrap}.admin-home-action-arrow{flex:none;color:#94a6b5;font-size:.72rem}.admin-home-pending{flex:none;padding:5px 7px;border-radius:8px;background:#f1f3f6;color:#798796;font-size:.65rem;font-weight:800}.admin-home-pending.has-pending{background:#fff0e6;color:#c2632c}.dash-shell.dark-mode .admin-home-hero{border-color:#1e5973}.dash-shell.dark-mode .admin-home-metric.is-alert{border-color:#624938;background:#2c241f}.dash-shell.dark-mode .admin-home-metric.is-alert>span{background:#4a3023;color:#ffc18f}.dash-shell.dark-mode .admin-home-group{box-shadow:none}.dash-shell.dark-mode .admin-home-group>header>span{background:#18344a;color:#8bdcff}.dash-shell.dark-mode .admin-home-action:hover{border-color:#356681;background:#142c3d}.dash-shell.dark-mode .admin-home-action-icon,.dash-shell.dark-mode .admin-home-metric>span{background:#18344a;color:#8bdcff}.dash-shell.dark-mode .admin-home-pending{background:#233345;color:#b5c5d5}.dash-shell.dark-mode .admin-home-pending.has-pending{background:#4a3023;color:#ffc18f}
+@media(max-width:900px){.admin-home-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.admin-home-hero{align-items:flex-start;flex-direction:column;padding:20px}.admin-home-hero-actions{width:100%}.admin-home-hero-actions a{justify-content:center;flex:1}.admin-home-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.admin-home-metric{gap:9px;padding:11px}.admin-home-metric>span{width:35px;height:35px;border-radius:11px}.admin-home-metric small{font-size:.66rem}.admin-home-metric b{font-size:1.1rem}.admin-home-group{padding:13px}.admin-home-actions{grid-template-columns:1fr}.admin-home-action{padding:10px}.admin-home-action-copy small{white-space:normal}.admin-home-group>header p{max-width:70vw}}
 
 /* معاينة صورة غلاف الكورس */
 .adm-cover { aspect-ratio: 16 / 9; max-width: 320px; border-radius: 12px; overflow: hidden; background: var(--bg); border: 1px solid var(--border); margin-bottom: 10px; }
@@ -193,3 +196,86 @@
 
 /* سكرين التحويل في نافذة المراجعة */
 .adm-shot { display: block; width: 100%; max-height: 60vh; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); margin-bottom: 8px; }
+
+.admin-finance-page { max-width: 1380px; margin: 0 auto; padding-bottom: 32px; }
+.admin-finance-hero { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; padding:24px 26px; border:1px solid #d4e9f4; border-radius:20px; background:radial-gradient(circle at 0 100%,#e6f8ff 0,transparent 38%),linear-gradient(120deg,#fff,#f4fbff); }
+.admin-finance-kicker { display:inline-flex; align-items:center; gap:7px; color:#0a91bd; font-size:.75rem; font-weight:900; }
+.admin-finance-hero h1 { margin:6px 0; color:#102e4c; font-size:clamp(1.45rem,2.5vw,2rem); }
+.admin-finance-hero p { margin:0; color:#647c91; line-height:1.8; font-size:.87rem; }
+.admin-finance-hero-icon { display:grid; place-items:center; width:58px; height:58px; flex:none; border-radius:17px; background:#e2f6ff; color:#078bb7; font-size:1.45rem; }
+.admin-finance-lock { max-width:560px; margin:34px auto; padding:30px; text-align:center; }
+.admin-finance-lock-icon { display:grid; place-items:center; width:58px; height:58px; margin:0 auto 12px; border-radius:18px; background:#e9f7fc; color:#078bb7; font-size:1.3rem; }
+.admin-finance-lock h2 { margin:0 0 7px; color:var(--text); }
+.admin-finance-lock>p { max-width:430px; margin:0 auto 20px; color:var(--muted); line-height:1.8; font-size:.85rem; }
+.admin-finance-lock form { display:grid; gap:9px; text-align:right; }
+.admin-finance-lock label { color:var(--text); font-size:.82rem; font-weight:800; }
+.admin-finance-password-field { display:flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid var(--border); border-radius:12px; background:var(--card); }
+.admin-finance-password-field:focus-within { border-color:#33a9d2; box-shadow:0 0 0 3px #139bd51a; }
+.admin-finance-password-field input { width:100%; min-width:0; padding:10px 4px; border:0; outline:0; background:transparent; color:var(--text); }
+.admin-finance-password-field button { display:grid; place-items:center; width:36px; height:36px; flex:none; border:0; border-radius:9px; background:#eaf6fb; color:#1683aa; cursor:pointer; }
+.admin-finance-unlock { justify-content:center; min-height:44px; margin-top:5px; }
+.admin-finance-error { margin:4px 0; color:#bb343d; font-size:.8rem; line-height:1.6; }
+.admin-finance-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.admin-finance-toolbar>span { display:inline-flex; align-items:center; gap:7px; color:#16825b; font-size:.77rem; font-weight:750; }
+.admin-finance-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+.admin-finance-metric { display:grid; gap:9px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:16px; background:var(--card); box-shadow:0 5px 20px #15334a08; }
+.admin-finance-metric>span { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.78rem; font-weight:800; }
+.admin-finance-metric>span i { color:#0a93bc; }
+.admin-finance-metric strong { overflow-wrap:anywhere; color:var(--text); font-size:clamp(1.15rem,2vw,1.55rem); font-variant-numeric:tabular-nums; }
+.admin-finance-metric small { color:var(--muted); font-size:.7rem; line-height:1.5; }
+.admin-finance-metric.metric-platform { border-top:3px solid #1e9fcd; }
+.admin-finance-metric.metric-teachers { border-top:3px solid #30a676; }
+.admin-finance-metric.metric-wallets { border-top:3px solid #8184d9; }
+.admin-finance-grid { display:grid; grid-template-columns:minmax(250px,.75fr) minmax(0,1.65fr); align-items:start; gap:14px; }
+.admin-finance-card { min-width:0; padding:0; overflow:hidden; }
+.admin-finance-section-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:17px 18px; border-bottom:1px solid var(--border); }
+.admin-finance-section-head>div { display:grid; gap:3px; }
+.admin-finance-section-head>div>span { color:#0b91ba; font-size:.69rem; font-weight:850; }
+.admin-finance-section-head h2 { margin:0; color:var(--text); font-size:.98rem; }
+.admin-finance-collapse { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:36px; padding:0 12px; border:1px solid #d8e8f1; border-radius:11px; background:#f5fbfe; color:#087fa9; font:inherit; font-size:.72rem; font-weight:850; cursor:pointer; transition:background .15s ease,border-color .15s ease; }
+.admin-finance-collapse:hover { border-color:#9ed9ed; background:#eaf8fd; }
+.admin-finance-section-head>i { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; background:#e9f7fc; color:#078bb7; }
+.admin-finance-teacher-list { display:grid; max-height:460px; overflow:auto; }
+.admin-finance-teacher-row { display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--border); }
+.admin-finance-teacher-row:last-child { border-bottom:0; }
+.admin-finance-teacher-avatar { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; background:#e9f7fc; color:#1389b5; }
+.admin-finance-teacher-row>div { display:grid; gap:3px; min-width:0; }
+.admin-finance-teacher-row b { overflow:hidden; color:var(--text); font-size:.8rem; text-overflow:ellipsis; white-space:nowrap; }
+.admin-finance-teacher-row small { color:var(--muted); font-size:.67rem; }
+.admin-finance-teacher-row strong { color:#16825b; font-size:.8rem; white-space:nowrap; }
+.admin-finance-table-wrap { max-height:500px; overflow:auto; }
+.admin-finance-table { width:100%; border-collapse:collapse; text-align:right; }
+.admin-finance-table th,.admin-finance-table td { padding:11px 12px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.admin-finance-table th { position:sticky; top:0; z-index:1; background:var(--bg); color:var(--muted); font-size:.68rem; }
+.admin-finance-table td { color:var(--text); font-size:.72rem; }
+.admin-finance-table td b,.admin-finance-table td small { display:block; max-width:190px; overflow:hidden; text-overflow:ellipsis; }
+.admin-finance-table td b { font-size:.75rem; }
+.admin-finance-table td small { margin-top:3px; color:var(--muted); font-size:.65rem; }
+.admin-finance-empty { padding:28px 14px; color:var(--muted); text-align:center; font-size:.83rem; }
+.admin-finance-footnote { display:flex; align-items:flex-start; gap:8px; margin:12px 2px; color:var(--muted); font-size:.73rem; line-height:1.7; }
+.admin-finance-footnote i { margin-top:3px; color:#0a93bc; }
+.dash-shell.dark-mode .admin-finance-hero { border-color:#24465b; background:linear-gradient(120deg,#12273a,#15364b); }
+.dash-shell.dark-mode .admin-finance-hero h1,.dash-shell.dark-mode .admin-finance-lock h2,.dash-shell.dark-mode .admin-finance-section-head h2 { color:#e9f5ff; }
+.dash-shell.dark-mode .admin-finance-hero p,.dash-shell.dark-mode .admin-finance-lock>p { color:#a9bfd1; }
+.dash-shell.dark-mode .admin-finance-hero-icon,.dash-shell.dark-mode .admin-finance-lock-icon,.dash-shell.dark-mode .admin-finance-section-head>i,.dash-shell.dark-mode .admin-finance-teacher-avatar { background:#183c52; color:#72d4f3; }
+.dash-shell.dark-mode .admin-finance-collapse { border-color:#29495d; background:#14283a; color:#80d8f5; }
+.dash-shell.dark-mode .admin-finance-collapse:hover { border-color:#3b718d; background:#1a354a; }
+.dash-shell.dark-mode .admin-finance-password-field button { background:#183c52; color:#72d4f3; }
+@media(max-width:1050px) { .admin-finance-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .admin-finance-grid { grid-template-columns:1fr; } }
+@media(max-width:650px) {
+  .admin-finance-hero { padding:18px; }
+  .admin-finance-hero-icon { width:46px; height:46px; }
+  .admin-finance-lock { margin:18px auto; padding:20px; }
+  .admin-finance-metrics { gap:8px; }
+  .admin-finance-metric { gap:7px; padding:12px; }
+  .admin-finance-metric>span { align-items:flex-start; font-size:.7rem; line-height:1.5; }
+  .admin-finance-metric strong { font-size:1rem; }
+  .admin-finance-metric small { font-size:.63rem; }
+  .admin-finance-toolbar { align-items:flex-start; flex-direction:column; }
+  .admin-finance-table thead { display:none; }
+  .admin-finance-table,.admin-finance-table tbody,.admin-finance-table tr,.admin-finance-table td { display:block; width:100%; }
+  .admin-finance-table tr { padding:9px 13px; border-bottom:1px solid var(--border); }
+  .admin-finance-table td { display:flex; justify-content:space-between; gap:12px; padding:6px 0; border:0; white-space:normal; text-align:left; }
+  .admin-finance-table td::before { content:attr(data-label); color:var(--muted); font-weight:750; text-align:right; }
+  .admin-finance-table td b,.admin-finance-table td small { max-width:62vw; text-align:left; }
+}

@@ -18,7 +18,7 @@ type Req = {
 };
 
 function reviewErrorMessage(err: { code?: string; message?: string }): string {
-  if (err.code === "PGRST202") return "لازم تشغّل ملف supabase/53_course_approval.sql في Supabase الأول";
+  if (err.code === "PGRST202") return "لازم تشغّل ملفات مراجعة الكورسات في Supabase، وآخرها 88_course_request_workflow_and_teacher_notifications.sql.";
   if (err.code === "42501") return "مفيش عندك صلاحية أدمن للعملية دي";
   if ((err.message ?? "").includes("not_pending")) return "الكورس ده اتراجع قبل كده، حدّث الصفحة";
   return "مقدرناش ننفّذ القرار، جرّب تاني";
@@ -42,7 +42,7 @@ export default function CourseRequestsPage() {
     setLoading(false);
     if (err) {
       console.error("course requests load failed:", err);
-      if (err.code === "42703") return setError("لازم تشغّل ملف supabase/53_course_approval.sql في Supabase الأول");
+      if (err.code === "42703") return setError("لازم تشغّل ملفات مراجعة الكورسات في Supabase، وآخرها 88_course_request_workflow_and_teacher_notifications.sql.");
       return setError("مقدرناش نحمّل الطلبات، جرّب تحدّث الصفحة");
     }
     setError("");
@@ -88,7 +88,7 @@ export default function CourseRequestsPage() {
         <h1>طلبات الكورسات {rows.length > 0 && <span className="adm-sub">({rows.length.toLocaleString("ar-EG-u-nu-latn")})</span>}</h1>
       </div>
       <p className="adm-sub" style={{ marginBottom: 14 }}>
-        كورسات المدرّسين اللي مستنية موافقتك. الموافقة بتنشر الكورس للطلاب، والرفض بيرجّعه للمدرّس بملاحظتك. السعر بتحدده انت من صفحة الكورس.
+        كورسات المدرّسين اللي مستنية مراجعتك. افتح صفحة الكورس وحدد السعر قبل القرار؛ الموافقة بتسمح للمدرّس باستكمال المحتوى، وبعد ما يجهزه يقدر ينشره للطلاب. الرفض بيرجّعه للمدرّس بملاحظتك.
       </p>
 
       {error && <p className="msg-error">{error}</p>}
@@ -116,7 +116,7 @@ export default function CourseRequestsPage() {
           <div className="adm-actions">
             <Link href={`/dashboard/admin/courses/${r.id}`} className="btn btn-outline btn-sm">فتح الكورس للمراجعة</Link>
             <button className="btn btn-sm" disabled={busyId === r.id} onClick={() => review(r, "approved")}>
-              موافقة ونشر
+              موافقة للمدرّس
             </button>
             <button className="btn btn-danger btn-sm" disabled={busyId === r.id} onClick={() => review(r, "rejected")}>
               رفض

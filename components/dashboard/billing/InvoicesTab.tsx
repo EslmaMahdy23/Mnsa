@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useProfile } from "@/components/dashboard/ProfileContext";
-import Pagination from "@/components/admin/Pagination";
+import DashboardPagination from "@/components/dashboard/DashboardPagination";
 import { INVOICE_KIND, INVOICE_STATUS, PAY_METHOD, fmtDateTime } from "@/lib/billing";
 import { fmtMoney } from "@/lib/wallet";
 import LoadingState from "@/components/dashboard/LoadingState";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 type Doc = {
   id: string;
@@ -124,7 +124,7 @@ export default function InvoicesTab() {
         </div>
       </div>
 
-      <Pagination page={page} pageSize={PAGE_SIZE} total={total} onChange={setPage} />
+      <DashboardPagination page={page} pageSize={PAGE_SIZE} total={total} onChange={setPage} />
     </>
   );
 }

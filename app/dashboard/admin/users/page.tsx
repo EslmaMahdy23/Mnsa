@@ -22,7 +22,7 @@ export default function AdminUsersPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("__non_teacher__");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
@@ -115,9 +115,8 @@ export default function AdminUsersPage() {
           }}
           aria-label="فلتر الدور"
         >
-          <option value="">كل الأدوار</option>
+          <option value="__non_teacher__">كل المستخدمين (بدون المدرسين)</option>
           <option value="student">طلاب</option>
-          <option value="teacher">مدرّسين</option>
           <option value="admin">أدمن</option>
           <option value="essay_grader">مصححين مقالي</option>
           <option value="course_manager">مديري محتوى الكورسات</option>

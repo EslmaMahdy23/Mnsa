@@ -38,10 +38,10 @@ export default function ExamLeaderboard({ userId }: { userId: string }) {
       </div>
       {loading ? <p className="empty">جاري تحميل الترتيب...</p> : error ? <p className="msg-error" role="alert">تعذر تحميل ترتيب الطلاب حاليًا.</p> : examCount === 0 ? <p className="empty">لا توجد امتحانات منشورة حاليًا.</p> : rows.length === 0 ? <p className="empty">سيظهر الترتيب بعد أن يكمل الطلاب كل الامتحانات المنشورة.</p> : <>
         <div style={{ display: "grid", gap: 8 }}>
-          {rows.map((row) => <div key={row.user_id} style={{ display: "grid", gridTemplateColumns: "42px minmax(0,1fr) auto", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 12, background: row.user_id === userId ? "#eef8fc" : "#f8fafc", border: `1px solid ${row.user_id === userId ? "#b9e3f1" : "#edf1f5"}` }}>
+          {rows.map((row) => <div key={row.user_id} className={`exam-leaderboard-row${row.user_id === userId ? " is-current" : ""}`}>
             <span style={{ fontWeight: 800, color: row.rank <= 3 ? "#d39b22" : "#738198" }}>#{row.rank.toLocaleString("ar-EG-u-nu-latn")}</span>
-            <b style={{ color: "#2a3a52", overflow: "hidden", textOverflow: "ellipsis" }}>{row.student_name}{row.user_id === userId ? " (أنت)" : ""}</b>
-            <strong style={{ color: "#1688b5" }}>{Number(row.average_percent).toLocaleString("ar-EG-u-nu-latn", { maximumFractionDigits: 1 })}٪</strong>
+            <b className="exam-leaderboard-name">{row.student_name}{row.user_id === userId ? " (أنت)" : ""}</b>
+            <strong className="exam-leaderboard-score">{Number(row.average_percent).toLocaleString("ar-EG-u-nu-latn", { maximumFractionDigits: 1 })}٪</strong>
           </div>)}
         </div>
         {!me && <p style={{ margin: "12px 2px 0", color: "#718096", fontSize: ".82rem" }}>أكمل كل الامتحانات المنشورة لتظهر في الترتيب.</p>}

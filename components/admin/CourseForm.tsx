@@ -37,7 +37,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
   const me = useProfile();
   const router = useRouter();
   const isTeacher = me.role === "teacher";
-  const approved = true;
+  const approved = !isTeacher || course?.approval_status === "approved";
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   // بيانات تسجيل المدرّس: المواد وسنواته اللي سجّل بيها (null = لسه بتتحمّل)
   const [tinfo, setTinfo] = useState<{ subjects: string[]; grades: number[] } | null>(null);
@@ -158,11 +158,7 @@ export default function CourseForm({ course }: { course?: CourseData }) {
       grade: f.grade ? Number(f.grade) : null,
     };
 
-    const teacherPayload = {
-      ...basePayload,
-      subject: f.subject.trim() || null,
-      is_published: f.published,
-    };
+    const teacherPayload = { ...basePayload, subject: f.subject.trim() || null, is_published: f.published };
     const adminPayload = {
       ...basePayload,
       price,
@@ -183,17 +179,37 @@ export default function CourseForm({ course }: { course?: CourseData }) {
       return setOk("اتحفظت التعديلات ✔");
     }
 
-    const result = isTeacher
-      ? await supabase.from("courses").insert(teacherPayload).select("id").single()
-      : await supabase.from("courses").insert(adminPayload).select("id").single();
+    if (isTeacher) {
+      const { data: courseId, error: requestError } = await supabase.rpc("teacher_create_course_request", {
+        p_title: basePayload.title,
+        p_description: basePayload.description,
+        p_cover_url: basePayload.cover_url,
+        p_subject: teacherPayload.subject,
+        p_grade: basePayload.grade,
+      });
+      setLoading(false);
+      if (requestError || !courseId) {
+        console.error("teacher course request failed:", requestError);
+        if (requestError?.code === "PGRST202" || requestError?.code === "42883") {
+          return setError("شغّل تحديث طلبات الكورسات 88_course_request_workflow_and_teacher_notifications.sql في Supabase الأول.");
+        }
+        return setError(requestError?.message?.includes("subject_required")
+          ? "اختار مادة الكورس قبل الإرسال."
+          : "مقدرناش نبعت الكورس للأدمن. راجع البيانات وحاول تاني.");
+      }
+      try { sessionStorage.setItem("eduhelp:course-request-sent", "1"); } catch {}
+      router.push("/teacher/courses");
+      return;
+    }
+
+    const result = await supabase.from("courses").insert(adminPayload).select("id").single();
     const { data, error: err } = result;
     if (err || !data) {
       setLoading(false);
       console.error("course insert failed:", err);
       return setError(courseSaveError(err, "مقدرناش نضيف الكورس، جرّب تاني"));
     }
-    // نروح لصفحة الكورس عشان تضيف الدروس
-    router.push(isTeacher ? `/teacher/courses/${data.id}` : `/dashboard/admin/courses/${data.id}`);
+    router.push(`/dashboard/admin/courses/${data.id}`);
   }
 
   // لو عمود المادة لسه مش موجود يبقى ملف 53 ما اتشغّلش
@@ -219,7 +235,13 @@ export default function CourseForm({ course }: { course?: CourseData }) {
     <form className={`course-form${isTeacher ? " course-form-teacher" : ""}`} onSubmit={onSubmit} noValidate>
       <div className="course-form-intro">
         <span className="course-form-kicker"><i className="fa-solid fa-circle-info" /> {course ? "تحديث بيانات الكورس" : "بيانات أساسية"}</span>
-        <p>{isTeacher ? "احفظ بيانات الكورس، وحدد إذا كان ظاهرًا للطلاب، ثم أضف الفيديوهات والملفات والامتحانات داخل الأقسام." : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
+        <p>{isTeacher
+          ? approved
+            ? "الكورس معتمد. أكمل الأقسام والدروس، ثم انشره للطلاب عندما يصبح جاهزًا."
+            : course?.approval_status === "pending"
+              ? "الكورس قيد مراجعة الأدمن. بعد الموافقة وتحديد السعر ستقدر تكمل محتواه."
+              : "احفظ بيانات الكورس لإرسالها مباشرة إلى الأدمن. بعد الموافقة وتحديد السعر ستقدر تكمل الأقسام والدروس."
+          : "اكتب المعلومات التي سيستخدمها الطلاب لرؤية الكورس واختيار الاشتراك المناسب."}</p>
       </div>
       <div className="course-form-section">
         <div className="course-form-section-head"><span><i className="fa-solid fa-pen-to-square" /></span><div><b>معلومات الكورس</b><small>العنوان والوصف وصورة الغلاف</small></div></div>

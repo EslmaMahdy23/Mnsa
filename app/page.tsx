@@ -4,6 +4,7 @@ import { Fragment, useContext, useEffect, useRef, useState, type CSSProperties }
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { getUserDashboardPath } from "@/lib/auth-return";
 import { MaintenanceAdminContext } from "@/components/MaintenanceAdminContext";
 import { readCache, writeCache } from "@/lib/cache";
 import {
@@ -14,7 +15,6 @@ import {
   parseMaintenance,
   safeHref,
   safeIcon,
-  safeImg,
   statValue,
   type AutoStats,
   type HomeData,
@@ -79,12 +79,10 @@ export default function Home() {
     async function redirectSignedInUser() {
       const { data } = await supabase.auth.getSession();
       if (cancelled || !data.session) return;
-
-      // MaintenanceGate already checks admin access and displays the maintenance
-      // preview. Waiting for two extra RPCs here only delays every signed-in user.
-      router.replace("/dashboard");
+      const destination = await getUserDashboardPath(data.session.user.id).catch(() => "/dashboard");
+      if (!cancelled) router.replace(destination);
     }
-    redirectSignedInUser();
+    void redirectSignedInUser();
     return () => { cancelled = true; };
   }, [router, maintenanceAdmin]);
 
@@ -175,7 +173,6 @@ export default function Home() {
 
   const c = home.content;
   const hidden = (k: string) => home.layout.hidden.includes(k as never);
-  const heroImg = safeImg(c.hero.image);
   const design = c.design;
   const designStyle = {
     "--eh-hero-height": `${design.heroHeight}px`,
@@ -193,9 +190,12 @@ export default function Home() {
       <>
         {/* SUBJECTS — الكورسات المختارة بقت فوق بعد الهيرو على طول */}
         <section className="section-pad subjects-section" id="subjects">
-          <div className="section-head">
-            <div className="sec-tag">{c.subjects.tag}</div>
-            <h2 className="sec-title vip-heading">{c.subjects.titlePre} <span>{c.subjects.titleHighlight}</span></h2>
+          <div className="section-head home-courses-heading">
+            <h2 className="sec-title vip-heading">
+              {c.subjects.titlePre === "كورسات مميزة" && c.subjects.titleHighlight === "اخترناها ليك"
+                ? <>اختار كورسك <span>اللي يوصلك لهدفك</span></>
+                : <>{c.subjects.titlePre} <span>{c.subjects.titleHighlight}</span></>}
+            </h2>
             <p className="sec-sub">{c.subjects.sub}</p>
           </div>
           <HomeCourses />
@@ -257,7 +257,7 @@ export default function Home() {
     stats: (
       <div className="stats-section" ref={statsRef}>
         <div className="stats-inner">
-          {c.stats.items.map((s, i) => (
+          {c.stats.items.filter((s) => !(valueOf(s) === 98 && /[%٪]/.test(s.suffix))).map((s, i) => (
             <Fragment key={i}>
               {i > 0 && <div className="stat-sep"></div>}
               <div className="stat-block">
@@ -275,7 +275,7 @@ export default function Home() {
         <div className="teach-inner">
           <div>
             <div className="teach-left-tag"><span></span>{c.teach.tag}<span></span></div>
-            <h2 className="teach-left-head">{c.teach.headPre} <span>{c.teach.headHighlight}</span><br />{c.teach.headPost}</h2>
+            <h2 className="teach-left-head">{c.teach.headPre} <span>{c.teach.headHighlight}</span> {c.teach.headPost}</h2>
             <p className="teach-left-desc">{c.teach.desc}</p>
             <div className="teach-perks-grid">
               {c.teach.perks.map((p, i) => (
@@ -292,41 +292,14 @@ export default function Home() {
           </div>
 
           <div className="teach-right">
-            <div className="teach-right-card">
-              <div className="trc-header">
-                <div className="trc-avatar">{c.teach.card.name.trim().replace(/^أ\.\s*/, "").charAt(0)}</div>
-                <div>
-                  <div className="trc-teacher-name">{c.teach.card.name}</div>
-                  <div className="trc-teacher-role">{c.teach.card.role}</div>
-                </div>
-                <div className="trc-badge">{c.teach.card.tag}</div>
-              </div>
-              <div className="trc-stats">
-                {c.teach.card.stats.map((s, i) => (
-                  <Fragment key={i}>
-                    {i > 0 && <div className="trc-stat-sep"></div>}
-                    <div className="trc-stat"><span className="trc-stat-val">{s.value}</span><span className="trc-stat-lbl">{s.label}</span></div>
-                  </Fragment>
-                ))}
-              </div>
-              <div className="trc-quote">
-                <span className="trc-quote-mark">&ldquo;</span>
-                {c.teach.card.quote}
-              </div>
-              <div className="trc-steps">
-                {c.teach.card.steps.map((s, i, arr) => {
-                  const last = i === arr.length - 1;
-                  return (
-                    <Fragment key={i}>
-                      {i > 0 && <div className="trc-step-line"></div>}
-                      <div className={`trc-step ${last ? "active" : "done"}`}>
-                        <div className="trc-step-num">{last ? i + 1 : <>&#10003;</>}</div>
-                        <div className="trc-step-lbl">{s.label}</div>
-                      </div>
-                    </Fragment>
-                  );
-                })}
-              </div>
+            <div className="teach-illustration-card" aria-hidden="true">
+              <div className="teach-illustration-glow" />
+              <div className="teach-illustration-orbit orbit-a" />
+              <div className="teach-illustration-orbit orbit-b" />
+              {/* unDraw Educator illustration, open source: https://undraw.co/illustration/educator_6dgp */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="teach-vector" src="/curious-teacher.svg" alt="" />
+              <div className="teach-illustration-caption"><span className="teach-illustration-icon"><i className="fa-solid fa-chalkboard-user" /></span><div><b>مكانك بين مدرّسي EduHelp</b><small>قدّم محتوى مفيدًا ووصل شرحك لطلابك</small></div><i className="fa-solid fa-arrow-left" /></div>
             </div>
           </div>
         </div>
@@ -389,13 +362,12 @@ export default function Home() {
           </div>
 
           <div className="hero-right">
-            {heroImg && (
-              <div className="hero-image-frame">
-                {/* Unsplash photo by Vitaly Gariev, free under the Unsplash License. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={heroImg} alt={c.hero.imageAlt} />
-              </div>
-            )}
+            <div className="hero-image-frame">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brain-organ.svg" alt="رسم توضيحي لدماغ" />
+            </div>
+            <span className="hero-orbit hero-orbit-one" aria-hidden="true" />
+            <span className="hero-orbit hero-orbit-two" aria-hidden="true" />
           </div>
         </div>
       </section>}

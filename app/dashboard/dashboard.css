@@ -364,6 +364,20 @@
 .dash-shell.dark-mode .dash-content :is(.lecture-table tbody tr, .lecture-table td, .support-ticket, .support-message, .support-composer, .support-list-head, .support-chat-head) { border-color: var(--student-line); }
 .dash-shell.dark-mode .dash-content .lecture-table tbody tr { background: var(--student-surface); }
 .dash-shell.dark-mode .dash-content .lecture-table tbody tr:nth-child(even) { background: var(--student-surface-raised); }
+.dash-shell.dark-mode .dash-content .student-loading{border-color:var(--student-line);background:linear-gradient(115deg,#111b27,#152332);box-shadow:0 7px 22px rgba(0,0,0,.18);color:var(--student-ink)}
+.dash-shell.dark-mode .dash-content .student-loading-copy strong{color:var(--student-ink)}
+.dash-shell.dark-mode .dash-content .student-loading-copy small{color:var(--student-muted)}
+.dash-shell.dark-mode .dash-content .student-loading-mark{background:#17344a;color:#82d9f4}
+.dash-shell.dark-mode .dash-content .student-loading-track{background:#203548}
+.dash-shell.dark-mode .dash-content .lecture-page-kicker{background:#173449;color:#a9e7f6}
+.exam-leaderboard-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid #edf1f5;border-radius:12px;background:#f8fafc}
+.exam-leaderboard-row.is-current{border-color:#b9e3f1;background:#eef8fc}
+.exam-leaderboard-name{overflow:hidden;color:#2a3a52;text-overflow:ellipsis}
+.exam-leaderboard-score{color:#1688b5}
+.dash-shell.dark-mode .dash-content .exam-leaderboard-row{border-color:#2b4053;background:#14202d}
+.dash-shell.dark-mode .dash-content .exam-leaderboard-row.is-current{border-color:#2d657b;background:#173447}
+.dash-shell.dark-mode .dash-content .exam-leaderboard-name{color:#e7eef5}
+.dash-shell.dark-mode .dash-content .exam-leaderboard-score{color:#77d4f2}
 
 /* Wallet forms and transaction history. */
 .dash-shell.dark-mode .wallet-page { --wallet-ink: #e7eef5; --wallet-muted: #a6b6c6; color: var(--student-ink); }
@@ -485,6 +499,7 @@
 .bill-badge.free { background: #dcfce7; color: #15803d; }
 .bill-badge.admin { background: #f1f2f7; color: var(--muted); }
 .adm-pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; color: var(--muted); font-size: 0.92rem; }
+.dashboard-pagination{display:flex;align-items:center;justify-content:center;gap:5px;margin:18px auto 4px;direction:ltr}.dashboard-pagination button{display:grid;min-width:32px;height:32px;padding:0 8px;place-items:center;border:0;border-radius:9px;background:#e9f4ff;color:#087fce;font:inherit;font-size:.85rem;font-weight:800;cursor:pointer;transition:background .15s,color .15s,transform .15s}.dashboard-pagination button:hover:not(:disabled):not(.active){background:#d7ebff;transform:translateY(-1px)}.dashboard-pagination button.active{background:#078de2;color:#fff}.dashboard-pagination button:disabled{opacity:.42;cursor:not-allowed}.dash-shell.dark-mode .dashboard-pagination button{background:#1a3044;color:#8dcfff}.dash-shell.dark-mode .dashboard-pagination button.active{background:#078de2;color:#fff}
 
 /* شريط الرصيد في صفحة الكورسات */
 .crs-bar {

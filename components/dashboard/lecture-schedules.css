@@ -81,3 +81,17 @@
 @media(max-width:600px){.lecture-student-hero{grid-template-columns:minmax(0,1fr);padding:19px}.lecture-student-hero-art{display:none}.lecture-student-next{grid-column:auto}.lecture-student-hero h1{font-size:1.45rem}.lecture-full-schedules .lecture-filters:before{grid-column:auto}.lecture-full-schedules .lecture-filters{padding:13px}.lecture-full-schedules .lecture-schedule-head{padding:13px}}
 @media(max-width:700px) { .lecture-filters { grid-template-columns:1fr 1fr; }.lecture-grade { grid-column:1/-1;justify-content:center; }.lecture-schedule-head { align-items:flex-start;flex-wrap:wrap; }.lecture-term { margin-inline-start:auto; } }
 @media(max-width:480px) { .lecture-filters { grid-template-columns:1fr; }.lecture-grade { grid-column:auto; }.lecture-schedule-head { padding:12px; }.lecture-table-wrap { padding:10px; }.lecture-compact-summary{align-items:stretch;flex-direction:column}.lecture-schedules-page .lecture-profile-section{padding:14px}.lecture-page-kicker{font-size:.68rem} }
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-schedule-head{border-bottom-color:#2d465b;background:#172b3d!important}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-schedule-head h3{color:#edf6ff!important}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-schedule-head p{color:#b5c7d7!important}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-teacher-avatar{background:#1b3c52;color:#86def4}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-term{border-color:#36546b;background:#1c3447;color:#b8eaff}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-filters select{border-color:#34495c;background:#101a25;color:#e7eef5}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-grade{background:#17384a;color:#a9eafa}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-description{border-color:#2e4a60;background:#142536;color:#c0ceda}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-table{border-color:#2b4053}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-table th{border-color:#2b5268;background:#12617a;color:#f0f9ff}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-table td:nth-child(n+2){color:#c1cfdb}
+.dash-shell.dark-mode .dash-content .lecture-full-schedules .lecture-number{background:#1a3c50;color:#a9eafa}
+
+
